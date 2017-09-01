@@ -1,0 +1,16 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="头文件">
+      <UniqueIdentifier>{8dce8a02-2618-4e3c-9d9b-a1e0cba7fe3c}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="d:\我的文档\Visual Studio 2017\Projects\opengl_for_windows\glfw_wrapper\free_gl.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="d:\我的文档\Visual Studio 2017\Projects\opengl_for_windows\glfw_wrapper\stb_image.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>
