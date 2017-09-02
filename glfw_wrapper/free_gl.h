@@ -761,7 +761,7 @@ namespace gl
 			glEnableVertexAttribArray(loc);
 		}
 
-		void set_attribute(int loc_in_vs, unsigned loc_t_size, data_type dt, bool normalized, unsigned stride, void* next)
+		void set_attribute(int loc_in_vs, unsigned loc_t_size, data_type dt, bool normalized, unsigned stride, void const* next)
 		{
 			glVertexAttribPointer(loc_in_vs, loc_t_size, static_cast<unsigned>(dt), normalized ? GL_TRUE : GL_FALSE, stride, next);
 		}
@@ -783,7 +783,7 @@ namespace gl
 			glGenBuffers(n, buffers);
 		}
 
-		void delete_buffers(unsigned* buffers, int n)
+		void delete_buffers(unsigned const* buffers, int n)
 		{
 			glDeleteBuffers(n, buffers);
 		}
@@ -808,7 +808,7 @@ namespace gl
 			glGenVertexArrays(n, buffers);
 		}
 
-		void delete_vertex_arrays(unsigned* buffers, int n)
+		void delete_vertex_arrays(unsigned const* buffers, int n)
 		{
 			glDeleteVertexArrays(n, buffers);
 		}
@@ -840,7 +840,7 @@ namespace gl
             glTexParameterf(static_cast<unsigned>(type), static_cast<unsigned>(feature), value);
         }
 
-        void texture_parameter_vector(texture_type type, texture_feature feature, float* values)
+        void texture_parameter_vector(texture_type type, texture_feature feature, const float* values)
         {
             glTexParameterfv(static_cast<unsigned>(type), static_cast<unsigned>(feature), values);
         }
@@ -991,6 +991,10 @@ namespace gl
 			glDrawArrays(static_cast<unsigned>(mode), first, count);
 		}
 
+        void draw_elements(draw_mode mode, int count, data_type dt, void const* indices)
+        {
+            glDrawElements(static_cast<unsigned>(mode), count, static_cast<unsigned>(dt), indices);
+        }
 	}
 
 }
@@ -1204,13 +1208,21 @@ namespace gl {
 			}
 		};
 
-		struct copy_data
+		struct copy_buffer_data
 		{
 			void from(void const* data, int size, buffer_usage_type usage_type = buffer_usage_type::static_draw)
 			{
 				detail::buffer_data(buffer_type::array_buffer, size, data, usage_type);
 			}
 		};
+
+        struct copy_element_data
+        {
+            void from(void const* data, int size, buffer_usage_type usage_type = buffer_usage_type::static_draw)
+            {
+                detail::buffer_data(buffer_type::element_array_buffer, size, data, usage_type);
+            }
+        };
 
 		template<unsigned N, template<unsigned> typename BufferT>
 		struct vao_t : BufferT<N>
@@ -1238,7 +1250,7 @@ namespace gl {
 		};
 
 		template<unsigned N,template<unsigned> typename BufferT>
-		struct vbo_t : BufferT<N>, copy_data, attribute
+		struct vbo_t : BufferT<N>, copy_buffer_data, attribute
 		{
 			vbo_t()
 			{
@@ -1262,7 +1274,7 @@ namespace gl {
 		};
 
         template<unsigned N, template<unsigned> typename BufferT>
-        struct ebo_t : BufferT<N>, copy_data
+        struct ebo_t : BufferT<N>, copy_element_data
         {
             ebo_t()
             {
@@ -1316,6 +1328,11 @@ namespace gl {
 	{
 		detail::draw_arrays(mode, first, count);
 	}
+
+    void draw_elements(draw_mode mode, int count, data_type dt, void const* indices)
+    {
+        detail::draw_elements(mode, count, dt, indices);
+    }
 
 	shader make_vertex_shader(std::string const& source)
 	{
