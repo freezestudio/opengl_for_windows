@@ -6,11 +6,7 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="d:\我的文档\Visual Studio 2017\Projects\opengl_for_windows\glfw_wrapper\free_gl.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="d:\我的文档\Visual Studio 2017\Projects\opengl_for_windows\glfw_wrapper\stb_image.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)free_gl.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)stb_image.h" />
   </ItemGroup>
 </Project>

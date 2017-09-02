@@ -20,6 +20,11 @@ int __stdcall wWinMain(HINSTANCE hInstance, HINSTANCE, LPWSTR, int)
 
 	auto shader_program = gl::make_shader_program("vertex.glsl"s, "fragment.glsl"s);
 	float verties[] = {	/*×ó*/-0.5f,-0.5f,1.0f,/*ÓÒ*/0.5f,-0.5f,1.0f,/*¶¥*/0.0f, 0.5f,1.0f,};
+    float texcoods[] = {
+        0.0f,0.0f,
+        1.0f,0.0f,
+        0.5f,1.0f,
+    };
 	auto single_vao = make<gl::single_vao>();
 	auto single_vbo = make<gl::single_vbo>();
 

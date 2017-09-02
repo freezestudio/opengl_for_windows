@@ -698,6 +698,45 @@ namespace gl {
 		triangles_adjacency = GL_TRIANGLES_ADJACENCY,
 		//patches = GL_PATCHES,
 	};
+
+    enum class texture_type
+    {
+        _1d = GL_TEXTURE_1D, 
+        _1d_array = GL_TEXTURE_1D_ARRAY, 
+        _2d = GL_TEXTURE_2D, 
+        _2d_array = GL_TEXTURE_2D_ARRAY, 
+        _2d_multisample = GL_TEXTURE_2D_MULTISAMPLE, 
+        _2d_multisample_array = GL_TEXTURE_2D_MULTISAMPLE_ARRAY,
+        _3d = GL_TEXTURE_3D, 
+        cube_map = GL_TEXTURE_CUBE_MAP, 
+        //cube_map_array = GL_TEXTURE_CUBE_MAP_ARRAY,
+        rectangle = GL_TEXTURE_RECTANGLE,
+    };
+
+    enum class texture_feature
+    {
+        //depth_stencil_texture_mode = GL_DEPTH_STENCIL_TEXTURE_MODE,
+        base_level = GL_TEXTURE_BASE_LEVEL, 
+        compare_func = GL_TEXTURE_COMPARE_FUNC, 
+        compare_mode = GL_TEXTURE_COMPARE_MODE, 
+        lod_bais = GL_TEXTURE_LOD_BIAS, 
+        min_filter = GL_TEXTURE_MIN_FILTER,
+        mag_filter = GL_TEXTURE_MAG_FILTER, 
+        min_lod = GL_TEXTURE_MIN_LOD, 
+        max_lod = GL_TEXTURE_MAX_LOD,
+        max_level = GL_TEXTURE_MAX_LEVEL,
+        //swizzle_r = GL_TEXTURE_SWIZZLE_R, 
+        //swizzle_g = GL_TEXTURE_SWIZZLE_G, 
+        //swizzle_b = GL_TEXTURE_SWIZZLE_B, 
+        //swizzle_a = GL_TEXTURE_SWIZZLE_A,
+        wrap_s = GL_TEXTURE_WRAP_S,
+        wrap_t = GL_TEXTURE_WRAP_T,
+        wrap_r = GL_TEXTURE_WRAP_R,
+
+        //For the vector commands(glTexParameter*v), pname can also be one of 
+        border_color = GL_TEXTURE_BORDER_COLOR,
+        //swizzle_rgba = GL_TEXTURE_SWIZZLE_RGBA,
+    };
 }
 
 //gl::detail
@@ -783,6 +822,28 @@ namespace gl
 		{
 			glBindVertexArray(0);
 		}
+
+        //texture
+
+        void create_textures(unsigned* textures,int n)
+        {
+            glGenTextures(n,textures);
+        }
+
+        void texture_parameter(texture_type type,texture_feature feature,int value)
+        {
+            glTexParameteri(static_cast<unsigned>(type), static_cast<unsigned>(feature), value);
+        }
+
+        void texture_parameter(texture_type type, texture_feature feature, float value)
+        {
+            glTexParameterf(static_cast<unsigned>(type), static_cast<unsigned>(feature), value);
+        }
+
+        void texture_parameter_vector(texture_type type, texture_feature feature, float* values)
+        {
+            glTexParameterfv(static_cast<unsigned>(type), static_cast<unsigned>(feature), values);
+        }
 
 		//shader
 
@@ -961,19 +1022,35 @@ namespace gl {
 	class shader
 	{
 	public:
+        shader(shader_type type)
+            : shader(type, "")
+        {
+
+        }
+
 		shader(shader_type type, std::string const& source_file)
 			: shader_id_(detail::create_shader(type))
 		{
-			if (shader_id_ > 0)
+			if (shader_id_ > 0 && !source_file.empty())
 			{
-				std::string source = detail::load_shader(source_file);
-				const char* source_string = source.c_str();
-				detail::shader_source(shader_id_, 1, &source_string, nullptr);
+                load_source(source_file);
 			}
-
 		}
 
 	public:
+        void load_source(std::string const& source_file)
+        {
+            std::string source = detail::load_shader(source_file);
+            const char* source_string = source.c_str();
+            detail::shader_source(shader_id_, 1, &source_string, nullptr);
+        }
+
+        void load_source_code(std::string const& source_code)
+        {
+            const char* source_string = source_code.c_str();
+            detail::shader_source(shader_id_, 1, &source_string, nullptr);
+        }
+
 		bool compile()
 		{
 			detail::compile_shader(shader_id_);
@@ -1122,7 +1199,7 @@ namespace gl {
 		{
 			void set(int loc_in_vs, unsigned loc_t_size, data_type dt, bool normalized, unsigned stride, int next)
 			{
-				detail::set_attribute(loc_in_vs, loc_t_size, dt, normalized, stride, (void*)next);
+				detail::set_attribute(loc_in_vs, loc_t_size, dt, normalized, stride, reinterpret_cast<void*>(next));
 				detail::enable_vertex_attrib_array(loc_in_vs);
 			}
 		};
@@ -1151,7 +1228,7 @@ namespace gl {
 
 			void bind(typename BufferT<N>::value_type index)
 			{
-				detail::bind_vertex_array(BufferT<N>::get(index));
+				detail::bind_vertex_array(get(index));
 			}
 
 			void unbind()
@@ -1175,7 +1252,7 @@ namespace gl {
 
 			void bind(typename BufferT<N>::value_type index)
 			{
-				detail::bind_buffer(buffer_type::array_buffer, BufferT<N>::get(index));
+				detail::bind_buffer(buffer_type::array_buffer, get(index));
 			}
 
 			void unbind()
@@ -1184,16 +1261,36 @@ namespace gl {
 			}
 		};
 
+        template<unsigned N, template<unsigned> typename BufferT>
+        struct ebo_t : BufferT<N>, copy_data
+        {
+            ebo_t()
+            {
+                detail::create_buffers(buffer.data(), N);
+            }
+
+            ~ebo_t()
+            {
+                detail::delete_buffers(buffer.data(), N);
+            }
+
+            void bind(typename BufferT<N>::value_type index)
+            {
+                detail::bind_buffer(buffer_type::element_array_buffer, get(index));
+            }
+        };
 	}
 
-	//template<unsigned N>
-	//constexpr detail::vbo_t<N, detail::buffer_t> vbo_n{};
-
-	//template<unsigned N>
-	//constexpr detail::vao_t<N, detail::buffer_t> vao_n{};
-
-	using single_vbo = detail::vbo_t<1, detail::buffer_t>;
+	template<unsigned N>
+    using multi_vao = detail::vao_t<N, detail::buffer_t>;
+    template<unsigned N>
+    using multi_vbo = detail::vbo_t<N, detail::buffer_t>;
+    template<unsigned N>
+    using multi_ebo = detail::ebo_t<N, detail::buffer_t>;
+    	
 	using single_vao = detail::vao_t<1, detail::buffer_t>;
+    using single_vbo = detail::vbo_t<1, detail::buffer_t>;
+    using single_ebo = detail::ebo_t<1, detail::buffer_t>;
 
 }
 
@@ -1249,9 +1346,9 @@ namespace gl {
 		}
 
 		auto fss = make_fragment_shader(fs);
-		if (!vss.compile())
+		if (!fss.compile())
 		{
-			err = vss.get_error_message();
+			err = fss.get_error_message();
 			sp.reset();
 			return sp;
 		}
