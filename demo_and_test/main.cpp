@@ -3,9 +3,14 @@
 void simp_test_glm()
 {
     auto vec=glm::vec4{1.f,0.f,0.f,1.f };
+
+    //建议的顺序是：缩放-->旋转-->位移
     auto trans = glm::translate(glm::mat4{ 1.f }, glm::vec3{ 1.f,1.f,0.f });
-    vec = trans * vec;
-    assert(vec.x == 2.f && vec.y == 1.f && vec.z == 0.f);
+    auto rotate = glm::rotate(glm::mat4{ 1.f }, glm::radians(45.0f), glm::vec3{ 0.f,0.f,1.f });
+    auto scale = glm::scale(glm::mat4{ 1.f }, glm::vec3{ 0.5f,0.5f,0.5f });
+
+    //从右向左
+    vec = trans * rotate * scale * vec;
 }
 
 int __stdcall wWinMain(HINSTANCE hInstance, HINSTANCE, LPWSTR, int)
@@ -18,8 +23,12 @@ int __stdcall wWinMain(HINSTANCE hInstance, HINSTANCE, LPWSTR, int)
 
     auto free_window = make<glfw::window>(800, 600, "hello"s);
     free_window.make_context_current();
-    free_window.set_key_callback([](glfw::window::pointer w, int key, int scancode, int action, int mods) {
-        glfw::set_window_should_close(w);
+    free_window.set_key_callback([](glfw::window::pointer win, int key, int scancode, int action, int mods) {
+        if (key == static_cast<int>(glfw::key_code::escape) &&
+            action == static_cast<int>(glfw::key_mouse_action::press))
+        {
+            glfw::set_window_should_close(win);
+        }        
     });
     free_window.set_frame_buffer_size_callback([](glfw::window::pointer w, int width, int height) {
         gl::view_port(0, 0, width, height);
@@ -74,7 +83,7 @@ int __stdcall wWinMain(HINSTANCE hInstance, HINSTANCE, LPWSTR, int)
     //test - 1 缩放并逆时针旋转90度.
     //auto trans = glm::rotate(glm::mat4{ 1.f }, glm::radians(-90.0f), glm::vec3{ 0.f,0.f,1.f });
     //trans = glm::scale(trans, glm::vec3(0.5, 0.5, 0.5));
-    //test -2 顺时针旋转90度并移动到屏幕右下角。
+    //test - 2 顺时针旋转90度并移动到屏幕右下角。
     //auto trans = glm::translate(glm::mat4{ 1.f }, glm::vec3{ 0.5f,-0.5f,0.0f });
     //trans = glm::rotate(trans, glm::radians(90.0f), glm::vec3{ 0.f,0.f,1.f });
 
@@ -82,6 +91,13 @@ int __stdcall wWinMain(HINSTANCE hInstance, HINSTANCE, LPWSTR, int)
         
     while (!free_window.should_close())
     {
+        free_window.process_input_event(glfw::key_code::up, [](auto&& action) {
+            if (action == glfw::key_mouse_action::press)
+            {
+                //key event handler
+            }
+        });
+
         gl::clear_color(0.2f, 0.3f, 0.4f);
         gl::clear(gl::bit_field::color_buffer_bit);
 
@@ -94,6 +110,7 @@ int __stdcall wWinMain(HINSTANCE hInstance, HINSTANCE, LPWSTR, int)
         shader_program.use();
         single_vao.bind(0);
 
+        //test - 3 旋转
         auto trans = glm::rotate(glm::mat4{ 1.f }, (float)(free_gl.get_time()), glm::vec3{ 0.f,0.f,1.f });
         shader_program.set_uniform_matrix("transform"s, 1, glm::value_ptr(trans));
 
