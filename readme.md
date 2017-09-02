@@ -1,6 +1,14 @@
 # OpenGL for Windows
 
-free_gl 3D基础类库，[glfw](http://www.glfw.org/)库的c++浅层封装,简化[OpenGL](https://www.opengl.org/)函数调用的有限封装。
+[![Build status](https://travis-ci.org/glfw/glfw.svg?branch=master)](https://travis-ci.org/glfw/glfw)
+[![Build status](https://ci.appveyor.com/api/projects/status/0kf0ct9831i5l6sp/branch/master?svg=true)](https://ci.appveyor.com/project/elmindreda/glfw)
+[![Coverity Scan](https://scan.coverity.com/projects/4884/badge.svg)](https://scan.coverity.com/projects/glfw-glfw)
+
+freeGL 3D基础类库，[glfw](http://www.glfw.org/)库的c++浅层封装,简化[OpenGL](https://www.opengl.org/)函数调用的有限封装。
+
+## Introduction
+
+freeGL，基于OpenGL3.3及以上版本、c++14、Windows原生简明封装。
 
 ## Download
 
@@ -77,5 +85,6 @@ int __stdcall wWinMain(HINSTANCE hInstance, HINSTANCE, LPWSTR, int)
 
 ## documentation & Tutorial
 
-中文教程参考：<https://learnopengl-cn.github.io>,英文教程参考：<https://learnopengl.com/>
-API文档参考：<https://www.khronos.org/registry/OpenGL-Refpages/gl4/>
+* 中文教程参考：<https://learnopengl-cn.github.io>
+* 英文教程参考：<https://learnopengl.com/>
+* API文档参考：<https://www.khronos.org/registry/OpenGL-Refpages/gl4/>
