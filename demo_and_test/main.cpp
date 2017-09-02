@@ -54,23 +54,24 @@ int __stdcall wWinMain(HINSTANCE hInstance, HINSTANCE, LPWSTR, int)
     }
     single_vao.unbind();
 
-    auto single_texture2d = make<gl::single_texture2d>();
-    single_texture2d.bind(0);
+	auto single_texture2d_1 = gl::make_single_texture("container.jpg"s);
+	auto single_texture2d_2 = gl::make_single_texture("awesomeface.png"s,gl::texture_format::rgb,gl::texture_format::rgba,true);
 
-    single_texture2d.set(gl::texture_feature::wrap_s, GL_REPEAT);
-    single_texture2d.set(gl::texture_feature::wrap_t, GL_REPEAT);
-    single_texture2d.set(gl::texture_feature::min_filter, GL_LINEAR);
-    single_texture2d.set(gl::texture_feature::mag_filter, GL_LINEAR);
-
-    single_texture2d.from("container.jpg"s);
+	shader_program.use();
+	shader_program.set_uniform("ourTexture0"s, 0);
+	shader_program.set_uniform("ourTexture1"s, 1);
 
     while (!free_window.should_close())
     {
         gl::clear_color(0.2f, 0.3f, 0.4f);
         gl::clear(gl::bit_field::color_buffer_bit);
 
-        single_texture2d.bind(0);
+		single_texture2d_1.active(0);
+		single_texture2d_1.bind(0);
 
+		single_texture2d_2.active(0);
+		single_texture2d_2.bind(0);
+		
         shader_program.use();
         single_vao.bind(0);
 

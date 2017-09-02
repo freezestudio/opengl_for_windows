@@ -798,6 +798,26 @@ namespace gl
 			return glGetUniformLocation(program_id, name);
 		}
 
+		void uniform(int loc, int value)
+		{
+			glUniform1i(loc, value);
+		}
+
+		void uniform(int loc, float value)
+		{
+			glUniform1f(loc, value);
+		}
+
+		void uniform(int loc, unsigned count, int const* values)
+		{
+			glUniform1iv(loc, count, values);
+		}
+
+		void uniform(int loc, unsigned count, float const* values)
+		{
+			glUniform1fv(loc, count, values);
+		}
+
 		void enable_vertex_attrib_array(int loc)
 		{
 			glEnableVertexAttribArray(loc);
@@ -915,6 +935,14 @@ namespace gl
         {
             glTexParameterfv(static_cast<unsigned>(type), static_cast<unsigned>(feature), values);
         }
+
+		void texture_active(int id)
+		{
+			if (id >= GL_TEXTURE0 && id < GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS)
+			{
+				glActiveTexture(id);
+			}
+		}
 
 		//shader
 
@@ -1237,6 +1265,21 @@ namespace gl {
 			return error_message_;
 		}
 
+	public:
+		template<typename ValueType>
+		void set_uniform(std::string const& uniform_name,ValueType value)
+		{
+			auto loc = detail::get_uniform_location(program_id_, uniform_name.c_str());
+			detail::uniform(loc, value);
+		}
+
+		template<unsigned Count, typename ValueType>
+		void set_uniform(std::string const& uniform_name, ValueType value)
+		{
+			auto loc = detail::get_uniform_location(program_id_, uniform_name.c_str());
+			detail::uniform(loc, Count, std::forward<ValueType>(value));
+		}
+
 	private:
 		unsigned program_id_;
 		std::set<unsigned> shader_set_;
@@ -1328,16 +1371,28 @@ namespace gl {
             int width;
             int height;
 
-            void from(std::string const& image_file = ""s)
+            void from(std::string const& image_file = ""s, 
+				texture_format _internal = texture_format::rgb,
+				texture_format format = texture_format::rgb,
+				bool flip = false)
             {
                 if (!image_file.empty())
                 {
+					if (flip)
+					{
+						stbi_set_flip_vertically_on_load(flip);
+					}
+
                     int comp;
                     auto data = stbi_load(image_file.c_str(), &width, &height, &comp, 0);
                     if (data)
                     {
-                        detail::texture_image_2d(0, texture_format::rgb, width, height,
-                            texture_format::rgb, pixel_data_type::_unsigned_byte, data);
+                        detail::texture_image_2d(0,
+							_internal,
+							width, height,
+							format,
+							pixel_data_type::_unsigned_byte,
+							data);
                     }
                     stbi_image_free(data);
                 }                
@@ -1429,6 +1484,15 @@ namespace gl {
             {
                 detail::bind_texture(texture_type::_2d,get(index));
             }
+
+			void active(typename texture_t<N>::value_type index)
+			{
+				auto actived = get(index);
+				if (actived > 0)
+				{
+					detail::texture_active(GL_TEXTURE0 + actived - 1);
+				}				
+			}
         };
 	}
 
@@ -1525,5 +1589,24 @@ namespace gl {
 		}
 
 		return sp;
+	}
+
+	auto make_single_texture(std::string const& texture_file,
+		texture_format _internal = texture_format::rgb,
+		texture_format format=texture_format::rgb,
+		bool flip = false)
+	{
+		auto single_texture2d = make<gl::single_texture2d>();
+		single_texture2d.bind(0);
+
+		single_texture2d.set(gl::texture_feature::wrap_s, GL_REPEAT);
+		single_texture2d.set(gl::texture_feature::wrap_t, GL_REPEAT);
+		single_texture2d.set(gl::texture_feature::min_filter, GL_LINEAR);
+		single_texture2d.set(gl::texture_feature::mag_filter, GL_LINEAR);
+
+		single_texture2d.from(texture_file.c_str(),_internal,format,flip);
+		single_texture2d.create_mipmap();
+
+		return single_texture2d;
 	}
 }
