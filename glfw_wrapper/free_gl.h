@@ -386,6 +386,11 @@ namespace glfw {
 		{
 			detail::poll_events();
 		}
+
+        float get_time() const
+        {
+            return (float)detail::get_time();
+        }
 		//callback
 	public:
 		//void handler(int error,const char* description)
@@ -822,6 +827,11 @@ namespace gl
 		{
 			glUniform1fv(loc, count, values);
 		}
+
+        void uniform_matrix(int loc, unsigned count, bool transpose, float const* value)
+        {
+            glUniformMatrix4fv(loc, count, transpose?GL_TRUE:GL_FALSE, value);
+        }
 
 		void enable_vertex_attrib_array(int loc)
 		{
@@ -1284,6 +1294,12 @@ namespace gl {
 			auto loc = detail::get_uniform_location(program_id_, uniform_name.c_str());
 			detail::uniform(loc, Count, std::forward<ValueType>(value));
 		}
+
+        void set_uniform_matrix(std::string const& matrix_name,unsigned count, float const* value)
+        {
+            auto loc = detail::get_uniform_location(program_id_, matrix_name.c_str());
+            detail::uniform_matrix(loc, count, false, value);
+        }
 
 	private:
 		unsigned program_id_;

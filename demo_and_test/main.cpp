@@ -1,7 +1,17 @@
 #include <free_gl.h>
 
+void simp_test_glm()
+{
+    auto vec=glm::vec4{1.f,0.f,0.f,1.f };
+    auto trans = glm::translate(glm::mat4{ 1.f }, glm::vec3{ 1.f,1.f,0.f });
+    vec = trans * vec;
+    assert(vec.x == 2.f && vec.y == 1.f && vec.z == 0.f);
+}
+
 int __stdcall wWinMain(HINSTANCE hInstance, HINSTANCE, LPWSTR, int)
 {
+    //simp_test_glm();
+
     auto free_gl = make<glfw::glfw>();
     free_gl.set_opengl_version(3, 3);
     free_gl.set_opengl_core_profile();
@@ -61,6 +71,15 @@ int __stdcall wWinMain(HINSTANCE hInstance, HINSTANCE, LPWSTR, int)
 	shader_program.set_uniform("ourTexture0"s, 0);
 	shader_program.set_uniform("ourTexture1"s, 1);
 
+    //test - 1 缩放并逆时针旋转90度.
+    //auto trans = glm::rotate(glm::mat4{ 1.f }, glm::radians(-90.0f), glm::vec3{ 0.f,0.f,1.f });
+    //trans = glm::scale(trans, glm::vec3(0.5, 0.5, 0.5));
+    //test -2 顺时针旋转90度并移动到屏幕右下角。
+    //auto trans = glm::translate(glm::mat4{ 1.f }, glm::vec3{ 0.5f,-0.5f,0.0f });
+    //trans = glm::rotate(trans, glm::radians(90.0f), glm::vec3{ 0.f,0.f,1.f });
+
+    //shader_program.set_uniform_matrix("transform"s, 1, glm::value_ptr(trans));
+        
     while (!free_window.should_close())
     {
         gl::clear_color(0.2f, 0.3f, 0.4f);
@@ -74,6 +93,9 @@ int __stdcall wWinMain(HINSTANCE hInstance, HINSTANCE, LPWSTR, int)
 		
         shader_program.use();
         single_vao.bind(0);
+
+        auto trans = glm::rotate(glm::mat4{ 1.f }, (float)(free_gl.get_time()), glm::vec3{ 0.f,0.f,1.f });
+        shader_program.set_uniform_matrix("transform"s, 1, glm::value_ptr(trans));
 
         gl::draw_arrays(gl::draw_mode::triangles, 0, 3);
         gl::draw_elements(gl::draw_mode::triangles, 6, gl::data_type::_unsigned_int, 0);

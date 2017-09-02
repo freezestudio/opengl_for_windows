@@ -15,6 +15,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="$(MSBuildThisFileDirectory)free_gl.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)glm\glm.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)stb_image.h" />
   </ItemGroup>
 </Project>
