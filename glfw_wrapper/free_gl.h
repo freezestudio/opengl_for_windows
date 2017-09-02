@@ -737,6 +737,48 @@ namespace gl {
         border_color = GL_TEXTURE_BORDER_COLOR,
         //swizzle_rgba = GL_TEXTURE_SWIZZLE_RGBA,
     };
+
+    enum class texture_format
+    {
+        red = GL_RED, 
+        rg = GL_RG,
+        rgb = GL_RGB, 
+        bgr = GL_BGR, 
+        rgba = GL_RGBA, 
+        bgra = GL_BGRA, 
+        red_integer = GL_RED_INTEGER, 
+        rg_integer = GL_RG_INTEGER, 
+        rgb_integer = GL_RGB_INTEGER, 
+        bgr_integer = GL_BGR_INTEGER, 
+        rbga_integer = GL_RGBA_INTEGER,
+        bgra_integer = GL_BGRA_INTEGER, 
+        stencil_index = GL_STENCIL_INDEX, 
+        depth_component = GL_DEPTH_COMPONENT,
+        depth_stencil = GL_DEPTH_STENCIL,
+    };
+
+    enum class pixel_data_type
+    {
+        _unsigned_byte = GL_UNSIGNED_BYTE, 
+        _byte = GL_BYTE, 
+        _unsigned_short = GL_UNSIGNED_SHORT, 
+        _short = GL_SHORT,
+        _unsigned_int = GL_UNSIGNED_INT, 
+        _int = GL_INT, 
+        _float = GL_FLOAT, 
+        _unsigned_byte_3_3_2 = GL_UNSIGNED_BYTE_3_3_2, 
+        _unsigned_byte_2_3_3_rev=GL_UNSIGNED_BYTE_2_3_3_REV,
+        _unsigned_short_5_6_5= GL_UNSIGNED_SHORT_5_6_5,
+        _unsigned_short_5_6_5_rev=GL_UNSIGNED_SHORT_5_6_5_REV,
+        _unsigned_short_4_4_4_4=GL_UNSIGNED_SHORT_4_4_4_4,
+        _unsigned_short_4_4_4_4_rev= GL_UNSIGNED_SHORT_4_4_4_4_REV,
+        _unsigned_short_5_5_5_1= GL_UNSIGNED_SHORT_5_5_5_1,
+        _unsigned_short_1_5_5_5_rev= GL_UNSIGNED_SHORT_1_5_5_5_REV,
+        _unsigned_int_8_8_8_8= GL_UNSIGNED_INT_8_8_8_8,
+        _unsigned_int_8_8_8_8_rev=GL_UNSIGNED_INT_8_8_8_8_REV,
+        _unsigned_int_10_10_10_2=GL_UNSIGNED_INT_10_10_10_2,
+        _unsigned_int_2_10_10_10_rev=GL_UNSIGNED_INT_2_10_10_10_REV
+    };
 }
 
 //gl::detail
@@ -828,6 +870,35 @@ namespace gl
         void create_textures(unsigned* textures,int n)
         {
             glGenTextures(n,textures);
+        }
+
+        void bind_texture(texture_type type, unsigned texture_id)
+        {
+            glBindTexture(static_cast<unsigned>(type), texture_id);
+        }
+
+        //level -- Specifies the level-of-detail number. 
+        //         Level 0 is the base image level.
+        //         Level n is the nth mipmap reduction image. 
+        //         If target is GL_TEXTURE_RECTANGLE or GL_PROXY_TEXTURE_RECTANGLE,level must be 0.
+        void texture_image_2d(int level,
+            texture_format internel_format,
+            int width,int height,
+            texture_format format,
+            pixel_data_type type,
+            void const* pixels)
+        {
+            glTexImage2D(static_cast<unsigned>(texture_type::_2d),
+                level,
+                static_cast<int>(internel_format),
+                width, height, 0,
+                static_cast<unsigned>(format),
+                static_cast<unsigned>(type), pixels);
+        }
+
+        void texture_create_mipmap()
+        {
+            glGenerateMipmap(static_cast<unsigned>(texture_type::_2d));
         }
 
         void texture_parameter(texture_type type,texture_feature feature,int value)
@@ -962,9 +1033,6 @@ namespace gl
 		{
 			return glIsProgram(program_id) == GL_TRUE;
 		}
-
-		//texture
-
 
 		//misc
 		bool is_enabled(enable_status status, int index = -1)
@@ -1174,8 +1242,7 @@ namespace gl {
 		std::set<unsigned> shader_set_;
 		std::string error_message_;
 	};
-
-
+    
 	//
 	//顶点数组对象： Vertex  Array  Object，VAO
 	//顶点缓冲对象： Vertex  Buffer Object，VBO
@@ -1199,7 +1266,21 @@ namespace gl {
 			}
 		};
 
-		struct attribute
+        template<unsigned N>
+        struct texture_t
+        {
+            using value_type = decltype(N);
+            constexpr static auto value = N;
+
+            std::array<value_type, value> texture{};
+
+            value_type get(value_type index)
+            {
+                return texture.at(index);
+            }
+        };
+
+		struct vertex_attribute
 		{
 			void set(int loc_in_vs, unsigned loc_t_size, data_type dt, bool normalized, unsigned stride, int next)
 			{
@@ -1207,6 +1288,24 @@ namespace gl {
 				detail::enable_vertex_attrib_array(loc_in_vs);
 			}
 		};
+
+        struct texture_attribute
+        {
+            void set(texture_feature feature,int value)
+            {
+                detail::texture_parameter(texture_type::_2d, feature, value);
+            }
+
+            void set(texture_feature feature, float value)
+            {
+                detail::texture_parameter(texture_type::_2d, feature, value);
+            }
+
+            void set(texture_feature feature, float const* values)
+            {
+                detail::texture_parameter_vector(texture_type::_2d, feature, values);
+            }
+        };
 
 		struct copy_buffer_data
 		{
@@ -1221,6 +1320,32 @@ namespace gl {
             void from(void const* data, int size, buffer_usage_type usage_type = buffer_usage_type::static_draw)
             {
                 detail::buffer_data(buffer_type::element_array_buffer, size, data, usage_type);
+            }
+        };
+
+        struct copy_texture_data
+        {
+            int width;
+            int height;
+
+            void from(std::string const& image_file = ""s)
+            {
+                if (!image_file.empty())
+                {
+                    int comp;
+                    auto data = stbi_load(image_file.c_str(), &width, &height, &comp, 0);
+                    if (data)
+                    {
+                        detail::texture_image_2d(0, texture_format::rgb, width, height,
+                            texture_format::rgb, pixel_data_type::_unsigned_byte, data);
+                    }
+                    stbi_image_free(data);
+                }                
+            }
+
+            void create_mipmap()
+            {
+                detail::texture_create_mipmap();
             }
         };
 
@@ -1250,7 +1375,7 @@ namespace gl {
 		};
 
 		template<unsigned N,template<unsigned> typename BufferT>
-		struct vbo_t : BufferT<N>, copy_buffer_data, attribute
+		struct vbo_t : BufferT<N>, copy_buffer_data, vertex_attribute
 		{
 			vbo_t()
 			{
@@ -1291,6 +1416,20 @@ namespace gl {
                 detail::bind_buffer(buffer_type::element_array_buffer, get(index));
             }
         };
+
+        template<unsigned N,template<unsigned> typename TextureT>
+        struct texture_2d_t : texture_t<N>, texture_attribute, copy_texture_data
+        {
+            texture_2d_t()
+            {
+                detail::create_textures(texture.data(), N);
+            }
+
+            void bind(typename texture_t<N>::value_type index)
+            {
+                detail::bind_texture(texture_type::_2d,get(index));
+            }
+        };
 	}
 
 	template<unsigned N>
@@ -1299,10 +1438,13 @@ namespace gl {
     using multi_vbo = detail::vbo_t<N, detail::buffer_t>;
     template<unsigned N>
     using multi_ebo = detail::ebo_t<N, detail::buffer_t>;
+    template<unsigned N>
+    using multi_texture2d = detail::texture_2d_t<N, detail::texture_t>;
     	
 	using single_vao = detail::vao_t<1, detail::buffer_t>;
     using single_vbo = detail::vbo_t<1, detail::buffer_t>;
     using single_ebo = detail::ebo_t<1, detail::buffer_t>;
+    using single_texture2d = detail::texture_2d_t<1, detail::texture_t>;
 
 }
 

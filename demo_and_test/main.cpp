@@ -20,23 +20,19 @@ int __stdcall wWinMain(HINSTANCE hInstance, HINSTANCE, LPWSTR, int)
 
     auto shader_program = gl::make_shader_program("vertex.glsl"s, "fragment.glsl"s);
 
+    // 设置顶点数据 (缓存) 并配置顶点属性
     float vertices[] = {
-        0.5f, 0.5f, 0.0f,   // 右上角
-        0.5f, -0.5f, 0.0f,  // 右下角
-        -0.5f, -0.5f, 0.0f, // 左下角
-        -0.5f, 0.5f, 0.0f   // 左上角
+        // positions          // colors           // texture coords
+        0.5f,  0.5f, 0.0f,   1.0f, 0.0f, 0.0f,   1.0f, 1.0f, // top right
+        0.5f, -0.5f, 0.0f,   0.0f, 1.0f, 0.0f,   1.0f, 0.0f, // bottom right
+        -0.5f, -0.5f, 0.0f,   0.0f, 0.0f, 1.0f,   0.0f, 0.0f, // bottom left
+        -0.5f,  0.5f, 0.0f,   1.0f, 1.0f, 0.0f,   0.0f, 1.0f  // top left 
+    };
+    unsigned int indices[] = {
+        0, 1, 3, // first triangle
+        1, 2, 3  // second triangle
     };
 
-    unsigned int indices[] = { // 注意索引从0开始! 
-        0, 1, 3, // 第一个三角形
-        1, 2, 3  // 第二个三角形
-    };
-
-    float texcoods[] = {
-        0.0f,0.0f,
-        1.0f,0.0f,
-        0.5f,1.0f,
-    };
     auto single_vao = make<gl::single_vao>();
     auto single_vbo = make<gl::single_vbo>();
     auto single_ebo = make<gl::single_ebo>();
@@ -46,7 +42,9 @@ int __stdcall wWinMain(HINSTANCE hInstance, HINSTANCE, LPWSTR, int)
         single_vbo.bind(0);
         {
             single_vbo.from(vertices, sizeof(vertices));
-            single_vbo.set(0, 3, gl::data_type::_float, false, 0, 0);
+            single_vbo.set(0, 3, gl::data_type::_float, false, 8 * sizeof(float), 0 * sizeof(float));
+            single_vbo.set(1, 3, gl::data_type::_float, false, 8 * sizeof(float), (3+0) * sizeof(float));
+            single_vbo.set(2, 2, gl::data_type::_float, false, 8 * sizeof(float), (3+3+0) * sizeof(float));
 
         }
         single_vbo.unbind();
@@ -56,10 +54,22 @@ int __stdcall wWinMain(HINSTANCE hInstance, HINSTANCE, LPWSTR, int)
     }
     single_vao.unbind();
 
+    auto single_texture2d = make<gl::single_texture2d>();
+    single_texture2d.bind(0);
+
+    single_texture2d.set(gl::texture_feature::wrap_s, GL_REPEAT);
+    single_texture2d.set(gl::texture_feature::wrap_t, GL_REPEAT);
+    single_texture2d.set(gl::texture_feature::min_filter, GL_LINEAR);
+    single_texture2d.set(gl::texture_feature::mag_filter, GL_LINEAR);
+
+    single_texture2d.from("container.jpg"s);
+
     while (!free_window.should_close())
     {
         gl::clear_color(0.2f, 0.3f, 0.4f);
         gl::clear(gl::bit_field::color_buffer_bit);
+
+        single_texture2d.bind(0);
 
         shader_program.use();
         single_vao.bind(0);

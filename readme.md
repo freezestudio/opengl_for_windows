@@ -1,6 +1,6 @@
-OpenGL for Windows
+# OpenGL for Windows
 
-free_gl ÊÇ3DÓ¦ÓÃ¿ª·¢Ê¹ÓÃµÄ»ù´¡Àà¿â£¬ËüÊÇ[glfw](http://www.glfw.org/)¿âµÄc++Ç³²ã·â×°ºÍ¼ò»¯OpenGLº¯Êýµ÷ÓÃµÄÓÐÏÞ·â×°¡£
+free_gl 3D»ù´¡Àà¿â£¬[glfw](http://www.glfw.org/)¿âµÄc++Ç³²ã·â×°,¼ò»¯OpenGLº¯Êýµ÷ÓÃµÄÓÐÏÞ·â×°¡£
 
 ## Download
 
@@ -18,10 +18,12 @@ free_gl ÊÇ3DÓ¦ÓÃ¿ª·¢Ê¹ÓÃµÄ»ù´¡Àà¿â£¬ËüÊÇ[glfw](http://www.glfw.org/)¿âµÄc++Ç³²ã·
 
 int __stdcall wWinMain(HINSTANCE hInstance, HINSTANCE, LPWSTR, int)
 {
+    //³õÊ¼»¯
 	auto free_gl = make<glfw::glfw>();
 	free_gl.set_opengl_version(3, 3);
 	free_gl.set_opengl_core_profile();
 
+    //´°¿Ú
 	auto free_window = make<glfw::window>(800, 600, "hello"s);
 	free_window.make_context_current();
 	free_window.set_key_callback([](glfw::window::pointer w, int key, int scancode, int action, int mods) {
@@ -31,14 +33,19 @@ int __stdcall wWinMain(HINSTANCE hInstance, HINSTANCE, LPWSTR, int)
 		gl::view_port(0, 0, width, height);
 	});
 
+    //¼ÓÔØglad
 	free_gl.load_loader();
 	free_gl.swap_interval(1);
 
+    //×ÅÉ«Æ÷³ÌÐò
 	auto shader_program = gl::make_shader_program("vertex.glsl"s, "fragment.glsl"s);
+
+    //¶¥µãÊý¾Ý
 	float verties[] = {	/*×ó*/-0.5f,-0.5f,1.0f,/*ÓÒ*/0.5f,-0.5f,1.0f,/*¶¥*/0.0f, 0.5f,1.0f,};
 	auto single_vao = make<gl::single_vao>();
 	auto single_vbo = make<gl::single_vbo>();
 
+    //´«µÝµ½GPU
 	single_vao.bind(0);
 	{
 		single_vbo.bind(0);
@@ -50,6 +57,7 @@ int __stdcall wWinMain(HINSTANCE hInstance, HINSTANCE, LPWSTR, int)
 	}
 	single_vao.unbind();
 
+    //äÖÈ¾
 	while (!free_window.should_close())
 	{
 		gl::clear_color(0.2f, 0.3f, 0.4f);
