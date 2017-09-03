@@ -83,7 +83,7 @@ int __stdcall wWinMain(HINSTANCE hInstance, HINSTANCE, LPWSTR, int)
 }
 ```
 
-库的功能是递增的，每递增一个功能都会更改示例的输出，所有如果想查看每一步的示例，请签出每一步提交中的示例文件及对应的着色器代码。
+库的功能是递增的，每递增一个功能都会更改示例的输出，如果想查看每一步的示例，请签出每一步提交中的示例文件及对应的着色器代码。
 
 ## documentation & Tutorial
 

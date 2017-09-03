@@ -269,6 +269,13 @@ namespace glfw {
     {
         release, press, repeat
     };
+
+    enum class input_mode
+    {
+        cursor = GLFW_CURSOR,
+        strick_keys = GLFW_STICKY_KEYS,
+        stricky_mouse_buttons = GLFW_STICKY_MOUSE_BUTTONS,
+    };
 }
 
 //glfw::detail
@@ -404,23 +411,33 @@ namespace glfw {
     };
 
     class monitor;
+    class cursor;
 
     class window
     {
     public:
         using pointer = GLFWwindow*;
         using const_pointer = GLFWwindow const*;
+
+        enum class cursor_mode
+        {
+            normal = GLFW_CURSOR_NORMAL,
+            hidden = GLFW_CURSOR_HIDDEN,
+            disabled = GLFW_CURSOR_DISABLED,
+        };
+
         window() : windowp_(nullptr)
         {
 
         }
 
         window(int width, int height, std::string const& title)
+            : windowp_(glfwCreateWindow(width, height, title.c_str(), nullptr,nullptr))
         {
-            windowp_ = glfwCreateWindow(width, height, title.c_str(), nullptr, nullptr);
+            
         }
 
-        window(int width, int height, std::string const& title, monitor& _monitor, window& _window)
+        window(int width, int height, std::string const& title, monitor* _monitor, window* _window)
         {
 
         }
@@ -478,6 +495,17 @@ namespace glfw {
             handler(action);
         }
 
+        key_mouse_action get_key(key_code key) const
+        {
+            int action = glfwGetKey(windowp_, static_cast<int>(key));
+            return static_cast<key_mouse_action>(action);
+        }
+
+        void set_cursor_mode(cursor_mode mode)
+        {
+            glfwSetInputMode(windowp_, static_cast<int>(input_mode::cursor), static_cast<int>(mode));
+        }
+
         pointer get()
         {
             return windowp_;
@@ -488,6 +516,7 @@ namespace glfw {
             return windowp_;
         }
 
+        //callback
     public:
         //void handler(GLFWwindow* window,int key,int scancode,int action,int mods)
         template<typename KeyHandler>
@@ -503,10 +532,25 @@ namespace glfw {
             glfwSetFramebufferSizeCallback(windowp_, std::forward<decltype(handler)>(handler));
         }
 
-        key_mouse_action get_key(key_code key) const
+        //void handler(GLFWwindow* window,int entered)
+        template<typename CursorEnterHandler>
+        void set_cursor_enter_callback(CursorEnterHandler&& handler)
         {
-            int action = glfwGetKey(windowp_, static_cast<int>(key));
-            return static_cast<key_mouse_action>(action);
+            glfwSetCursorEnterCallback(windowp_, std::forward<decltype(handler)>(handler));
+        }
+
+        //void handler(GLFWwindow* window,double xpos,double ypos)
+        template<typename CursorPosHandler>
+        void set_cursor_pos_callback(CursorPosHandler&& handler)
+        {
+            glfwSetCursorPosCallback(windowp_, std::forward<decltype(handler)>(handler));
+        }
+
+        //void handler(GLFWwindow* window,double xoffset,double yoffset)
+        template<typename ScrollHandler>
+        void set_scroll_callback(ScrollHandler&& handler)
+        {
+            glfwSetScrollCallback(windowp_, std::forward<decltype(handler)>(handler));
         }
 
     private:
@@ -516,26 +560,33 @@ namespace glfw {
     class monitor
     {
     public:
+        using pointer = GLFWmonitor*;
+        using const_pointer = GLFWmonitor const*;
 
-        monitor(monitor const& rhs)
-            : monitorp_(rhs.monitorp_)
+        monitor()
+            : monitorp_(glfwGetPrimaryMonitor())
         {
 
         }
 
-        monitor& operator=(GLFWmonitor* _monitor)
+    public:
+        pointer get()
         {
-            this->monitorp_ = _monitor;
-            return *this;
+            return monitorp_;
         }
 
-    protected:
-        monitor() : monitorp_(nullptr)
+        const_pointer get() const
         {
-
+            return monitorp_;
         }
+
     private:
         GLFWmonitor* monitorp_;
+    };
+
+    class cursor
+    {
+
     };
 
 }
@@ -545,6 +596,31 @@ namespace glfw {
     void set_window_should_close(window::pointer win, bool _close = true)
     {
         glfwSetWindowShouldClose(win, _close ? GL_TRUE : GL_FALSE);
+    }
+
+    int get_key(window::pointer win, int key)
+    {
+        return glfwGetKey(win, key);
+    }
+
+    void set_cursor_mode(window::pointer win, window::cursor_mode mode)
+    {
+        glfwSetInputMode(win, static_cast<int>(input_mode::cursor), static_cast<int>(mode));
+    }
+
+    void set_cursor_normal(window::pointer win)
+    {
+        glfwSetInputMode(win, static_cast<int>(input_mode::cursor), static_cast<int>(window::cursor_mode::normal));
+    }
+
+    void set_cursor_disable(window::pointer win)
+    {
+        glfwSetInputMode(win, static_cast<int>(input_mode::cursor), static_cast<int>(window::cursor_mode::disabled));
+    }
+
+    void set_cursor_hidden(window::pointer win)
+    {
+        glfwSetInputMode(win, static_cast<int>(input_mode::cursor), static_cast<int>(window::cursor_mode::hidden));
     }
 }
 
@@ -1300,6 +1376,12 @@ namespace gl {
             detail::uniform_matrix(loc, count, false, value);
         }
 
+        void set_uniform_matrix(std::string const& matrix_name, glm::mat4 const& mat)
+        {
+            auto loc = detail::get_uniform_location(program_id_, matrix_name.c_str());
+            detail::uniform_matrix(loc, 1, false, glm::value_ptr(mat));
+        }
+
     private:
         unsigned program_id_;
         std::set<unsigned> shader_set_;
@@ -1530,6 +1612,116 @@ namespace gl {
     using single_ebo = detail::ebo_t<1, detail::buffer_t>;
     using single_texture2d = detail::texture_2d_t<1, detail::texture_t>;
 
+    class camera
+    {
+    public:
+        enum class movement
+        {
+            forwrad,
+            backward,
+            left,
+            right,
+        };
+
+        //Å·À­½Ç£º¸©Ñö½Ç(Pitch)¡¢Æ«º½½Ç(Yaw)ºÍ¹ö×ª½Ç(Roll)
+        constexpr static float yaw = -90.0f;
+        constexpr static float pitch = 0.0f;
+
+        constexpr static float speed = 2.5f;
+        constexpr static float sensitivty = 0.1f; //ÁéÃô¶È
+        constexpr static float zoom = 45.0f;
+    public:
+        camera(glm::vec3 _pos={ 0.0f,0.0f,0.0f })
+            : position_{_pos}
+            , up_{0.0f,1.0f,0.0f}
+            , front_{0.0f,0.0f,-1.0f}
+            , right_{1.0f,0.0f,0.0f}
+            , world_up_{0.0f,1.0f,0.0f}
+        {
+            update();
+        }
+    public:
+        glm::mat4 get_view() const
+        {
+            auto view = glm::lookAt(position_, position_ + front_, up_);
+            return view;
+        }
+
+        float get_zoom() const
+        {
+            return zoom_;
+        }
+
+    public:
+        void key_press(movement direction, float delta_time)
+        {
+            auto velocity = speed * delta_time;
+            switch (direction)
+            {
+            case movement::forwrad:
+                position_ += front_ * velocity;
+                break;
+            case movement::backward:
+                position_ -= front_ * velocity;
+                break;
+            case movement::left:
+                position_ -= right_ * velocity;
+                break;
+            case movement::right:
+                position_ += right_ * velocity;
+                break;
+            default:
+                break;
+            }
+        }
+
+        void mouse_move(float xoffset, float yoffset, bool constrain_pitch = true)
+        {
+            xoffset *= sensitivty;
+            yoffset *= sensitivty;
+
+            yaw_ += xoffset;
+            pitch_ += yoffset;
+
+            if (constrain_pitch)
+            {
+                if (pitch_ > 89.9f)pitch_ = 89.9f;
+                if (pitch_ < -89.9f)pitch_ = -89.9f;
+            }
+
+            update();
+        }
+
+        void scroll(float yoffset)
+        {
+            if (zoom_ >= 1.0f && zoom_ <= 45.0f) zoom_ -= yoffset;
+            if (zoom_ <= 1.0f) zoom_ = 1.0f;
+            if (zoom_ >= 45.0f) zoom_ = 45.0f;
+        }
+    private:
+        void update()
+        {
+            auto vfront = glm::vec3{
+                std::cos(glm::radians(yaw_)) * std::cos(glm::radians(pitch_)),
+                std::sin(glm::radians(pitch_)),
+                std::sin(glm::radians(yaw_)) * std::cos(glm::radians(pitch_)),
+            };
+            
+            front_ = glm::normalize(vfront);
+            right_ = glm::normalize(glm::cross(front_, world_up_));
+            up_    = glm::normalize(glm::cross(right_, front_));
+        }
+    private:
+        glm::vec3 position_;
+        glm::vec3 up_;
+        glm::vec3 front_;
+        glm::vec3 right_;
+        glm::vec3 world_up_;
+
+        float yaw_ = camera::yaw;
+        float pitch_ = camera::pitch;
+        float zoom_ = camera::zoom;
+    };
 }
 
 //gl::function
