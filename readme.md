@@ -12,7 +12,7 @@ freeGL，基于OpenGL3.3及以上版本、c++14、Windows原生简明封装。
 
 ## Download
 
-直接复制<https://github.com/freezestudio/opengl_for_windows.git>，用git客户端工具拉取。
+用git客户端工具获取： `git clone https://github.com/freezestudio/opengl_for_windows.git`
 
 ## Quick Start
 
@@ -82,6 +82,8 @@ int __stdcall wWinMain(HINSTANCE hInstance, HINSTANCE, LPWSTR, int)
     return 0;
 }
 ```
+
+库的功能是递增的，每递增一个功能都会更改示例的输出，所有如果想查看每一步的示例，请签出每一步提交中的示例文件及对应的着色器代码。
 
 ## documentation & Tutorial
 

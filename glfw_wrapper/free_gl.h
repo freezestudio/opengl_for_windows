@@ -1545,6 +1545,11 @@ namespace gl {
         detail::clear(mask);
     }
 
+    bool enable_depth_test(bool enable = true)
+    {
+        return detail::enabled(enable_status::depth_test, -1, enable);
+    }
+
     void view_port(int x, int y, int width, int height)
     {
         detail::view_port(x, y, width, height);
