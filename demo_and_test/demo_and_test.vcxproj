@@ -157,8 +157,13 @@
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="fragment.glsl" />
-    <None Include="vertex.glsl" />
+    <None Include="box.fs" />
+    <None Include="box.vs" />
+    <None Include="light.fs" />
+    <None Include="light.vs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="camera_test.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

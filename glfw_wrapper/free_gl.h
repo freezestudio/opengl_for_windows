@@ -283,6 +283,21 @@ namespace glfw
 {
     namespace detail {
 
+        int make_version(int major, int minor)
+        {
+            return MAKELONG(major, minor);
+        }
+
+        int major_version(int version)
+        {
+            return LOWORD(version);
+        }
+
+        int minor_version(int version)
+        {
+            return HIWORD(version);
+        }
+
         bool init()
         {
             return glfwInit() == GLFW_TRUE;
@@ -316,6 +331,7 @@ namespace glfw
         {
             glfwWindowHint(static_cast<int>(hint), value);
         }
+
         bool load_gl_loader()
         {
             return gladLoadGLLoader((GLADloadproc)glfwGetProcAddress) == GLFW_TRUE;
@@ -340,9 +356,7 @@ namespace glfw
         {
             return glfwGetTime();
         }
-
     }
-
 }
 
 //glfw::class
@@ -354,6 +368,14 @@ namespace glfw {
         glfw()
             : inited_(detail::init())
         {
+
+        }
+
+        glfw(int major, int minor)
+            : inited_(detail::init())
+        {
+            set_opengl_version(major, minor);
+            set_opengl_core_profile();
         }
 
         ~glfw()
@@ -363,6 +385,11 @@ namespace glfw {
 
         //feature
     public:
+        //void set_opengl_version(int version)
+        //{
+        //    set_opengl_version(major_version(version), minor_version(version));
+        //}
+
         void set_opengl_version(int major, int minor)
         {
             detail::window_hint(window_hint_type::context_version_major, major);
@@ -398,6 +425,7 @@ namespace glfw {
         {
             return (float)detail::get_time();
         }
+
         //callback
     public:
         //void handler(int error,const char* description)
@@ -410,8 +438,39 @@ namespace glfw {
         bool inited_;
     };
 
-    class monitor;
-    class cursor;
+
+    class monitor
+    {
+    public:
+        using pointer = GLFWmonitor*;
+        using const_pointer = GLFWmonitor const*;
+
+        monitor()
+            : monitorp_(glfwGetPrimaryMonitor())
+        {
+
+        }
+
+    public:
+        pointer get()
+        {
+            return monitorp_;
+        }
+
+        const_pointer get() const
+        {
+            return monitorp_;
+        }
+
+    private:
+        GLFWmonitor* monitorp_;
+    };
+
+    class cursor
+    {
+
+    };
+
 
     class window
     {
@@ -431,15 +490,12 @@ namespace glfw {
 
         }
 
-        window(int width, int height, std::string const& title)
-            : windowp_(glfwCreateWindow(width, height, title.c_str(), nullptr,nullptr))
+        window(int width, int height,
+            std::string const& title = "demo"s,
+            monitor* _monitor = nullptr,
+            window* _window = nullptr)
         {
-            
-        }
-
-        window(int width, int height, std::string const& title, monitor* _monitor, window* _window)
-        {
-
+            create(width, height, title, _monitor, _window);
         }
 
         ~window()
@@ -452,9 +508,15 @@ namespace glfw {
         }
     public:
 
-        bool create(int width, int height, std::string const& title)
+        bool create(int width, int height,
+            std::string const& title = "demo"s,
+            monitor* _monitor = nullptr,
+            window* _window = nullptr)
         {
-            windowp_ = glfwCreateWindow(width, height, title.c_str(), nullptr, nullptr);
+            windowp_ = glfwCreateWindow(width, height,
+                title.c_str(),
+                _monitor ? _monitor->get() : nullptr,
+                _window ? _window->get() : nullptr);
             return windowp_ != nullptr;
         }
 
@@ -557,42 +619,11 @@ namespace glfw {
         GLFWwindow* windowp_;
     };
 
-    class monitor
-    {
-    public:
-        using pointer = GLFWmonitor*;
-        using const_pointer = GLFWmonitor const*;
-
-        monitor()
-            : monitorp_(glfwGetPrimaryMonitor())
-        {
-
-        }
-
-    public:
-        pointer get()
-        {
-            return monitorp_;
-        }
-
-        const_pointer get() const
-        {
-            return monitorp_;
-        }
-
-    private:
-        GLFWmonitor* monitorp_;
-    };
-
-    class cursor
-    {
-
-    };
-
 }
 
 //glfw::function
 namespace glfw {
+
     void set_window_should_close(window::pointer win, bool _close = true)
     {
         glfwSetWindowShouldClose(win, _close ? GL_TRUE : GL_FALSE);
@@ -696,7 +727,7 @@ namespace gl {
         stream_draw = GL_STREAM_DRAW,   //数据每次绘制时都会改变
         stream_read = GL_STREAM_READ, 	//
         stream_copy = GL_STREAM_COPY, 	//
-        static_draw = GL_STATIC_DRAW, 	//数据不会或几乎不会改变。
+        static_draw = GL_STATIC_DRAW, 	//数据不会或几乎不会改变
         static_read = GL_STATIC_READ, 	//
         static_copy = GL_STATIC_COPY,	//
         dynamic_draw = GL_DYNAMIC_DRAW,	//数据会被改变很多
@@ -901,6 +932,66 @@ namespace gl
         void uniform(int loc, unsigned count, float const* values)
         {
             glUniform1fv(loc, count, values);
+        }
+
+        void uniform2(int loc, int v0,int v1)
+        {
+            glUniform2i(loc, v0, v1);
+        }
+
+        void uniform2(int loc, float v0, float v1)
+        {
+            glUniform2f(loc, v0, v1);
+        }
+
+        void uniform2(int loc, unsigned count, int const* values)
+        {
+            glUniform2iv(loc, count, values);
+        }
+
+        void uniform2(int loc, unsigned count, float const* values)
+        {
+            glUniform2fv(loc, count, values);
+        }
+
+        void uniform3(int loc, int v0, int v1, int v2)
+        {
+            glUniform3i(loc, v0, v1, v2);
+        }
+
+        void uniform3(int loc, float v0, float v1, float v2)
+        {
+            glUniform3f(loc, v0, v1, v2);
+        }
+
+        void uniform3(int loc, unsigned count, int const* values)
+        {
+            glUniform3iv(loc, count, values);
+        }
+
+        void uniform3(int loc, unsigned count, float const* values)
+        {
+            glUniform3fv(loc, count, values);
+        }
+
+        void uniform4(int loc, int v0, int v1, int v2, int v3)
+        {
+            glUniform4i(loc, v0, v1, v2, v3);
+        }
+
+        void uniform4(int loc, float v0, float v1, float v2, float v3)
+        {
+            glUniform4f(loc, v0, v1, v2, v3);
+        }
+
+        void uniform4(int loc, unsigned count, int const* values)
+        {
+            glUniform4iv(loc, count, values);
+        }
+
+        void uniform4(int loc, unsigned count, float const* values)
+        {
+            glUniform4fv(loc, count, values);
         }
 
         void uniform_matrix(int loc, unsigned count, bool transpose, float const* value)
@@ -1356,32 +1447,62 @@ namespace gl {
         }
 
     public:
-        template<typename ValueType>
-        void set_uniform(std::string const& uniform_name, ValueType value)
+        void set_bool(const std::string &name, bool value)
         {
-            auto loc = detail::get_uniform_location(program_id_, uniform_name.c_str());
+            auto loc = detail::get_uniform_location(program_id_, name.c_str());
+            detail::uniform(loc, value ? 1 : 0);
+        }
+        
+        void set_int(const std::string &name, int value)
+        {
+            auto loc = detail::get_uniform_location(program_id_, name.c_str());
             detail::uniform(loc, value);
         }
-
-        template<unsigned Count, typename ValueType>
-        void set_uniform(std::string const& uniform_name, ValueType value)
+       
+        void set_float(const std::string &name, float value)
         {
-            auto loc = detail::get_uniform_location(program_id_, uniform_name.c_str());
-            detail::uniform(loc, Count, std::forward<ValueType>(value));
+            auto loc = detail::get_uniform_location(program_id_, name.c_str());
+            detail::uniform(loc, value);
         }
-
-        void set_uniform_matrix(std::string const& matrix_name, unsigned count, float const* value)
+        
+        void set_vec2(const std::string &name, const glm::vec2 &value) const
         {
-            auto loc = detail::get_uniform_location(program_id_, matrix_name.c_str());
-            detail::uniform_matrix(loc, count, false, value);
+            auto loc = detail::get_uniform_location(program_id_, name.c_str());
+            detail::uniform2(loc,1, glm::value_ptr(value));
         }
-
-        void set_uniform_matrix(std::string const& matrix_name, glm::mat4 const& mat)
+        void set_vec2(const std::string &name, float x, float y) const
         {
-            auto loc = detail::get_uniform_location(program_id_, matrix_name.c_str());
-            detail::uniform_matrix(loc, 1, false, glm::value_ptr(mat));
+            auto loc = detail::get_uniform_location(program_id_, name.c_str());
+            detail::uniform2(loc, x,y);
         }
-
+        
+        void set_vec3(const std::string &name, const glm::vec3 &value) const
+        {
+            auto loc = detail::get_uniform_location(program_id_, name.c_str());
+            detail::uniform3(loc, 1, glm::value_ptr(value));
+        }
+        void set_vec3(const std::string &name, float x, float y, float z) const
+        {
+            auto loc = detail::get_uniform_location(program_id_, name.c_str());
+            detail::uniform3(loc, x,y,z);
+        }
+        
+        void set_vec4(const std::string &name, const glm::vec4 &value) const
+        {
+            auto loc = detail::get_uniform_location(program_id_, name.c_str());
+            detail::uniform4(loc, 1, glm::value_ptr(value));
+        }
+        void set_vec4(const std::string &name, float x, float y, float z, float w)
+        {
+            auto loc = detail::get_uniform_location(program_id_, name.c_str());
+            detail::uniform4(loc, x, y, z,w);
+        }
+        
+        void set_mat4(const std::string &name, const glm::mat4 &mat)
+        {
+            auto loc = detail::get_uniform_location(program_id_, name.c_str());
+            detail::uniform_matrix(loc, 1,false, glm::value_ptr(mat));
+        }
     private:
         unsigned program_id_;
         std::set<unsigned> shader_set_;
@@ -1401,7 +1522,14 @@ namespace gl {
         struct buffer_t
         {
             using value_type = decltype(N);
-            constexpr static auto value = N;
+            constexpr static auto value = value_type{ N };
+            constexpr static auto first = value_type{ 0 };
+            constexpr static auto second = value_type{ 1 };
+            constexpr static auto third = value_type{ 2 };
+            constexpr static auto fourth = value_type{ 3 };
+            constexpr static auto fifth = value_type{ 4 };
+            constexpr static auto sixth = value_type{ 5 };
+            constexpr static auto seventh = value_type{ 6 };
 
             std::array<value_type, value> buffer{};
 
@@ -1427,9 +1555,40 @@ namespace gl {
 
         struct vertex_attribute
         {
-            void set(int loc_in_vs, unsigned loc_t_size, data_type dt, bool normalized, unsigned stride, int next)
+            //
+            //loc_in_vs  :   指定要配置的顶点属性。
+            //               在顶点着色器中使用layout(location = 0)
+            //               定义了position顶点属性的位置值(Location)
+            //
+            //loc_t_size :   指定顶点属性的大小。顶点属性是一个vec3，它由3个值组成，所以大小是3
+            //
+            //data_t     :   指定数据的类型，这里是GL_FLOAT(GLSL中vec*都是由浮点数值组成的)
+            //
+            //normalized :   是否希望数据被标准化(Normalize)。
+            //               如果我们设置为GL_TRUE，
+            //               所有数据都会被映射到0（对于有符号型signed数据是-1）到1之间。
+            //
+            //stride     :   步长(Stride)，它告诉我们在连续的顶点属性组之间的间隔。
+            //               要注意的是如果这个数组是紧密排列的（在两个顶点属性之间没有空隙）
+            //               我们也可以设置为0来让OpenGL决定具体步长是多少（只有当数值是紧密排列时才可用）
+            //               一旦有更多的顶点属性，必须更小心地定义每个顶点属性之间的间隔。
+            //               这个参数的意思简单说就是从这个属性第二次出现的地方到整个数组0位置之间有多少字节
+            //
+            //next       :   参数的类型是void*，所以需要进行强制类型转换。
+            //               它表示位置数据在缓冲中起始位置的偏移量(Offset)
+            //
+            void set(int loc_in_vs,
+                unsigned loc_t_size,
+                data_type data_t,
+                bool normalized,
+                unsigned stride, int next)
             {
-                detail::set_attribute(loc_in_vs, loc_t_size, dt, normalized, stride, reinterpret_cast<void*>(next));
+                detail::set_attribute(loc_in_vs,
+                    loc_t_size,
+                    data_t,
+                    normalized,
+                    stride,
+                    reinterpret_cast<void*>(next));
                 detail::enable_vertex_attrib_array(loc_in_vs);
             }
         };
@@ -1631,12 +1790,12 @@ namespace gl {
         constexpr static float sensitivty = 0.1f; //灵敏度
         constexpr static float zoom = 45.0f;
     public:
-        camera(glm::vec3 _pos={ 0.0f,0.0f,0.0f })
-            : position_{_pos}
-            , up_{0.0f,1.0f,0.0f}
-            , front_{0.0f,0.0f,-1.0f}
-            , right_{1.0f,0.0f,0.0f}
-            , world_up_{0.0f,1.0f,0.0f}
+        camera(glm::vec3 _pos = { 0.0f,0.0f,0.0f })
+            : position_{ _pos }
+            , up_{ 0.0f,1.0f,0.0f }
+            , front_{ 0.0f,0.0f,-1.0f }
+            , right_{ 1.0f,0.0f,0.0f }
+            , world_up_{ 0.0f,1.0f,0.0f }
         {
             update();
         }
@@ -1706,10 +1865,10 @@ namespace gl {
                 std::sin(glm::radians(pitch_)),
                 std::sin(glm::radians(yaw_)) * std::cos(glm::radians(pitch_)),
             };
-            
+
             front_ = glm::normalize(vfront);
             right_ = glm::normalize(glm::cross(front_, world_up_));
-            up_    = glm::normalize(glm::cross(right_, front_));
+            up_ = glm::normalize(glm::cross(right_, front_));
         }
     private:
         glm::vec3 position_;

@@ -1,230 +1,191 @@
 #include <free_gl.h>
 
-//glm简单用法
-void simp_test_glm()
+//#include "camera_test.h"
+
+// 设置顶点数据 (缓存) 并配置顶点属性
+constexpr float vertices[] = {
+    -0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
+    0.5f, -0.5f, -0.5f,  1.0f, 0.0f,
+    0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+    0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+    -0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
+    -0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
+
+    -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+    0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
+    0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
+    0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
+    -0.5f,  0.5f,  0.5f,  0.0f, 1.0f,
+    -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+
+    -0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+    -0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+    -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+    -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+    -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+    -0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+
+    0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+    0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+    0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+    0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+    0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+    0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+
+    -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+    0.5f, -0.5f, -0.5f,  1.0f, 1.0f,
+    0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
+    0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
+    -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+    -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+
+    -0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
+    0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+    0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+    0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+    -0.5f,  0.5f,  0.5f,  0.0f, 0.0f,
+    -0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
+};
+
+constexpr auto vertices_size_bytes = sizeof(vertices);
+constexpr auto vertices_size = vertices_size_bytes / (5 * sizeof(float));
+
+//球心坐标为（x，y，z），球的半径为radius，M，N分别表示球体的横纵向被分成多少份  
+void sphere(glm::vec3 core, GLfloat radius, GLfloat M, GLfloat N,glm::vec3* vertices)
 {
-    auto vec = glm::vec4{ 1.f,0.f,0.f,1.f };
+    auto PI = glm::pi<float>();
 
-    //建议的顺序是：缩放-->旋转-->位移
-    auto trans = glm::translate(glm::mat4{ 1.f }, glm::vec3{ 1.f,1.f,0.f });
-    auto rotate = glm::rotate(glm::mat4{ 1.f }, glm::radians(45.0f), glm::vec3{ 0.f,0.f,1.f });
-    auto scale = glm::scale(glm::mat4{ 1.f }, glm::vec3{ 0.5f,0.5f,0.5f });
+    float step_z = PI / M;
+    float step_xy = 2 * PI / N;
+    float x[4], y[4], z[4];
 
-    //从右向左
-    vec = trans * rotate * scale * vec;
-}
+    float angle_z = 0.0;
+    float angle_xy = 0.0;
 
-//全局变量
-
-gl::camera camera{ {0.0f,0.0f,3.0f} };
-float delta_time{ 0.0f };
-float latest_time{ 0.0f };
-bool first_enter{ true };
-
-float latest_pos_x{ 800.0f / 2.0f };
-float latest_pos_y{ 600.0f / 2.0f };
-
-//事件回调
-
-void key_callback(glfw::window::pointer win, int key, int scancode, int action, int mods)
-{    
-    auto keycode = static_cast<glfw::key_code>(key);
-    switch (keycode)
+    auto index = 0;
+    
+    for (int i = 0; i < M; i++)
     {
-    case glfw::key_code::unknown:
-        break;
-    case glfw::key_code::space:
-        break;
-    case glfw::key_code::A:
-        camera.key_press(gl::camera::movement::left, delta_time);
-        break;
-    case glfw::key_code::D:
-        camera.key_press(gl::camera::movement::right, delta_time);
-        break;
-    case glfw::key_code::S:
-        camera.key_press(gl::camera::movement::forwrad, delta_time);
-        break;
-    case glfw::key_code::W:
-        camera.key_press(gl::camera::movement::backward, delta_time);
-        break;
-    case glfw::key_code::escape:
-        glfw::set_window_should_close(win);
-        break;
-    default:
-        break;
-    }
-}
+        angle_z = i * step_z;
 
-void cursor_pos_callback(glfw::window::pointer win, double xpos, double ypos)
-{
-    if (first_enter)
-    {
-        latest_pos_x = xpos;
-        latest_pos_y = ypos;
-        first_enter = false;
+        for (int j = 0; j < N; j++)
+        {
+            angle_xy = j * step_xy;
+
+            x[0] = radius * sin(angle_z) * cos(angle_xy);
+            y[0] = radius * sin(angle_z) * sin(angle_xy);
+            z[0] = radius * cos(angle_z);
+
+            x[1] = radius * sin(angle_z + step_z) * cos(angle_xy);
+            y[1] = radius * sin(angle_z + step_z) * sin(angle_xy);
+            z[1] = radius * cos(angle_z + step_z);
+
+            x[2] = radius * sin(angle_z + step_z) * cos(angle_xy + step_xy);
+            y[2] = radius * sin(angle_z + step_z) * sin(angle_xy + step_xy);
+            z[2] = radius * cos(angle_z + step_z);
+
+            x[3] = radius * sin(angle_z) * cos(angle_xy + step_xy);
+            y[3] = radius * sin(angle_z) * sin(angle_xy + step_xy);
+            z[3] = radius * cos(angle_z);
+
+            for (int k = 0; k < 4; k++)
+            {
+                vertices[index++]=glm::vec3(core.x + x[k], core.y + y[k], core.z + z[k]);
+            }
+        }
     }
 
-    float xoffset = xpos - latest_pos_x;
-    float yoffset = latest_pos_y - ypos; //y坐标由下到上
-
-    latest_pos_x = xpos;
-    latest_pos_y = ypos;
-
-    camera.mouse_move(xoffset, yoffset);
-}
-
-void scroll_callback(glfw::window::pointer win, double xoffset, double yoffset)
-{
-    camera.scroll(yoffset);
 }
 
 int __stdcall wWinMain(HINSTANCE hInstance, HINSTANCE, LPWSTR, int)
 {
-    //simp_test_glm();
+    auto freegl = make<glfw::glfw>(3,3);
 
-    auto free_gl = make<glfw::glfw>();
-    free_gl.set_opengl_version(3, 3);
-    free_gl.set_opengl_core_profile();
-
-    
-    auto free_window = make<glfw::window>(800, 600, "hello"s);
-    free_window.make_context_current();
-    free_window.set_key_callback(key_callback);
-    free_window.set_cursor_enter_callback([](glfw::window::pointer win, int entered) {
-        glfw::set_cursor_mode(win,entered ? glfw::window::cursor_mode::hidden :
-            glfw::window::cursor_mode::normal);
-        first_enter = entered;
-    });
-    free_window.set_cursor_pos_callback(cursor_pos_callback);
-    free_window.set_scroll_callback(scroll_callback);
-    free_window.set_frame_buffer_size_callback([](glfw::window::pointer w, int width, int height) {
+    auto freewin = make<glfw::window>(800, 600);
+    freewin.make_context_current();
+    freewin.set_frame_buffer_size_callback(
+        [](glfw::window::pointer w, int width, int height) {
         gl::view_port(0, 0, width, height);
     });
 
-    free_gl.load_loader();
-    free_gl.swap_interval(1);
+    freegl.load_loader();
+    freegl.swap_interval(1);
 
-    auto shader_program = gl::make_shader_program("vertex.glsl"s, "fragment.glsl"s);
+    glm::vec3 sphere_vertices[60 * 60 * 4];
+    sphere(glm::vec3(0), 1.0f, 60, 60, sphere_vertices);
+    auto sphere_size_byte = sizeof(sphere_vertices);
+    auto sphere_size = (sizeof(sphere_vertices) / sizeof(sphere_vertices[0]));
 
-    // 设置顶点数据 (缓存) 并配置顶点属性
-    float vertices[] = {
-        -0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
-        0.5f, -0.5f, -0.5f,  1.0f, 0.0f,
-        0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-        0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-        -0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
-        -0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
+    auto multi_vao = make<gl::multi_vao<2>>();
+    auto multi_vbo = make<gl::multi_vbo<2>>();
 
-        -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
-        0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
-        0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
-        0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
-        -0.5f,  0.5f,  0.5f,  0.0f, 1.0f,
-        -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
-
-        -0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-        -0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-        -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-        -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-        -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
-        -0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-
-        0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-        0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-        0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-        0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-        0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
-        0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-
-        -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-        0.5f, -0.5f, -0.5f,  1.0f, 1.0f,
-        0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
-        0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
-        -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
-        -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-
-        -0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
-        0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-        0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-        0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-        -0.5f,  0.5f,  0.5f,  0.0f, 0.0f,
-        -0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
-    };
-
-    glm::vec3 positions[]{
-        {0.0f,  0.0f,  0.0f},
-        {2.0f,  5.0f, -15.0f },
-        {-1.5f, -2.2f, -2.5f },
-        {-3.8f, -2.0f, -12.3f },
-        {2.4f, -0.4f, -3.5f },
-        {-1.7f,  3.0f, -7.5f },
-        {1.3f, -2.0f, -2.5f },
-        {1.5f,  2.0f, -2.5f },
-        {1.5f,  0.2f, -1.5f },
-        {-1.3f,  1.0f, -1.5f },
-    };
-
-    auto single_vao = make<gl::single_vao>();
-    auto single_vbo = make<gl::single_vbo>();
-
-    single_vao.bind(0);
+    //light
+    multi_vao.bind(multi_vao.first);
     {
-        single_vbo.bind(0);
+        multi_vbo.bind(multi_vbo.first);
         {
-            single_vbo.from(vertices, sizeof(vertices));
-            single_vbo.set(0, 3, gl::data_type::_float, false, 5 * sizeof(float), 0 * sizeof(float));
-            single_vbo.set(1, 2, gl::data_type::_float, false, 5 * sizeof(float), (3 + 0) * sizeof(float));
-
+            multi_vbo.from(sphere_vertices, sphere_size_byte);
+            multi_vbo.set(0, 3, gl::data_type::_float, false, 3 * sizeof(float), 0);
         }
-        single_vbo.unbind();
+        multi_vbo.unbind();
     }
-    single_vao.unbind();
+    multi_vao.unbind();
 
-    auto single_texture2d_1 = gl::make_single_texture("container.jpg"s);
-    auto single_texture2d_2 = gl::make_single_texture("awesomeface.png"s, gl::texture_format::rgb, gl::texture_format::rgba);
-
-    shader_program.use();
-    shader_program.set_uniform("ourTexture0"s, 0);
-    shader_program.set_uniform("ourTexture1"s, 1);
-
-    gl::enable_depth_test();
-
-    while (!free_window.should_close())
+    //cube
+    multi_vao.bind(multi_vao.second);
     {
-        float current_time = free_gl.get_time();
-        delta_time = current_time - latest_time;
-        latest_time = current_time;
+        multi_vbo.bind(multi_vbo.second);
+        {
+            multi_vbo.from(vertices, vertices_size_bytes);
+            multi_vbo.set(0, 3, gl::data_type::_float, false, 5 * sizeof(float), 0);
+        }
+        multi_vbo.unbind();
+    }
+    multi_vao.unbind();
 
+    auto norm_mat4 = glm::mat4{ 1.0f };
+    auto proj = glm::perspective(45.0f, 800.0f / 600.0f, 0.1f, 100.0f);
+    auto view = glm::lookAt(glm::vec3{ 0.0f,0.0f,3.0f }, glm::vec3{ 0.0f }, glm::vec3{ 0.0f,1.0f,0.0f });
+    auto model = glm::translate(norm_mat4, glm::vec3{ 14.0f,13.0f,-25.0f });
+    
+    auto light_program = gl::make_shader_program("light.vs"s, "light.fs"s);
+    light_program.use();
+    light_program.set_mat4("proj"s, proj);
+    light_program.set_mat4("view"s, view);
+    light_program.set_mat4("model"s, model);
+
+    norm_mat4 = glm::mat4{ 1.0f };
+    auto cube_program = gl::make_shader_program("box.vs"s,"box.fs"s);
+    cube_program.use();
+    cube_program.set_vec3("light_color"s, glm::vec3{1.0f});
+    cube_program.set_vec3("cube_color"s, glm::vec3{ 1.0f, 0.5f, 0.31f });
+    cube_program.set_mat4("proj"s, proj);
+    cube_program.set_mat4("view"s, view);
+    cube_program.set_mat4("model"s, glm::rotate(norm_mat4, glm::radians(45.0f), glm::vec3{1.0f,1.0f,0.0f}));
+    
+    while (!freewin.should_close())
+    {
         gl::clear_color(0.2f, 0.3f, 0.4f);
         gl::clear(gl::bit_field::color_buffer_bit);
-        gl::clear(gl::bit_field::depth_buffer_bit);
 
-        single_texture2d_1.active(0);
-        single_texture2d_1.bind(0);
-
-        single_texture2d_2.active(0);
-        single_texture2d_2.bind(0);
-
-        shader_program.use();
-
-        auto view = camera.get_view();
-        auto proj = glm::perspective(glm::radians(camera.get_zoom()), 800.0f / 600.0f, 0.1f, 100.0f);
-        shader_program.set_uniform_matrix("proj"s, proj);
-        shader_program.set_uniform_matrix("view"s, view);
-
-            single_vao.bind(0);
-        for (auto i = 0; i < 10; ++i)
+        //draw light
         {
-            auto model = glm::translate(glm::mat4{ 1.0f }, positions[i]);
-            auto angle = 20.0f * i;
-            model = glm::rotate(model, glm::radians(angle), glm::vec3{ 1.0f,0.3f,0.5f });
-            shader_program.set_uniform_matrix("model"s, model);
+            multi_vao.bind(multi_vao.first);
+            light_program.use();
 
-            gl::draw_arrays(gl::draw_mode::triangles, 0, 36);
+            gl::draw_arrays(gl::draw_mode::triangle_fan, 0, sphere_size);
+        }
+        
+        //draw cube
+        {
+            multi_vao.bind(multi_vao.second);
+            cube_program.use();
+
+            gl::draw_arrays(gl::draw_mode::triangles, 0, vertices_size);
         }
 
-        free_window.swap_buffers();
-        free_gl.poll_events();
+        freegl.poll_events();
+        freewin.swap_buffers();
     }
     return 0;
 }

@@ -23,11 +23,22 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="vertex.glsl">
+    <None Include="light.vs">
       <Filter>资源文件</Filter>
     </None>
-    <None Include="fragment.glsl">
+    <None Include="light.fs">
       <Filter>资源文件</Filter>
     </None>
+    <None Include="box.vs">
+      <Filter>资源文件</Filter>
+    </None>
+    <None Include="box.fs">
+      <Filter>资源文件</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="camera_test.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
