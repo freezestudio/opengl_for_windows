@@ -4,47 +4,47 @@
 
 // 设置顶点数据 (缓存) 并配置顶点属性
 constexpr float vertices[] = {
-    -0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
-    0.5f, -0.5f, -0.5f,  1.0f, 0.0f,
-    0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-    0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-    -0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
-    -0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
+    -0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
+    0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
+    0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
+    0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
+    -0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
+    -0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
 
-    -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
-    0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
-    0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
-    0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
-    -0.5f,  0.5f,  0.5f,  0.0f, 1.0f,
-    -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+    -0.5f, -0.5f,  0.5f,  0.0f,  0.0f,  1.0f,
+    0.5f, -0.5f,  0.5f,  0.0f,  0.0f,  1.0f,
+    0.5f,  0.5f,  0.5f,  0.0f,  0.0f,  1.0f,
+    0.5f,  0.5f,  0.5f,  0.0f,  0.0f,  1.0f,
+    -0.5f,  0.5f,  0.5f,  0.0f,  0.0f,  1.0f,
+    -0.5f, -0.5f,  0.5f,  0.0f,  0.0f,  1.0f,
 
-    -0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-    -0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-    -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-    -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-    -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
-    -0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+    -0.5f,  0.5f,  0.5f, -1.0f,  0.0f,  0.0f,
+    -0.5f,  0.5f, -0.5f, -1.0f,  0.0f,  0.0f,
+    -0.5f, -0.5f, -0.5f, -1.0f,  0.0f,  0.0f,
+    -0.5f, -0.5f, -0.5f, -1.0f,  0.0f,  0.0f,
+    -0.5f, -0.5f,  0.5f, -1.0f,  0.0f,  0.0f,
+    -0.5f,  0.5f,  0.5f, -1.0f,  0.0f,  0.0f,
 
-    0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-    0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-    0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-    0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-    0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
-    0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+    0.5f,  0.5f,  0.5f,  1.0f,  0.0f,  0.0f,
+    0.5f,  0.5f, -0.5f,  1.0f,  0.0f,  0.0f,
+    0.5f, -0.5f, -0.5f,  1.0f,  0.0f,  0.0f,
+    0.5f, -0.5f, -0.5f,  1.0f,  0.0f,  0.0f,
+    0.5f, -0.5f,  0.5f,  1.0f,  0.0f,  0.0f,
+    0.5f,  0.5f,  0.5f,  1.0f,  0.0f,  0.0f,
 
-    -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-    0.5f, -0.5f, -0.5f,  1.0f, 1.0f,
-    0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
-    0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
-    -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
-    -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+    -0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,
+    0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,
+    0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,
+    0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,
+    -0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,
+    -0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,
 
-    -0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
-    0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-    0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-    0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-    -0.5f,  0.5f,  0.5f,  0.0f, 0.0f,
-    -0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
+    -0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,
+    0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,
+    0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,
+    0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,
+    -0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,
+    -0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,
 };
 
 constexpr auto vertices_size_bytes = sizeof(vertices);
@@ -94,7 +94,82 @@ void sphere(glm::vec3 core, GLfloat radius, GLfloat M, GLfloat N,glm::vec3* vert
             }
         }
     }
+}
 
+//全局变量
+
+gl::camera camera{ { 0.0f,0.0f,3.0f } };
+float delta_time{ 0.0f };
+float latest_time{ 0.0f };
+bool first_enter{ true };
+
+float latest_pos_x{ 800.0f / 2.0f };
+float latest_pos_y{ 600.0f / 2.0f };
+
+//事件回调
+
+void frame_buffer_size_callback(glfw::window::pointer w, int width, int height)
+{
+    gl::view_port(0, 0, width, height);
+}
+
+void key_callback(glfw::window::pointer win, int key, int scancode, int action, int mods)
+{
+    auto keycode = static_cast<glfw::key_code>(key);
+    switch (keycode)
+    {
+    case glfw::key_code::unknown:
+        break;
+    case glfw::key_code::space:
+        break;
+    case glfw::key_code::A:
+        camera.key_press(gl::camera::movement::left, delta_time);
+        break;
+    case glfw::key_code::D:
+        camera.key_press(gl::camera::movement::right, delta_time);
+        break;
+    case glfw::key_code::S:
+        camera.key_press(gl::camera::movement::forwrad, delta_time);
+        break;
+    case glfw::key_code::W:
+        camera.key_press(gl::camera::movement::backward, delta_time);
+        break;
+    case glfw::key_code::escape:
+        glfw::set_window_should_close(win);
+        break;
+    default:
+        break;
+    }
+}
+
+void cursor_enter_callback(glfw::window::pointer win, int entered)
+{
+    glfw::set_cursor_mode(win, entered ? glfw::window::cursor_mode::hidden :
+        glfw::window::cursor_mode::normal);
+    first_enter = entered;
+}
+
+void cursor_pos_callback(glfw::window::pointer win, double xpos, double ypos)
+{
+    if (first_enter)
+    {
+        latest_pos_x = xpos;
+        latest_pos_y = ypos;
+        first_enter = false;
+    }
+
+    float xoffset = xpos - latest_pos_x;
+    float yoffset = latest_pos_y - ypos; //y坐标由下到上
+
+    latest_pos_x = xpos;
+    latest_pos_y = ypos;
+
+    camera.mouse_move(xoffset, yoffset);
+}
+
+void scroll_callback(glfw::window::pointer win, double xoffset, double yoffset)
+{
+    camera.scroll(yoffset);
 }
 
 int __stdcall wWinMain(HINSTANCE hInstance, HINSTANCE, LPWSTR, int)
@@ -103,10 +178,12 @@ int __stdcall wWinMain(HINSTANCE hInstance, HINSTANCE, LPWSTR, int)
 
     auto freewin = make<glfw::window>(800, 600);
     freewin.make_context_current();
-    freewin.set_frame_buffer_size_callback(
-        [](glfw::window::pointer w, int width, int height) {
-        gl::view_port(0, 0, width, height);
-    });
+    freewin.set_frame_buffer_size_callback(frame_buffer_size_callback);
+    freewin.set_key_callback(key_callback);
+    freewin.set_cursor_enter_callback(cursor_enter_callback);
+    freewin.set_cursor_pos_callback(cursor_pos_callback);
+    freewin.set_scroll_callback(scroll_callback);
+   
 
     freegl.load_loader();
     freegl.swap_interval(1);
@@ -137,42 +214,48 @@ int __stdcall wWinMain(HINSTANCE hInstance, HINSTANCE, LPWSTR, int)
         multi_vbo.bind(multi_vbo.second);
         {
             multi_vbo.from(vertices, vertices_size_bytes);
-            multi_vbo.set(0, 3, gl::data_type::_float, false, 5 * sizeof(float), 0);
+            multi_vbo.set(0, 3, gl::data_type::_float, false, 6 * sizeof(float), 0);
+            multi_vbo.set(1, 3, gl::data_type::_float, false, 6 * sizeof(float), 3 * sizeof(float));
         }
         multi_vbo.unbind();
     }
     multi_vao.unbind();
-
-    auto norm_mat4 = glm::mat4{ 1.0f };
-    auto proj = glm::perspective(45.0f, 800.0f / 600.0f, 0.1f, 100.0f);
-    auto view = glm::lookAt(glm::vec3{ 0.0f,0.0f,3.0f }, glm::vec3{ 0.0f }, glm::vec3{ 0.0f,1.0f,0.0f });
-    auto model = glm::translate(norm_mat4, glm::vec3{ 14.0f,13.0f,-25.0f });
     
     auto light_program = gl::make_shader_program("light.vs"s, "light.fs"s);
-    light_program.use();
-    light_program.set_mat4("proj"s, proj);
-    light_program.set_mat4("view"s, view);
-    light_program.set_mat4("model"s, model);
-
-    norm_mat4 = glm::mat4{ 1.0f };
+    
     auto cube_program = gl::make_shader_program("box.vs"s,"box.fs"s);
     cube_program.use();
     cube_program.set_vec3("light_color"s, glm::vec3{1.0f});
-    cube_program.set_vec3("cube_color"s, glm::vec3{ 1.0f, 0.5f, 0.31f });
-    cube_program.set_mat4("proj"s, proj);
-    cube_program.set_mat4("view"s, view);
-    cube_program.set_mat4("model"s, glm::rotate(norm_mat4, glm::radians(45.0f), glm::vec3{1.0f,1.0f,0.0f}));
+    cube_program.set_vec3("cube_color"s, glm::vec3{ 1.0f, 0.5f, 0.31f }); 
+    cube_program.set_vec3("light_position"s, glm::vec3{ 1.2f, 1.0f, 2.0f });
+    cube_program.set_vec3("view_position"s, camera.get_position());
     
+    gl::enable_depth_test();
+
     while (!freewin.should_close())
     {
+        float current_time = freegl.get_time();
+        delta_time = current_time - latest_time;
+        latest_time = current_time;
+
         gl::clear_color(0.2f, 0.3f, 0.4f);
         gl::clear(gl::bit_field::color_buffer_bit);
+        gl::clear(gl::bit_field::depth_buffer_bit);
 
         //draw light
         {
             multi_vao.bind(multi_vao.first);
             light_program.use();
+            
+            auto light_proj = glm::perspective(glm::radians(camera.get_zoom()), 800.0f / 600.0f, 0.1f, 100.0f);
+            auto light_view = camera.get_view();
+            auto light_model = glm::translate(glm::mat4{ 1.0f }, glm::vec3{ 1.2f, 1.0f, 2.0f });
+            light_model = glm::scale(light_model, glm::vec3{ 0.2f });
 
+            light_program.set_mat4("proj"s, light_proj);
+            light_program.set_mat4("view"s, light_view);
+            light_program.set_mat4("model"s, light_model);
+            
             gl::draw_arrays(gl::draw_mode::triangle_fan, 0, sphere_size);
         }
         
@@ -180,6 +263,14 @@ int __stdcall wWinMain(HINSTANCE hInstance, HINSTANCE, LPWSTR, int)
         {
             multi_vao.bind(multi_vao.second);
             cube_program.use();
+
+            auto cube_proj = glm::perspective(glm::radians(camera.get_zoom()), 800.0f / 600.0f, 0.1f, 100.0f);
+            auto cube_view = camera.get_view();
+            auto cube_model = glm::rotate(glm::mat4{ 1.0f }, glm::radians(45.0f), glm::vec3{ 1.0f,0.0f,1.0f });
+
+            cube_program.set_mat4("proj"s, cube_proj);
+            cube_program.set_mat4("view"s, cube_view);
+            cube_program.set_mat4("model"s, cube_model);
 
             gl::draw_arrays(gl::draw_mode::triangles, 0, vertices_size);
         }

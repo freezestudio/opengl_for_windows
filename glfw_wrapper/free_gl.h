@@ -1811,6 +1811,11 @@ namespace gl {
             return zoom_;
         }
 
+        auto get_position() const
+        {
+            return position_;
+        }
+
     public:
         void key_press(movement direction, float delta_time)
         {
