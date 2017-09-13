@@ -1,6 +1,6 @@
 #pragma once
 
-#include <Windows.h>
+//#include <Windows.h>
 
 #include <iostream>
 #include <string>
@@ -15,6 +15,8 @@
 #include <sstream>
 #include <set>
 #include <array>
+#include <codecvt>
+#include <filesystem>
 
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
@@ -28,6 +30,7 @@
 #include <glm/gtc/type_ptr.hpp>
 
 using namespace std::literals;
+namespace fs = std::experimental::filesystem;
 
 template<typename T, typename = void>
 struct make_impl;
@@ -1283,9 +1286,14 @@ namespace gl {
         std::string load_shader(std::string const& glslFile)
         {
             std::string str;
-            std::ostringstream oss;
 
+			auto glslpath = fs::path{ glslFile };
+			if (!fs::exists(glslpath))return str;
+
+            std::ostringstream oss;
             std::ifstream ifs{ glslFile };
+			if (!ifs.is_open())return str;
+
             oss << ifs.rdbuf();
             str = oss.str();
 
@@ -1304,7 +1312,7 @@ namespace gl {
     {
     public:
         shader(shader_type type)
-            : shader(type, "")
+            : shader(type, ""s)
         {
 
         }
@@ -1829,10 +1837,10 @@ namespace gl {
                 position_ -= front_ * velocity;
                 break;
             case movement::left:
-                position_ -= right_ * velocity;
+                position_ += right_ * velocity;
                 break;
             case movement::right:
-                position_ += right_ * velocity;
+                position_ -= right_ * velocity;
                 break;
             default:
                 break;

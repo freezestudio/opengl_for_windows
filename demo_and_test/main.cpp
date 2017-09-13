@@ -118,6 +118,8 @@ void key_callback(glfw::window::pointer win, int key, int scancode, int action, 
     auto keycode = static_cast<glfw::key_code>(key);
     switch (keycode)
     {
+    default:
+        break;
     case glfw::key_code::unknown:
         break;
     case glfw::key_code::space:
@@ -136,8 +138,6 @@ void key_callback(glfw::window::pointer win, int key, int scancode, int action, 
         break;
     case glfw::key_code::escape:
         glfw::set_window_should_close(win);
-        break;
-    default:
         break;
     }
 }
@@ -225,10 +225,19 @@ int __stdcall wWinMain(HINSTANCE hInstance, HINSTANCE, LPWSTR, int)
     
     auto cube_program = gl::make_shader_program("box.vs"s,"box.fs"s);
     cube_program.use();
-    cube_program.set_vec3("light_color"s, glm::vec3{1.0f});
-    cube_program.set_vec3("cube_color"s, glm::vec3{ 1.0f, 0.5f, 0.31f }); 
-    cube_program.set_vec3("light_position"s, glm::vec3{ 1.2f, 1.0f, 2.0f });
+    //cube_program.set_vec3("light_color"s, glm::vec3{1.0f});
+    //cube_program.set_vec3("cube_color"s, glm::vec3{ 1.0f, 0.5f, 0.31f }); 
+    //cube_program.set_vec3("light_position"s, glm::vec3{ 1.2f, 1.0f, 2.0f });
     cube_program.set_vec3("view_position"s, camera.get_position());
+	cube_program.set_vec3("material.ambient"s, glm::vec3{1.0f,0.5f,0.31f});
+	cube_program.set_vec3("material.diffuse"s, glm::vec3{ 1.0f,0.5f,0.31f });
+	cube_program.set_vec3("material.specular"s, glm::vec3{0.5f,0.5f,0.5f});
+	cube_program.set_float("material.shininess"s, 32.0f);
+
+	cube_program.set_vec3("light.position"s, glm::vec3{ 1.2f, 1.0f, 2.0f });
+	//cube_program.set_vec3("light.ambient"s, glm::vec3{ 0.2f,0.2f,0.2f });
+	//cube_program.set_vec3("light.diffuse"s, glm::vec3{ 0.5f,0.5f,0.5f });
+	cube_program.set_vec3("light.specular"s, glm::vec3{ 1.0f,1.0f,1.0f });
     
     gl::enable_depth_test();
 
@@ -263,6 +272,17 @@ int __stdcall wWinMain(HINSTANCE hInstance, HINSTANCE, LPWSTR, int)
         {
             multi_vao.bind(multi_vao.second);
             cube_program.use();
+
+			// light properties
+			glm::vec3 lightColor;
+			lightColor.x = sin(glfwGetTime() * 2.0f);
+			lightColor.y = sin(glfwGetTime() * 0.7f);
+			lightColor.z = sin(glfwGetTime() * 1.3f);
+			glm::vec3 diffuseColor = lightColor   * glm::vec3(0.5f); // decrease the influence
+			glm::vec3 ambientColor = diffuseColor * glm::vec3(0.2f); // low influence
+
+			cube_program.set_vec3("light.ambient"s, ambientColor);
+			cube_program.set_vec3("light.diffuse"s, diffuseColor);
 
             auto cube_proj = glm::perspective(glm::radians(camera.get_zoom()), 800.0f / 600.0f, 0.1f, 100.0f);
             auto cube_view = camera.get_view();
