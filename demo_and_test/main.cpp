@@ -1,302 +1,171 @@
-#include <free_gl.h>
+//
+//
+//#define USE_ORIG
 
-//#include "camera_test.h"
+//#define USE_ORIG_1
+//#define USE_ORIG_2
+//#define USE_ORIG_3
+//#define USE_ORIG_4
+//#define USE_ORIG_5
+//#define USE_ORIG_6
+//#define USE_ORIG_7
+//#define USE_ORIG_8
+//#define USE_ORIG_9
+//#define USE_ORIG_10
+//#define USE_ORIG_11
+//#define USE_ORIG_12
+//#define USE_ORIG_13
+//#define USE_ORIG_14
+//#define USE_ORIG_15
+//#define USE_ORIG_16
+//#define USE_ORIG_17
+//#define USE_ORIG_18
+//#define USE_ORIG_19
+//#define USE_ORIG_20
+//#define USE_ORIG_21
+//#define USE_ORIG_22
+//#define USE_ORIG_23
+#define USE_ORIG_24
+//#define USE_ORIG_25
+//#define USE_ORIG_26
+//#define USE_ORIG_27
+//#define USE_ORIG_28
+//#define USE_ORIG_29
+//#define USE_ORIG_30
 
-// 设置顶点数据 (缓存) 并配置顶点属性
-constexpr float vertices[] = {
-    -0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
-    0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
-    0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
-    0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
-    -0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
-    -0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
+#ifdef USE_ORIG
+#if defined (USE_ORIG_1)
+#include "orig_1.h"
+#elif defined (USE_ORIG_2)
+#include "orig_2.h"
+#elif defined (USE_ORIG_3)
+#include "orig_3.h"
+#elif defined (USE_ORIG_4)
+#include "orig_4.h"
+#elif defined (USE_ORIG_5)
+#include "orig_5.h"
+#elif defined (USE_ORIG_6)
+#include "orig_6.h"
+#elif defined (USE_ORIG_7)
+#include "orig_7.h"
+#elif defined (USE_ORIG_8)
+#include "orig_8.h"
+#elif defined (USE_ORIG_9)
+#include "orig_9.h"
+#elif defined (USE_ORIG_10)
+#include "orig_10.h"
+#elif defined (USE_ORIG_11)
+#include "orig_11.h"
+#elif defined (USE_ORIG_12)
+#include "orig_12.h"
+#elif defined (USE_ORIG_13)
+#include "orig_13.h"
+#elif defined (USE_ORIG_14)
+#include "orig_14.h"
+#elif defined (USE_ORIG_15)
+#include "orig_15.h"
+#elif defined (USE_ORIG_16)
+#include "orig_16.h"
+#elif defined (USE_ORIG_17)
+#include "orig_17.h"
+#elif defined (USE_ORIG_18)
+#include "orig_18.h"
+#elif defined (USE_ORIG_19)
+#include "orig_19.h"
+#elif defined (USE_ORIG_20)
+#include "orig_20.h"
+#elif defined (USE_ORIG_21)
+#include "orig_21.h"
+#elif defined (USE_ORIG_22)
+#include "orig_22.h"
+#elif defined (USE_ORIG_23)
+#include "orig_23.h"
+#elif defined (USE_ORIG_24)
+#include "orig_24.h"
+#elif defined (USE_ORIG_25)
+#include "orig_25.h"
+#elif defined (USE_ORIG_26)
+#include "orig_26.h"
+#elif defined (USE_ORIG_27)
+#include "orig_27.h"
+#elif defined (USE_ORIG_28)
+#include "orig_28.h"
+#elif defined (USE_ORIG_29)
+#include "orig_29.h"
+#elif defined (USE_ORIG_30)
+#include "orig_30.h"
+#endif
+#else
+#include "free.h"
+#endif
 
-    -0.5f, -0.5f,  0.5f,  0.0f,  0.0f,  1.0f,
-    0.5f, -0.5f,  0.5f,  0.0f,  0.0f,  1.0f,
-    0.5f,  0.5f,  0.5f,  0.0f,  0.0f,  1.0f,
-    0.5f,  0.5f,  0.5f,  0.0f,  0.0f,  1.0f,
-    -0.5f,  0.5f,  0.5f,  0.0f,  0.0f,  1.0f,
-    -0.5f, -0.5f,  0.5f,  0.0f,  0.0f,  1.0f,
-
-    -0.5f,  0.5f,  0.5f, -1.0f,  0.0f,  0.0f,
-    -0.5f,  0.5f, -0.5f, -1.0f,  0.0f,  0.0f,
-    -0.5f, -0.5f, -0.5f, -1.0f,  0.0f,  0.0f,
-    -0.5f, -0.5f, -0.5f, -1.0f,  0.0f,  0.0f,
-    -0.5f, -0.5f,  0.5f, -1.0f,  0.0f,  0.0f,
-    -0.5f,  0.5f,  0.5f, -1.0f,  0.0f,  0.0f,
-
-    0.5f,  0.5f,  0.5f,  1.0f,  0.0f,  0.0f,
-    0.5f,  0.5f, -0.5f,  1.0f,  0.0f,  0.0f,
-    0.5f, -0.5f, -0.5f,  1.0f,  0.0f,  0.0f,
-    0.5f, -0.5f, -0.5f,  1.0f,  0.0f,  0.0f,
-    0.5f, -0.5f,  0.5f,  1.0f,  0.0f,  0.0f,
-    0.5f,  0.5f,  0.5f,  1.0f,  0.0f,  0.0f,
-
-    -0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,
-    0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,
-    0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,
-    0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,
-    -0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,
-    -0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,
-
-    -0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,
-    0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,
-    0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,
-    0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,
-    -0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,
-    -0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,
-};
-
-constexpr auto vertices_size_bytes = sizeof(vertices);
-constexpr auto vertices_size = vertices_size_bytes / (5 * sizeof(float));
-
-//球心坐标为（x，y，z），球的半径为radius，M，N分别表示球体的横纵向被分成多少份  
-void sphere(glm::vec3 core, GLfloat radius, GLfloat M, GLfloat N,glm::vec3* vertices)
+int main()
 {
-    auto PI = glm::pi<float>();
+#ifdef USE_ORIG
+#if defined(USE_ORIG_1)
+	orig_1();
+#elif defined (USE_ORIG_2)
+	orig_2();
+#elif defined (USE_ORIG_3)
+	orig_3();
+#elif defined (USE_ORIG_4)
+	orig_4();
+#elif defined (USE_ORIG_5)
+	orig_5();
+#elif defined (USE_ORIG_6)
+	orig_6();
+#elif defined (USE_ORIG_7)
+	orig_7();
+#elif defined (USE_ORIG_8)
+	orig_8();
+#elif defined (USE_ORIG_9)
+	orig_9();
+#elif defined (USE_ORIG_10)
+	orig_10();
+#elif defined (USE_ORIG_11)
+	orig_11();
+#elif defined (USE_ORIG_12)
+	orig_12();
+#elif defined (USE_ORIG_13)
+	orig_13();
+#elif defined (USE_ORIG_14)
+	orig_14();
+#elif defined (USE_ORIG_15)
+	orig_15();
+#elif defined (USE_ORIG_16)
+	orig_16();
+#elif defined (USE_ORIG_17)
+	orig_17();
+#elif defined (USE_ORIG_18)
+	orig_18();
+#elif defined (USE_ORIG_19)
+	orig_19();
+#elif defined (USE_ORIG_20)
+	orig_20();
+#elif defined (USE_ORIG_21)
+	orig_21();
+#elif defined (USE_ORIG_22)
+	orig_22();
+#elif defined (USE_ORIG_23)
+	orig_23();
+#elif defined (USE_ORIG_24)
+	orig_24();
+#elif defined (USE_ORIG_25)
+	orig_25();
+#elif defined (USE_ORIG_26)
+	orig_26();
+#elif defined (USE_ORIG_27)
+	orig_27();
+#elif defined (USE_ORIG_28)
+	orig_28();
+#elif defined (USE_ORIG_29)
+	orig_29();
+#elif defined (USE_ORIG_30)
+	orig_30();
+#endif	
+#else
+	free();
+#endif
 
-    float step_z = PI / M;
-    float step_xy = 2 * PI / N;
-    float x[4], y[4], z[4];
-
-    float angle_z = 0.0;
-    float angle_xy = 0.0;
-
-    auto index = 0;
-    
-    for (int i = 0; i < M; i++)
-    {
-        angle_z = i * step_z;
-
-        for (int j = 0; j < N; j++)
-        {
-            angle_xy = j * step_xy;
-
-            x[0] = radius * sin(angle_z) * cos(angle_xy);
-            y[0] = radius * sin(angle_z) * sin(angle_xy);
-            z[0] = radius * cos(angle_z);
-
-            x[1] = radius * sin(angle_z + step_z) * cos(angle_xy);
-            y[1] = radius * sin(angle_z + step_z) * sin(angle_xy);
-            z[1] = radius * cos(angle_z + step_z);
-
-            x[2] = radius * sin(angle_z + step_z) * cos(angle_xy + step_xy);
-            y[2] = radius * sin(angle_z + step_z) * sin(angle_xy + step_xy);
-            z[2] = radius * cos(angle_z + step_z);
-
-            x[3] = radius * sin(angle_z) * cos(angle_xy + step_xy);
-            y[3] = radius * sin(angle_z) * sin(angle_xy + step_xy);
-            z[3] = radius * cos(angle_z);
-
-            for (int k = 0; k < 4; k++)
-            {
-                vertices[index++]=glm::vec3(core.x + x[k], core.y + y[k], core.z + z[k]);
-            }
-        }
-    }
-}
-
-//全局变量
-
-gl::camera camera{ { 0.0f,0.0f,3.0f } };
-float delta_time{ 0.0f };
-float latest_time{ 0.0f };
-bool first_enter{ true };
-
-float latest_pos_x{ 800.0f / 2.0f };
-float latest_pos_y{ 600.0f / 2.0f };
-
-//事件回调
-
-void frame_buffer_size_callback(glfw::window::pointer w, int width, int height)
-{
-    gl::view_port(0, 0, width, height);
-}
-
-void key_callback(glfw::window::pointer win, int key, int scancode, int action, int mods)
-{
-    auto keycode = static_cast<glfw::key_code>(key);
-    switch (keycode)
-    {
-    default:
-        break;
-    case glfw::key_code::unknown:
-        break;
-    case glfw::key_code::space:
-        break;
-    case glfw::key_code::A:
-        camera.key_press(gl::camera::movement::left, delta_time);
-        break;
-    case glfw::key_code::D:
-        camera.key_press(gl::camera::movement::right, delta_time);
-        break;
-    case glfw::key_code::S:
-        camera.key_press(gl::camera::movement::forwrad, delta_time);
-        break;
-    case glfw::key_code::W:
-        camera.key_press(gl::camera::movement::backward, delta_time);
-        break;
-    case glfw::key_code::escape:
-        glfw::set_window_should_close(win);
-        break;
-    }
-}
-
-void cursor_enter_callback(glfw::window::pointer win, int entered)
-{
-    glfw::set_cursor_mode(win, entered ? glfw::window::cursor_mode::hidden :
-        glfw::window::cursor_mode::normal);
-    first_enter = entered;
-}
-
-void cursor_pos_callback(glfw::window::pointer win, double xpos, double ypos)
-{
-    if (first_enter)
-    {
-        latest_pos_x = xpos;
-        latest_pos_y = ypos;
-        first_enter = false;
-    }
-
-    float xoffset = xpos - latest_pos_x;
-    float yoffset = latest_pos_y - ypos; //y坐标由下到上
-
-    latest_pos_x = xpos;
-    latest_pos_y = ypos;
-
-    camera.mouse_move(xoffset, yoffset);
-}
-
-void scroll_callback(glfw::window::pointer win, double xoffset, double yoffset)
-{
-    camera.scroll(yoffset);
-}
-
-int __stdcall wWinMain(HINSTANCE hInstance, HINSTANCE, LPWSTR, int)
-{
-    auto freegl = make<glfw::glfw>(3,3);
-
-    auto freewin = make<glfw::window>(800, 600);
-    freewin.make_context_current();
-    freewin.set_frame_buffer_size_callback(frame_buffer_size_callback);
-    freewin.set_key_callback(key_callback);
-    freewin.set_cursor_enter_callback(cursor_enter_callback);
-    freewin.set_cursor_pos_callback(cursor_pos_callback);
-    freewin.set_scroll_callback(scroll_callback);
-   
-
-    freegl.load_loader();
-    freegl.swap_interval(1);
-
-    glm::vec3 sphere_vertices[60 * 60 * 4];
-    sphere(glm::vec3(0), 1.0f, 60, 60, sphere_vertices);
-    auto sphere_size_byte = sizeof(sphere_vertices);
-    auto sphere_size = (sizeof(sphere_vertices) / sizeof(sphere_vertices[0]));
-
-    auto multi_vao = make<gl::multi_vao<2>>();
-    auto multi_vbo = make<gl::multi_vbo<2>>();
-
-    //light
-    multi_vao.bind(multi_vao.first);
-    {
-        multi_vbo.bind(multi_vbo.first);
-        {
-            multi_vbo.from(sphere_vertices, sphere_size_byte);
-            multi_vbo.set(0, 3, gl::data_type::_float, false, 3 * sizeof(float), 0);
-        }
-        multi_vbo.unbind();
-    }
-    multi_vao.unbind();
-
-    //cube
-    multi_vao.bind(multi_vao.second);
-    {
-        multi_vbo.bind(multi_vbo.second);
-        {
-            multi_vbo.from(vertices, vertices_size_bytes);
-            multi_vbo.set(0, 3, gl::data_type::_float, false, 6 * sizeof(float), 0);
-            multi_vbo.set(1, 3, gl::data_type::_float, false, 6 * sizeof(float), 3 * sizeof(float));
-        }
-        multi_vbo.unbind();
-    }
-    multi_vao.unbind();
-    
-    auto light_program = gl::make_shader_program("light.vs"s, "light.fs"s);
-    
-    auto cube_program = gl::make_shader_program("box.vs"s,"box.fs"s);
-    cube_program.use();
-    //cube_program.set_vec3("light_color"s, glm::vec3{1.0f});
-    //cube_program.set_vec3("cube_color"s, glm::vec3{ 1.0f, 0.5f, 0.31f }); 
-    //cube_program.set_vec3("light_position"s, glm::vec3{ 1.2f, 1.0f, 2.0f });
-    cube_program.set_vec3("view_position"s, camera.get_position());
-	cube_program.set_vec3("material.ambient"s, glm::vec3{1.0f,0.5f,0.31f});
-	cube_program.set_vec3("material.diffuse"s, glm::vec3{ 1.0f,0.5f,0.31f });
-	cube_program.set_vec3("material.specular"s, glm::vec3{0.5f,0.5f,0.5f});
-	cube_program.set_float("material.shininess"s, 32.0f);
-
-	cube_program.set_vec3("light.position"s, glm::vec3{ 1.2f, 1.0f, 2.0f });
-	//cube_program.set_vec3("light.ambient"s, glm::vec3{ 0.2f,0.2f,0.2f });
-	//cube_program.set_vec3("light.diffuse"s, glm::vec3{ 0.5f,0.5f,0.5f });
-	cube_program.set_vec3("light.specular"s, glm::vec3{ 1.0f,1.0f,1.0f });
-    
-    gl::enable_depth_test();
-
-    while (!freewin.should_close())
-    {
-        float current_time = freegl.get_time();
-        delta_time = current_time - latest_time;
-        latest_time = current_time;
-
-        gl::clear_color(0.2f, 0.3f, 0.4f);
-        gl::clear(gl::bit_field::color_buffer_bit);
-        gl::clear(gl::bit_field::depth_buffer_bit);
-
-        //draw light
-        {
-            multi_vao.bind(multi_vao.first);
-            light_program.use();
-            
-            auto light_proj = glm::perspective(glm::radians(camera.get_zoom()), 800.0f / 600.0f, 0.1f, 100.0f);
-            auto light_view = camera.get_view();
-            auto light_model = glm::translate(glm::mat4{ 1.0f }, glm::vec3{ 1.2f, 1.0f, 2.0f });
-            light_model = glm::scale(light_model, glm::vec3{ 0.2f });
-
-            light_program.set_mat4("proj"s, light_proj);
-            light_program.set_mat4("view"s, light_view);
-            light_program.set_mat4("model"s, light_model);
-            
-            gl::draw_arrays(gl::draw_mode::triangle_fan, 0, sphere_size);
-        }
-        
-        //draw cube
-        {
-            multi_vao.bind(multi_vao.second);
-            cube_program.use();
-
-			// light properties
-			glm::vec3 lightColor;
-			lightColor.x = sin(glfwGetTime() * 2.0f);
-			lightColor.y = sin(glfwGetTime() * 0.7f);
-			lightColor.z = sin(glfwGetTime() * 1.3f);
-			glm::vec3 diffuseColor = lightColor   * glm::vec3(0.5f); // decrease the influence
-			glm::vec3 ambientColor = diffuseColor * glm::vec3(0.2f); // low influence
-
-			cube_program.set_vec3("light.ambient"s, ambientColor);
-			cube_program.set_vec3("light.diffuse"s, diffuseColor);
-
-            auto cube_proj = glm::perspective(glm::radians(camera.get_zoom()), 800.0f / 600.0f, 0.1f, 100.0f);
-            auto cube_view = camera.get_view();
-            auto cube_model = glm::rotate(glm::mat4{ 1.0f }, glm::radians(45.0f), glm::vec3{ 1.0f,0.0f,1.0f });
-
-            cube_program.set_mat4("proj"s, cube_proj);
-            cube_program.set_mat4("view"s, cube_view);
-            cube_program.set_mat4("model"s, cube_model);
-
-            gl::draw_arrays(gl::draw_mode::triangles, 0, vertices_size);
-        }
-
-        freegl.poll_events();
-        freewin.swap_buffers();
-    }
-    return 0;
+	return 0;
 }

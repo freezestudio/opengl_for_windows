@@ -1640,10 +1640,7 @@ namespace gl {
             int width;
             int height;
 
-            void from(std::string const& image_file = ""s,
-                texture_format _internal = texture_format::rgb,
-                texture_format format = texture_format::rgb,
-                bool flip = false)
+            void from(std::string const& image_file = ""s, bool flip = false)
             {
                 if (!image_file.empty())
                 {
@@ -1656,8 +1653,19 @@ namespace gl {
                     auto data = stbi_load(image_file.c_str(), &width, &height, &comp, 0);
                     if (data)
                     {
+						texture_format format;
+						if (comp == 1)format = texture_format::red;
+						else if (comp == 3)format = texture_format::rgb;
+						else if (comp == 4)format = texture_format::rgba;
+						else
+						{
+							//error
+							stbi_image_free(data);
+							return;
+						}
+
                         detail::texture_image_2d(0,
-                            _internal,
+                            format,
                             width, height,
                             format,
                             pixel_data_type::_unsigned_byte,
@@ -1980,10 +1988,7 @@ namespace gl {
         return sp;
     }
 
-    auto make_single_texture(std::string const& texture_file,
-        texture_format _internal = texture_format::rgb,
-        texture_format format = texture_format::rgb,
-        bool flip = false)
+    auto make_single_texture(std::string const& texture_file, bool flip = false)
     {
         auto single_texture2d = make<gl::single_texture2d>();
         single_texture2d.bind(0);
@@ -1993,7 +1998,7 @@ namespace gl {
         single_texture2d.set(gl::texture_feature::min_filter, GL_LINEAR);
         single_texture2d.set(gl::texture_feature::mag_filter, GL_LINEAR);
 
-        single_texture2d.from(texture_file.c_str(), _internal, format, flip);
+        single_texture2d.from(texture_file.c_str(), flip);
         single_texture2d.create_mipmap();
 
         return single_texture2d;
