@@ -225,6 +225,7 @@ int free()
 
 	auto diffuse_texture = gl::make_single_texture("container2.png"s);
 	auto specular_texture = gl::make_single_texture("container2_specular.png"s);
+	auto emission_texture = gl::make_single_texture("matrix.jpg"s);
 
 	auto light_program = gl::make_shader_program("light.vs"s, "light.fs"s);
 	auto cube_program = gl::make_shader_program("box.vs"s, "box.fs"s);
@@ -233,6 +234,7 @@ int free()
 	cube_program.set_vec3("view_position"s, camera.get_position());
 	cube_program.set_int("material.diffuse"s, 0);
 	cube_program.set_int("material.specular"s, 1);
+	cube_program.set_int("material.emission"s, 2);
 	cube_program.set_float("material.shininess"s, 32.0f);
 
 	cube_program.set_vec3("light.position"s, glm::vec3{ 1.2f, 1.0f, 2.0f });
@@ -278,6 +280,9 @@ int free()
 
 			specular_texture.active(0);
 			specular_texture.bind(0);
+
+			emission_texture.active(0);
+			emission_texture.bind(0);
 
 			cube_program.use();
 
