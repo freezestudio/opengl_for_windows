@@ -90,13 +90,13 @@
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>..\glfw\include;..\glfw\deps;..\glfw_wrapper;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\glfw\include;..\glfw\deps;..\glfw_wrapper;..\thirdparty;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>$(SolutionDir)$(Configuration);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>glfw.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(SolutionDir)$(Configuration);..\thirdparty;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>glfw.lib;assimp-vc141-mt.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -175,12 +175,18 @@
     <None Include="lamp_22.vs" />
     <None Include="lamp_24.fs" />
     <None Include="lamp_24.vs" />
+    <None Include="lamp_25.fs" />
+    <None Include="lamp_25.vs" />
     <None Include="light.fs" />
     <None Include="light.vs" />
     <None Include="lighting_maps_24.fs" />
     <None Include="lighting_maps_24.vs" />
+    <None Include="lighting_maps_25.fs" />
+    <None Include="lighting_maps_25.vs" />
     <None Include="materials_23.fs" />
     <None Include="materials_23.vs" />
+    <None Include="model_loading_32.fs" />
+    <None Include="model_loading_32.vs" />
     <None Include="shader_10.fs" />
     <None Include="shader_10.vs" />
     <None Include="shader_11.fs" />
@@ -208,6 +214,8 @@
     <ClInclude Include="camera_test.h" />
     <ClInclude Include="free.h" />
     <ClInclude Include="orig\camera.h" />
+    <ClInclude Include="orig\mesh.h" />
+    <ClInclude Include="orig\model.h" />
     <ClInclude Include="orig\shader_m.h" />
     <ClInclude Include="orig_1.h" />
     <ClInclude Include="orig_10.h" />
@@ -226,7 +234,9 @@
     <ClInclude Include="orig_22.h" />
     <ClInclude Include="orig_23.h" />
     <ClInclude Include="orig_24.h" />
+    <ClInclude Include="orig_25.h" />
     <ClInclude Include="orig_3.h" />
+    <ClInclude Include="orig_32.h" />
     <ClInclude Include="orig_4.h" />
     <ClInclude Include="orig_5.h" />
     <ClInclude Include="orig_6.h" />

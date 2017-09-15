@@ -1,6 +1,6 @@
 //
 //
-//#define USE_ORIG
+#define USE_ORIG
 
 //#define USE_ORIG_1
 //#define USE_ORIG_2
@@ -25,13 +25,23 @@
 //#define USE_ORIG_21
 //#define USE_ORIG_22
 //#define USE_ORIG_23
-#define USE_ORIG_24
+//#define USE_ORIG_24
 //#define USE_ORIG_25
 //#define USE_ORIG_26
 //#define USE_ORIG_27
 //#define USE_ORIG_28
 //#define USE_ORIG_29
 //#define USE_ORIG_30
+//#define USE_ORIG_31
+#define USE_ORIG_32
+//#define USE_ORIG_33
+//#define USE_ORIG_34
+//#define USE_ORIG_35
+//#define USE_ORIG_36
+//#define USE_ORIG_37
+//#define USE_ORIG_38
+//#define USE_ORIG_39
+//#define USE_ORIG_40
 
 #ifdef USE_ORIG
 #if defined (USE_ORIG_1)
@@ -94,6 +104,26 @@
 #include "orig_29.h"
 #elif defined (USE_ORIG_30)
 #include "orig_30.h"
+#elif defined (USE_ORIG_31)
+#include "orig_31.h"
+#elif defined (USE_ORIG_32)
+#include "orig_32.h"
+#elif defined (USE_ORIG_33)
+#include "orig_33.h"
+#elif defined (USE_ORIG_34)
+#include "orig_34.h"
+#elif defined (USE_ORIG_35)
+#include "orig_35.h"
+#elif defined (USE_ORIG_36)
+#include "orig_36.h"
+#elif defined (USE_ORIG_37)
+#include "orig_37.h"
+#elif defined (USE_ORIG_38)
+#include "orig_38.h"
+#elif defined (USE_ORIG_39)
+#include "orig_39.h"
+#elif defined (USE_ORIG_40)
+#include "orig_40.h"
 #endif
 #else
 #include "free.h"
@@ -162,6 +192,26 @@ int main()
 	orig_29();
 #elif defined (USE_ORIG_30)
 	orig_30();
+#elif defined (USE_ORIG_31)
+	orig_31();
+#elif defined (USE_ORIG_32)
+	orig_32();
+#elif defined (USE_ORIG_33)
+	orig_33();
+#elif defined (USE_ORIG_34)
+	orig_34();
+#elif defined (USE_ORIG_35)
+	orig_35();
+#elif defined (USE_ORIG_36)
+	orig_36();
+#elif defined (USE_ORIG_37)
+	orig_37();
+#elif defined (USE_ORIG_38)
+	orig_38();
+#elif defined (USE_ORIG_39)
+	orig_39();
+#elif defined (USE_ORIG_40)
+	orig_40();
 #endif	
 #else
 	free();

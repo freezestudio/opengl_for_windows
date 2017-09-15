@@ -164,6 +164,24 @@
     <None Include="lamp_24.fs">
       <Filter>资源文件</Filter>
     </None>
+    <None Include="lamp_25.fs">
+      <Filter>资源文件</Filter>
+    </None>
+    <None Include="lamp_25.vs">
+      <Filter>资源文件</Filter>
+    </None>
+    <None Include="lighting_maps_25.fs">
+      <Filter>资源文件</Filter>
+    </None>
+    <None Include="lighting_maps_25.vs">
+      <Filter>资源文件</Filter>
+    </None>
+    <None Include="model_loading_32.fs">
+      <Filter>资源文件</Filter>
+    </None>
+    <None Include="model_loading_32.vs">
+      <Filter>资源文件</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="camera_test.h">
@@ -249,6 +267,18 @@
     </ClInclude>
     <ClInclude Include="orig_24.h">
       <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="orig_25.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="orig_32.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="orig\mesh.h">
+      <Filter>头文件\orig</Filter>
+    </ClInclude>
+    <ClInclude Include="orig\model.h">
+      <Filter>头文件\orig</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
