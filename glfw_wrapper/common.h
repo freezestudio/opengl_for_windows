@@ -1,3 +1,11 @@
+//common.h
+#ifndef FREEZE_COMMON_H
+#define FREEZE_COMMON_H
+
+#if defined(_WIN32) || defined(WIN32) || defined(__WIN32__)
+#if defined(_MSC_VER)
+
+
 #pragma once
 
 //#include <Windows.h>
@@ -445,7 +453,7 @@ namespace glfw {
     class monitor
     {
     public:
-        using pointer = GLFWmonitor*;
+        using pointer = GLFWmonitor * ;
         using const_pointer = GLFWmonitor const*;
 
         monitor()
@@ -466,7 +474,7 @@ namespace glfw {
         }
 
     private:
-        GLFWmonitor* monitorp_;
+        GLFWmonitor * monitorp_;
     };
 
     class cursor
@@ -478,7 +486,7 @@ namespace glfw {
     class window
     {
     public:
-        using pointer = GLFWwindow*;
+        using pointer = GLFWwindow * ;
         using const_pointer = GLFWwindow const*;
 
         enum class cursor_mode
@@ -587,39 +595,46 @@ namespace glfw {
         template<typename KeyHandler>
         void set_key_callback(KeyHandler&& handler)
         {
-            glfwSetKeyCallback(windowp_, std::forward<decltype(handler)>(handler));
+            glfwSetKeyCallback(windowp_, std::forward<KeyHandler>(handler));
         }
 
         //void handler(GLFWwindow* window,int width,int height)
         template<typename FramebufferSizeHandler>
         void set_frame_buffer_size_callback(FramebufferSizeHandler&& handler)
         {
-            glfwSetFramebufferSizeCallback(windowp_, std::forward<decltype(handler)>(handler));
+            glfwSetFramebufferSizeCallback(windowp_, std::forward<FramebufferSizeHandler>(handler));
         }
 
         //void handler(GLFWwindow* window,int entered)
         template<typename CursorEnterHandler>
         void set_cursor_enter_callback(CursorEnterHandler&& handler)
         {
-            glfwSetCursorEnterCallback(windowp_, std::forward<decltype(handler)>(handler));
+            glfwSetCursorEnterCallback(windowp_, std::forward<CursorEnterHandler>(handler));
         }
 
         //void handler(GLFWwindow* window,double xpos,double ypos)
         template<typename CursorPosHandler>
         void set_cursor_pos_callback(CursorPosHandler&& handler)
         {
-            glfwSetCursorPosCallback(windowp_, std::forward<decltype(handler)>(handler));
+            glfwSetCursorPosCallback(windowp_, std::forward<CursorPosHandler>(handler));
         }
 
         //void handler(GLFWwindow* window,double xoffset,double yoffset)
         template<typename ScrollHandler>
         void set_scroll_callback(ScrollHandler&& handler)
         {
-            glfwSetScrollCallback(windowp_, std::forward<decltype(handler)>(handler));
+            glfwSetScrollCallback(windowp_, std::forward<ScrollHandler>(handler));
+        }
+
+        //void handler(GLFWwindow* window,int button,int action,int mods)
+        template<typename MouseButtonHandler>
+        void set_mouse_button_callback(MouseButtonHandler&& handler)
+        {
+            glfwSetMouseButtonCallback(windowp_, std::forward<MouseButtonHandler>(handler));
         }
 
     private:
-        GLFWwindow* windowp_;
+        GLFWwindow * windowp_;
     };
 
 }
@@ -710,19 +725,19 @@ namespace gl {
     {
         //Buffer ---------------- Binding Target --------------------- Purpose -------------
         array_buffer = GL_ARRAY_BUFFER,                           //Vertex attributes
-        //atomic_counter_buffer = GL_ATOMIC_COUNTER_BUFFER,       //Atomic counter storage
-        copy_read_buffer = GL_COPY_READ_BUFFER,                   //Buffer copy source
-        copy_write_buffer = GL_COPY_WRITE_BUFFER,                 //Buffer copy destination
-        //dispatch_indirect_buffer = GL_DISPATCH_INDIRECT_BUFFER, //Indirect compute dispatch commands
-        //draw_indirect_buffer = GL_DRAW_INDIRECT_BUFFER,         //Indirect command arguments
-        element_array_buffer = GL_ELEMENT_ARRAY_BUFFER,           //Vertex array indices
-        pixel_pack_buffer = GL_PIXEL_PACK_BUFFER,                 //Pixel read target
-        pixel_unpack_buffer = GL_PIXEL_UNPACK_BUFFER,             //Texture data source
-        //query_buffer = GL_QUERY_BUFFER,                         //Query result buffer
-        //shader_storage_buffer = GL_SHADER_STORAGE_BUFFER,       //Read - write storage for shaders
-        texture_buffer = GL_TEXTURE_BUFFER,                       //Texture data buffer
-        transform_feedback_buffer = GL_TRANSFORM_FEEDBACK_BUFFER, //Transform feedback buffer
-        uniform_buffer = GL_UNIFORM_BUFFER,                       //Uniform block storage
+                                                                  //atomic_counter_buffer = GL_ATOMIC_COUNTER_BUFFER,       //Atomic counter storage
+                                                                  copy_read_buffer = GL_COPY_READ_BUFFER,                   //Buffer copy source
+                                                                  copy_write_buffer = GL_COPY_WRITE_BUFFER,                 //Buffer copy destination
+                                                                                                                            //dispatch_indirect_buffer = GL_DISPATCH_INDIRECT_BUFFER, //Indirect compute dispatch commands
+                                                                                                                            //draw_indirect_buffer = GL_DRAW_INDIRECT_BUFFER,         //Indirect command arguments
+                                                                                                                            element_array_buffer = GL_ELEMENT_ARRAY_BUFFER,           //Vertex array indices
+                                                                                                                            pixel_pack_buffer = GL_PIXEL_PACK_BUFFER,                 //Pixel read target
+                                                                                                                            pixel_unpack_buffer = GL_PIXEL_UNPACK_BUFFER,             //Texture data source
+                                                                                                                                                                                      //query_buffer = GL_QUERY_BUFFER,                         //Query result buffer
+                                                                                                                                                                                      //shader_storage_buffer = GL_SHADER_STORAGE_BUFFER,       //Read - write storage for shaders
+                                                                                                                                                                                      texture_buffer = GL_TEXTURE_BUFFER,                       //Texture data buffer
+                                                                                                                                                                                      transform_feedback_buffer = GL_TRANSFORM_FEEDBACK_BUFFER, //Transform feedback buffer
+                                                                                                                                                                                      uniform_buffer = GL_UNIFORM_BUFFER,                       //Uniform block storage
     };
 
     enum class buffer_usage_type
@@ -752,10 +767,10 @@ namespace gl {
         _half_float = GL_HALF_FLOAT,
         _float = GL_FLOAT,
         _double = GL_DOUBLE, //glVertexAttribLPointer
-        //_fixed = GL_FIXED, 
-        //_int_2_10_10_10_rev =GL_INT_2_10_10_10_REV,
-        _unsigned_int_2_10_10_10_rev = GL_UNSIGNED_INT_2_10_10_10_REV,
-        unsigned_int_10f_11f_11f_rev = GL_UNSIGNED_INT_10F_11F_11F_REV,
+                             //_fixed = GL_FIXED, 
+                             //_int_2_10_10_10_rev =GL_INT_2_10_10_10_REV,
+                             _unsigned_int_2_10_10_10_rev = GL_UNSIGNED_INT_2_10_10_10_REV,
+                             unsigned_int_10f_11f_11f_rev = GL_UNSIGNED_INT_10F_11F_11F_REV,
     };
 
     enum class enable_status
@@ -937,7 +952,7 @@ namespace gl
             glUniform1fv(loc, count, values);
         }
 
-        void uniform2(int loc, int v0,int v1)
+        void uniform2(int loc, int v0, int v1)
         {
             glUniform2i(loc, v0, v1);
         }
@@ -1287,12 +1302,12 @@ namespace gl {
         {
             std::string str;
 
-			auto glslpath = fs::path{ glslFile };
-			if (!fs::exists(glslpath))return str;
+            auto glslpath = fs::path{ glslFile };
+            if (!fs::exists(glslpath))return str;
 
             std::ostringstream oss;
             std::ifstream ifs{ glslFile };
-			if (!ifs.is_open())return str;
+            if (!ifs.is_open())return str;
 
             oss << ifs.rdbuf();
             str = oss.str();
@@ -1460,42 +1475,42 @@ namespace gl {
             auto loc = detail::get_uniform_location(program_id_, name.c_str());
             detail::uniform(loc, value ? 1 : 0);
         }
-        
+
         void set_int(const std::string &name, int value)
         {
             auto loc = detail::get_uniform_location(program_id_, name.c_str());
             detail::uniform(loc, value);
         }
-       
+
         void set_float(const std::string &name, float value)
         {
             auto loc = detail::get_uniform_location(program_id_, name.c_str());
             detail::uniform(loc, value);
         }
-        
-        void set_vec2(const std::string &name, const glm::vec2 &value) const
+
+        void set_vec2(const std::string &name, const glm::vec2 &value)
         {
             auto loc = detail::get_uniform_location(program_id_, name.c_str());
-            detail::uniform2(loc,1, glm::value_ptr(value));
+            detail::uniform2(loc, 1, glm::value_ptr(value));
         }
-        void set_vec2(const std::string &name, float x, float y) const
+        void set_vec2(const std::string &name, float x, float y)
         {
             auto loc = detail::get_uniform_location(program_id_, name.c_str());
-            detail::uniform2(loc, x,y);
+            detail::uniform2(loc, x, y);
         }
-        
-        void set_vec3(const std::string &name, const glm::vec3 &value) const
+
+        void set_vec3(const std::string &name, const glm::vec3 &value)
         {
             auto loc = detail::get_uniform_location(program_id_, name.c_str());
             detail::uniform3(loc, 1, glm::value_ptr(value));
         }
-        void set_vec3(const std::string &name, float x, float y, float z) const
+        void set_vec3(const std::string &name, float x, float y, float z)
         {
             auto loc = detail::get_uniform_location(program_id_, name.c_str());
-            detail::uniform3(loc, x,y,z);
+            detail::uniform3(loc, x, y, z);
         }
-        
-        void set_vec4(const std::string &name, const glm::vec4 &value) const
+
+        void set_vec4(const std::string &name, const glm::vec4 &value)
         {
             auto loc = detail::get_uniform_location(program_id_, name.c_str());
             detail::uniform4(loc, 1, glm::value_ptr(value));
@@ -1503,13 +1518,13 @@ namespace gl {
         void set_vec4(const std::string &name, float x, float y, float z, float w)
         {
             auto loc = detail::get_uniform_location(program_id_, name.c_str());
-            detail::uniform4(loc, x, y, z,w);
+            detail::uniform4(loc, x, y, z, w);
         }
-        
+
         void set_mat4(const std::string &name, const glm::mat4 &mat)
         {
             auto loc = detail::get_uniform_location(program_id_, name.c_str());
-            detail::uniform_matrix(loc, 1,false, glm::value_ptr(mat));
+            detail::uniform_matrix(loc, 1, false, glm::value_ptr(mat));
         }
     private:
         unsigned program_id_;
@@ -1541,7 +1556,7 @@ namespace gl {
 
             std::array<value_type, value> buffer{};
 
-            value_type get(value_type index)
+            constexpr value_type get(value_type index = 0)
             {
                 return buffer.at(index);
             }
@@ -1555,7 +1570,7 @@ namespace gl {
 
             std::array<value_type, value> texture{};
 
-            value_type get(value_type index)
+            constexpr value_type get(value_type index = 0)
             {
                 return texture.at(index);
             }
@@ -1653,16 +1668,16 @@ namespace gl {
                     auto data = stbi_load(image_file.c_str(), &width, &height, &comp, 0);
                     if (data)
                     {
-						texture_format format;
-						if (comp == 1)format = texture_format::red;
-						else if (comp == 3)format = texture_format::rgb;
-						else if (comp == 4)format = texture_format::rgba;
-						else
-						{
-							//error
-							stbi_image_free(data);
-							return;
-						}
+                        texture_format format;
+                        if (comp == 1)format = texture_format::red;
+                        else if (comp == 3)format = texture_format::rgb;
+                        else if (comp == 4)format = texture_format::rgba;
+                        else
+                        {
+                            //error
+                            stbi_image_free(data);
+                            return;
+                        }
 
                         detail::texture_image_2d(0,
                             format,
@@ -1686,18 +1701,18 @@ namespace gl {
         {
             vao_t()
             {
-                detail::create_vertex_arrays(buffer.data(), N);
+                detail::create_vertex_arrays(this->buffer.data(), N);
 
             }
 
             ~vao_t()
             {
-                detail::delete_vertex_arrays(static_cast<unsigned*>(buffer.data()), N);
+                detail::delete_vertex_arrays(static_cast<unsigned*>(this->buffer.data()), N);
             }
 
-            void bind(typename BufferT<N>::value_type index)
+            void bind(typename BufferT<N>::value_type index = 0)
             {
-                detail::bind_vertex_array(get(index));
+                detail::bind_vertex_array(this->get(index));
             }
 
             void unbind()
@@ -1711,17 +1726,17 @@ namespace gl {
         {
             vbo_t()
             {
-                detail::create_buffers(buffer.data(), N);
+                detail::create_buffers(this->buffer.data(), N);
             }
 
             ~vbo_t()
             {
-                detail::delete_buffers(buffer.data(), N);
+                detail::delete_buffers(this->buffer.data(), N);
             }
 
-            void bind(typename BufferT<N>::value_type index)
+            void bind(typename BufferT<N>::value_type index = 0)
             {
-                detail::bind_buffer(buffer_type::array_buffer, get(index));
+                detail::bind_buffer(buffer_type::array_buffer, this->get(index));
             }
 
             void unbind()
@@ -1735,17 +1750,17 @@ namespace gl {
         {
             ebo_t()
             {
-                detail::create_buffers(buffer.data(), N);
+                detail::create_buffers(this->buffer.data(), N);
             }
 
             ~ebo_t()
             {
-                detail::delete_buffers(buffer.data(), N);
+                detail::delete_buffers(this->buffer.data(), N);
             }
 
-            void bind(typename BufferT<N>::value_type index)
+            void bind(typename BufferT<N>::value_type index = 0)
             {
-                detail::bind_buffer(buffer_type::element_array_buffer, get(index));
+                detail::bind_buffer(buffer_type::element_array_buffer, this->get(index));
             }
         };
 
@@ -1754,17 +1769,17 @@ namespace gl {
         {
             texture_2d_t()
             {
-                detail::create_textures(texture.data(), N);
+                detail::create_textures(this->texture.data(), N);
             }
 
-            void bind(typename texture_t<N>::value_type index)
+            void bind(typename texture_t<N>::value_type index = 0)
             {
-                detail::bind_texture(texture_type::_2d, get(index));
+                detail::bind_texture(texture_type::_2d, this->get(index));
             }
 
-            void active(typename texture_t<N>::value_type index)
+            void active(typename texture_t<N>::value_type index = 0)
             {
-                auto actived = get(index);
+                auto actived = this->get(index);
                 if (actived > 0)
                 {
                     detail::texture_active(GL_TEXTURE0 + actived - 1);
@@ -1820,6 +1835,16 @@ namespace gl {
         {
             auto view = glm::lookAt(position_, position_ + front_, up_);
             return view;
+        }
+
+        glm::mat4 get_look() const
+        {
+            return get_view();
+        }
+
+        glm::mat4 lookat() const
+        {
+            return get_view();
         }
 
         float get_zoom() const
@@ -2004,3 +2029,110 @@ namespace gl {
         return single_texture2d;
     }
 }
+
+
+#endif //defined(_MSC_VER
+
+#else //defined(_WIN32) || defined(WIN32) || defined(__WIN32__)
+
+#if define(ANDROID) || define(__ANDROID__)
+
+#if __ANDROID_API__ >= 24
+
+/**
+* stl
+*/
+
+#include <string>
+#include <vector>
+#include <map>
+#include <memory>
+#include <sstream>
+#include <fstream>
+#include <cstdlib>
+#include <type_traits>
+#include <algorithm>
+
+/**
+*  ndk
+*/
+#include <android/log.h>
+#include <android/asset_manager_jni.h>
+
+/**
+* opengl es
+*/
+#include <egl/egl.h>
+#include <gles2/gl2.h>
+#include <gles2/gl2ext.h>
+#include <gles3/gl32.h>
+#include <gles3/gl3ext.h>
+
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
+
+/**
+* jni
+*/
+#include <jni.h>
+
+//外部声明
+////////////////////////////////////////////////////////////////////////////////////////////////////
+extern AAssetManager* g_asset_managerp;                                            //内部资产管理器
+                                                                                   ////////////////////////////////////////////////////////////////////////////////////////////////////
+
+#define CREATE_FUNCTION(name) METHOD_NAME(name)
+#define internal_args JNIEnv* pEnv,jobject obj
+
+#define METHOD_NAME(name)                                METHOD_CLASS_NAME(CLASS,name)
+#define METHOD_CLASS_NAME(cls,name)                      METHOD_PACKAGE_CLASS_NAME(PACKAGE,cls,name)
+#define METHOD_PACKAGE_CLASS_NAME(pkg,cls,name)          METHOD_PACKAGE_CLASS_NAME_INTERNAL(pkg,cls,name)
+#define METHOD_PACKAGE_CLASS_NAME_INTERNAL(pkg,cls,name) Java_##pkg##_##cls##_##name
+
+#define DEBUG 1
+
+#define LOG_TAG "Native"
+#define LOGI(...) ((void)__android_log_print(ANDROID_LOG_INFO, LOG_TAG, __VA_ARGS__))
+#define LOGW(...) ((void)__android_log_print(ANDROID_LOG_WARN, LOG_TAG, __VA_ARGS__))
+#define LOGE(...) ((void)__android_log_print(ANDROID_LOG_ERROR, LOG_TAG, __VA_ARGS__))
+#if DEBUG
+#define LOGV(...) ((void)__android_log_print(ANDROID_LOG_VERBOSE, LOG_TAG, __VA_ARGS__))
+#else
+#define LOGV(...)
+#endif
+
+
+                                                                                   /**
+                                                                                   * freeze lib
+                                                                                   */
+
+                                                                                   //for load texture
+#include "stb_image.h"
+
+                                                                                   //for load 3d model
+#include <assimp/Importer.hpp>
+#include <assimp/scene.h>
+#include <assimp/postprocess.h>
+
+#include "core.h"
+#include "any_buffer.h"
+#include "shader_program.h"
+#include "texture.h"
+#include "vertex.h"
+#include "mesh.h"
+#include "camera.h"
+#include "color.h"
+#include "depth.h"
+#include "stencil.h"
+#include "light.h"
+#include "material.h"
+
+#endif //__ANDROID_API__ >= 24
+
+#endif //define(ANDROID) || define(__ANDROID__)
+
+#endif //defined(_WIN32) || defined(WIN32) || defined(__WIN32__)
+
+//////////////////////////////////////////////////////////////////////////
+#endif

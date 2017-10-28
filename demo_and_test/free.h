@@ -1,6 +1,7 @@
 #pragma once
 
-#include <free_gl.h>
+#include <common.h>
+#include <gl/GLU.h>
 
 // 设置顶点数据 (缓存) 并配置顶点属性
 constexpr float vertices[] = {
@@ -49,7 +50,7 @@ constexpr float vertices[] = {
 };
 
 constexpr auto vertices_size_bytes = sizeof(vertices);
-constexpr auto vertices_size = vertices_size_bytes / (5 * sizeof(float));
+constexpr auto vertices_size = vertices_size_bytes / (8 * sizeof(float));
 
 //球心坐标为（x，y，z），球的半径为radius，M，N分别表示球体的横纵向被分成多少份  
 void sphere(glm::vec3 core, GLfloat radius, GLfloat M, GLfloat N, glm::vec3* vertices)
@@ -95,6 +96,64 @@ void sphere(glm::vec3 core, GLfloat radius, GLfloat M, GLfloat N, glm::vec3* ver
 			}
 		}
 	}
+}
+
+#define PI 3.14159265358979323846
+
+void makeSphereVertices(float radius, int divide, float* vertices, float* texCoords)
+{
+    float altitude;//纬度  
+    float altitudeDelta;//下一层纬度  
+    float azimuth;//经度  
+    float ex;//点坐标x  
+    float ey;//点坐标y  
+    float ez;//点坐标z  
+             //将纬度等分成divide份，这样就能计算出每一等份的纬度值  
+    for (int i = 0; i <= divide; i++) {
+        //获取当前等份的纬度值  
+        altitude = (float)(PI / 2.0 - i * (PI) / divide);
+        //获取下一等份的纬度值  
+        altitudeDelta = (float)(PI / 2.0 - (i + 1) * (PI) / divide);
+
+        //当前纬度和下一纬度的点坐标  
+        //float* vertices = new float[divide * 6];
+
+        //创建纹理坐标点数组  
+        //float* texCoords = new float[divide * 4];
+
+        //将经度等分成divide份，这样就能得到当前纬度值和下一纬度值的每一份经度值  
+        for (int j = 0; j <= divide; j++) {
+            //计算经度值  
+            azimuth = (float)(j * (PI * 2) / divide);
+
+            ex = (float)(std::cos(altitude) * std::cos(azimuth));
+            ey = (float)std::sin(altitude);
+            ez = (float)-(std::cos(altitude) * std::sin(azimuth));
+
+            //计算azimuth经度下纬度为altitude的纹理点坐标  
+            texCoords[4 * j + 0] = j / (float)divide;
+            texCoords[4 * j + 1] = i / (float)divide;
+
+            //此经度值下的当前纬度的点坐标  
+            vertices[6 * j + 0] = radius * ex;
+            vertices[6 * j + 1] = radius * ey;
+            vertices[6 * j + 2] = radius * ez;
+
+            ex = (float)(std::cos(altitudeDelta) * std::cos(azimuth));
+            ey = (float)std::sin(altitudeDelta);
+            ez = (float)-(std::cos(altitudeDelta) * std::sin(azimuth));
+
+            //计算azimuth经度下纬度为altitudeDelta的纹理点坐标  
+            texCoords[4 * j + 2] = j / (float)divide;
+            texCoords[4 * j + 3] = (i + 1) / (float)divide;
+
+            //此经度值下的下一纬度的点坐标  
+            vertices[6 * j + 3] = radius * ex;
+            vertices[6 * j + 4] = radius * ey;
+            vertices[6 * j + 5] = radius * ez;
+
+        }
+    }
 }
 
 //全局变量
@@ -173,6 +232,27 @@ void scroll_callback(glfw::window::pointer win, double xoffset, double yoffset)
 	camera.scroll(yoffset);
 }
 
+static glm::vec3 un_project(float x, float y, float z)
+{
+    glm::vec4 viewport;
+    glGetIntegerv(GL_VIEWPORT, (int*)&viewport);
+    return glm::unProject(glm::vec3{ x,y,z }, camera.get_view(),
+        glm::perspective(glm::radians(camera.get_zoom()), 4.0f / 3.0f, 0.1f, 100.0f),
+        viewport);
+}
+
+void mouse_button_callback(glfw::window::pointer win, int button, int action, int mods)
+{
+    if (action != GLFW_PRESS)return;
+
+    float x, y;
+    glfwGetCursorPos(win, (double*)&x, (double*)&y);
+
+    auto vA = un_project(x, y, 0.0f);
+    auto vB = un_project(x, y, 1.0f);
+
+}
+
 int free()
 {
 	auto freegl = make<glfw::glfw>(3, 3);
@@ -184,55 +264,39 @@ int free()
 	freewin.set_cursor_enter_callback(cursor_enter_callback);
 	freewin.set_cursor_pos_callback(cursor_pos_callback);
 	freewin.set_scroll_callback(scroll_callback);
+    freewin.set_mouse_button_callback(mouse_button_callback);
 
 
 	freegl.load_loader();
 	freegl.swap_interval(1);
 
-	glm::vec3 sphere_vertices[60 * 60 * 4];
-	sphere(glm::vec3(0), 1.0f, 60, 60, sphere_vertices);
-	auto sphere_size_byte = sizeof(sphere_vertices);
-	auto sphere_size = (sizeof(sphere_vertices) / sizeof(sphere_vertices[0]));
-
-	auto multi_vao = make<gl::multi_vao<2>>();
-	auto multi_vbo = make<gl::multi_vbo<2>>();
-
-	//light
-	multi_vao.bind(multi_vao.first);
-	{
-		multi_vbo.bind(multi_vbo.first);
-		{
-			multi_vbo.from(sphere_vertices, sphere_size_byte);
-			multi_vbo.set(0, 3, gl::data_type::_float, false, 3 * sizeof(float), 0);
-		}
-		multi_vbo.unbind();
-	}
-	multi_vao.unbind();
+	auto single_vao = make<gl::single_vao>();
+	auto single_vbo = make<gl::single_vbo>();
+    	
 
 	//cube
-	multi_vao.bind(multi_vao.second);
+    single_vao.bind();
 	{
-		multi_vbo.bind(multi_vbo.second);
+        single_vbo.bind();
 		{
-			multi_vbo.from(vertices, vertices_size_bytes);
-			multi_vbo.set(0, 3, gl::data_type::_float, false, 8 * sizeof(float), 0);
-			multi_vbo.set(1, 3, gl::data_type::_float, false, 8 * sizeof(float), 3 * sizeof(float));
-			multi_vbo.set(2, 2, gl::data_type::_float, false, 8 * sizeof(float), 6 * sizeof(float));
+			single_vbo.from(vertices, vertices_size_bytes);
+			single_vbo.set(0, 3, gl::data_type::_float, false, 8 * sizeof(float), 0);
+			single_vbo.set(1, 3, gl::data_type::_float, false, 8 * sizeof(float), 3 * sizeof(float));
+			single_vbo.set(2, 2, gl::data_type::_float, false, 8 * sizeof(float), 6 * sizeof(float));
 		}
-		multi_vbo.unbind();
+        single_vbo.unbind();
 	}
-	multi_vao.unbind();
+    single_vao.unbind();
 
 	auto diffuse_texture = gl::make_single_texture("container2.png"s);
 	auto specular_texture = gl::make_single_texture("container2_specular.png"s);
 	auto emission_texture = gl::make_single_texture("matrix.jpg"s);
 
-	auto light_program = gl::make_shader_program("light.vs"s, "light.fs"s);
-	auto cube_program = gl::make_shader_program("box.vs"s, "box.fs"s);
+    auto cube_program = gl::make_shader_program("box.vs"s, "box.fs"s);
 
 	cube_program.use();
 	cube_program.set_vec3("view_position"s, camera.get_position());
-	cube_program.set_int("material.diffuse"s, 0);
+	cube_program.set_int("material.diffuse"s, 0); //纹理的位置值 (Texture Unit)
 	cube_program.set_int("material.specular"s, 1);
 	cube_program.set_int("material.emission"s, 2);
 	cube_program.set_float("material.shininess"s, 32.0f);
@@ -243,7 +307,7 @@ int free()
 	cube_program.set_vec3("light.specular"s, glm::vec3{ 1.0f});
 
 	gl::enable_depth_test();
-
+    
 	while (!freewin.should_close())
 	{
 		float current_time = freegl.get_time();
@@ -254,35 +318,18 @@ int free()
 		gl::clear(gl::bit_field::color_buffer_bit);
 		gl::clear(gl::bit_field::depth_buffer_bit);
 
-		//draw light
-		{
-			multi_vao.bind(multi_vao.first);
-			light_program.use();
-
-			auto light_proj = glm::perspective(glm::radians(camera.get_zoom()), 800.0f / 600.0f, 0.1f, 100.0f);
-			auto light_view = camera.get_view();
-			auto light_model = glm::translate(glm::mat4{ 1.0f }, glm::vec3{ 1.2f, 1.0f, 2.0f });
-			light_model = glm::scale(light_model, glm::vec3{ 0.2f });
-
-			light_program.set_mat4("proj"s, light_proj);
-			light_program.set_mat4("view"s, light_view);
-			light_program.set_mat4("model"s, light_model);
-
-			gl::draw_arrays(gl::draw_mode::triangle_fan, 0, sphere_size);
-		}
-
 		//draw cube
 		{
-			multi_vao.bind(multi_vao.second);
+            single_vao.bind();
 
-			diffuse_texture.active(0);
-			diffuse_texture.bind(0);
+			diffuse_texture.active();
+			diffuse_texture.bind();
 
-			specular_texture.active(0);
-			specular_texture.bind(0);
+			specular_texture.active();
+			specular_texture.bind();
 
-			emission_texture.active(0);
-			emission_texture.bind(0);
+			emission_texture.active();
+			emission_texture.bind();
 
 			cube_program.use();
 
@@ -295,10 +342,13 @@ int free()
 			cube_program.set_mat4("model"s, cube_model);
 
 			gl::draw_arrays(gl::draw_mode::triangles, 0, vertices_size);
+
+            single_vao.unbind();
 		}
 
 		freegl.poll_events();
 		freewin.swap_buffers();
 	}
+
 	return 0;
 }
