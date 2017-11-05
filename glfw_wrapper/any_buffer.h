@@ -188,6 +188,16 @@ namespace freeze {
         void attachement_render(GLuint renderbuffer){
             glFramebufferRenderbuffer(FrameBuffer,GL_DEPTH_STENCIL_ATTACHMENT,GL_RENDERBUFFER,renderbuffer);
         }
+
+        void draw_buffer(GLenum buf)
+        {
+            glDrawBuffer(buf);
+        }
+
+        void read_buffer(GLenum mode)
+        {
+            glReadBuffer(mode);
+        }
     };
 }
 

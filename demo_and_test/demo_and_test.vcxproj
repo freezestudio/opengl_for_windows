@@ -163,8 +163,10 @@
     <ClInclude Include="renderer.h" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="resource\shaders\triangle.frag" />
-    <None Include="resource\shaders\triangle.vert" />
+    <None Include="resource\shaders\quad.frag" />
+    <None Include="resource\shaders\quad.vert" />
+    <None Include="resource\shaders\shadow.frag" />
+    <None Include="resource\shaders\shadow.vert" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

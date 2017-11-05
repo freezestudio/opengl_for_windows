@@ -11,58 +11,51 @@ renderer::renderer()
 
 void renderer::init()
 {
-    set_triangle();
-    set_texture();
-    set_shader();
+    freeze::depth::enable();
+
+    set_vertices();
+    set_textures();
+    set_shaders();
 }
-
-void renderer::set_triangle()
-{
-    GLfloat triangles[] = {
-        -1.0f,-1.0f, 0.0f,0.0f,
-         1.0f,-1.0f, 1.0f,0.0f,
-         0.0f, 1.0f, 0.5f, 0.5f,
-    };
-
-    triangle_vao.bind();
-    auto vbo = freeze::make_vertex_buffer();
-    vbo.bind();
-    vbo.copy_data(triangles, sizeof(triangles));
-    auto triangle_vertex = freeze::make_vertex();
-    triangle_vertex.set(0, 2, GL_FLOAT, 4 * sizeof(GLfloat), 0);
-    triangle_vertex.set(1, 2, GL_FLOAT, 4 * sizeof(GLfloat), 2 * sizeof(GLfloat));
-    vbo.unbind();
-    triangle_vao.unbind();
-}
-
-void renderer::set_shader()
-{
-    triangle_shader.compile_file("resource/shaders/triangle.vert"s, "resource/shaders/triangle.frag"s);
-    triangle_shader.use();
-    triangle_shader.set_int("TriangleTexture"s, 0);
-}
-
-void renderer::set_texture()
-{
-    triangle_texture.bind();
-    triangle_texture.set_image(freeze::load_image_from_file("resource/textures/wood.png"s));
-    triangle_texture.mipmap();
-    triangle_texture.set_min_filter(GL_LINEAR);
-    triangle_texture.set_mag_filter(GL_LINEAR);
-    triangle_texture.set_wrap_s(GL_REPEAT);
-    triangle_texture.set_wrap_t(GL_REPEAT);
-    triangle_texture.unbind();
-}
-
 
 void renderer::draw()
 {
-    triangle_shader.use();
-    triangle_texture.active();
-    triangle_texture.bind();
-    triangle_vao.bind();
-    glDrawArrays(GL_TRIANGLES, 0, 3);
-    triangle_vao.unbind();
+    draw_plane();
+    draw_cube();
+    draw_quad();
+}
+
+void renderer::process_event(glfw::window::pointer window,float deltaTime)
+{
+    auto key = glfw::get_key(window, GLFW_KEY_ESCAPE);
+    if (key == GLFW_PRESS)
+    {
+        glfw::set_window_should_close(window);
+    }
+
+    key = glfw::get_key(window, GLFW_KEY_W);
+    if (key == GLFW_PRESS)
+    {
+        scene_camera.ProcessKeyboard(freeze::camera_movement::FORWARD, deltaTime);
+    }
+
+    key = glfw::get_key(window, GLFW_KEY_S);
+    if (key == GLFW_PRESS)
+    {
+        scene_camera.ProcessKeyboard(freeze::camera_movement::BACKWARD, deltaTime);
+    }
+
+    key = glfw::get_key(window, GLFW_KEY_A);
+    if (key == GLFW_PRESS)
+    {
+        scene_camera.ProcessKeyboard(freeze::camera_movement::LEFT, deltaTime);
+    }
+
+    key = glfw::get_key(window, GLFW_KEY_D);
+    if (key == GLFW_PRESS)
+    {
+        scene_camera.ProcessKeyboard(freeze::camera_movement::RIGHT, deltaTime);
+    }
 }
 
 void renderer::framebuffer_size_callback(glfw::window::pointer window, int width, int height)
@@ -72,12 +65,206 @@ void renderer::framebuffer_size_callback(glfw::window::pointer window, int width
 
 void renderer::mouse_callback(glfw::window::pointer window, double xpos, double ypos)
 {
+    //if (firstMouse)
+    //{
+    //    last_x = xpos;
+    //    last_y = ypos;
+    //    firstMouse = false;
+    //}
+
 
 }
 
 void renderer::scroll_callback(glfw::window::pointer window, double xoffset, double yoffset)
 {
+    
+}
 
+void renderer::set_vertices()
+{
+    set_plane();
+    set_cube();
+    set_quad();
+}
+
+void renderer::set_shaders()
+{
+    shadow_shader.compile_file("resource/shaders/shadow.vert"s, "resource/shaders/shadow.frag"s);
+    
+    quad_shader.compile_file("resource/shaders/quad.vert"s, "resource/shaders/quad.frag"s);
+    quad_shader.use();
+    quad_shader.set_int("WoodTexture"s, 0);
+}
+
+void renderer::set_textures()
+{
+    shadow_texture.bind();
+    shadow_texture.set_image(GL_DEPTH_COMPONENT, 1024, 1024, GL_DEPTH_COMPONENT, GL_FLOAT, nullptr);
+    shadow_texture.set_min_filter(GL_NEAREST);
+    shadow_texture.set_mag_filter(GL_NEAREST);
+    shadow_texture.set_wrap_s(GL_REPEAT);
+    shadow_texture.set_wrap_t(GL_REPEAT);
+    shadow_texture.unbind();
+
+    shadow_fbo.bind();
+    shadow_fbo.attachement_depth(shadow_texture.ref());
+    shadow_fbo.draw_buffer(GL_NONE);
+    shadow_fbo.read_buffer(GL_NONE);
+    shadow_fbo.unbind();
+
+    quad_texture.bind();
+    quad_texture.set_image(freeze::load_image_from_file("resource/textures/wood.png"s));
+    quad_texture.mipmap();
+    quad_texture.set_min_filter(GL_LINEAR);
+    quad_texture.set_mag_filter(GL_LINEAR);
+    quad_texture.set_wrap_s(GL_REPEAT);
+    quad_texture.set_wrap_t(GL_REPEAT);
+    quad_texture.unbind();
+}
+
+void renderer::set_plane()
+{
+    GLfloat plane_vertices[] = {
+        // positions            // normals         // texcoords
+        25.0f, -0.5f,  25.0f,  0.0f, 1.0f, 0.0f,  25.0f,  0.0f,
+        -25.0f, -0.5f,  25.0f,  0.0f, 1.0f, 0.0f,   0.0f,  0.0f,
+        -25.0f, -0.5f, -25.0f,  0.0f, 1.0f, 0.0f,   0.0f, 25.0f,
+
+        25.0f, -0.5f,  25.0f,  0.0f, 1.0f, 0.0f,  25.0f,  0.0f,
+        -25.0f, -0.5f, -25.0f,  0.0f, 1.0f, 0.0f,   0.0f, 25.0f,
+        25.0f, -0.5f, -25.0f,  0.0f, 1.0f, 0.0f,  25.0f, 10.0f
+    };
+
+    plane_vao.bind();
+    auto vbo = freeze::make_vertex_buffer();
+    vbo.bind();
+    vbo.copy_data(plane_vertices, sizeof(plane_vertices));
+    auto plane_vertex = freeze::make_vertex();
+    plane_vertex.set(0, 3, GL_FLOAT, 8 * sizeof(GLfloat), 0);
+    plane_vertex.set(1, 3, GL_FLOAT, 8 * sizeof(GLfloat), 3 * sizeof(GLfloat));
+    plane_vertex.set(2, 2, GL_FLOAT, 8 * sizeof(GLfloat), 6 * sizeof(GLfloat));
+    vbo.unbind();
+    plane_vao.unbind();
+}
+
+void renderer::set_cube()
+{
+    float cube_vertices[] = {
+        // back face
+        -1.0f, -1.0f, -1.0f,  0.0f,  0.0f, -1.0f, 0.0f, 0.0f, // bottom-left
+        1.0f,  1.0f, -1.0f,  0.0f,  0.0f, -1.0f, 1.0f, 1.0f, // top-right
+        1.0f, -1.0f, -1.0f,  0.0f,  0.0f, -1.0f, 1.0f, 0.0f, // bottom-right         
+        1.0f,  1.0f, -1.0f,  0.0f,  0.0f, -1.0f, 1.0f, 1.0f, // top-right
+        -1.0f, -1.0f, -1.0f,  0.0f,  0.0f, -1.0f, 0.0f, 0.0f, // bottom-left
+        -1.0f,  1.0f, -1.0f,  0.0f,  0.0f, -1.0f, 0.0f, 1.0f, // top-left
+        // front face
+        -1.0f, -1.0f,  1.0f,  0.0f,  0.0f,  1.0f, 0.0f, 0.0f, // bottom-left
+        1.0f, -1.0f,  1.0f,  0.0f,  0.0f,  1.0f, 1.0f, 0.0f, // bottom-right
+        1.0f,  1.0f,  1.0f,  0.0f,  0.0f,  1.0f, 1.0f, 1.0f, // top-right
+        1.0f,  1.0f,  1.0f,  0.0f,  0.0f,  1.0f, 1.0f, 1.0f, // top-right
+        -1.0f,  1.0f,  1.0f,  0.0f,  0.0f,  1.0f, 0.0f, 1.0f, // top-left
+        -1.0f, -1.0f,  1.0f,  0.0f,  0.0f,  1.0f, 0.0f, 0.0f, // bottom-left
+        // left face
+        -1.0f,  1.0f,  1.0f, -1.0f,  0.0f,  0.0f, 1.0f, 0.0f, // top-right
+        -1.0f,  1.0f, -1.0f, -1.0f,  0.0f,  0.0f, 1.0f, 1.0f, // top-left
+        -1.0f, -1.0f, -1.0f, -1.0f,  0.0f,  0.0f, 0.0f, 1.0f, // bottom-left
+        -1.0f, -1.0f, -1.0f, -1.0f,  0.0f,  0.0f, 0.0f, 1.0f, // bottom-left
+        -1.0f, -1.0f,  1.0f, -1.0f,  0.0f,  0.0f, 0.0f, 0.0f, // bottom-right
+        -1.0f,  1.0f,  1.0f, -1.0f,  0.0f,  0.0f, 1.0f, 0.0f, // top-right
+        // right face
+        1.0f,  1.0f,  1.0f,  1.0f,  0.0f,  0.0f, 1.0f, 0.0f, // top-left
+        1.0f, -1.0f, -1.0f,  1.0f,  0.0f,  0.0f, 0.0f, 1.0f, // bottom-right
+        1.0f,  1.0f, -1.0f,  1.0f,  0.0f,  0.0f, 1.0f, 1.0f, // top-right         
+        1.0f, -1.0f, -1.0f,  1.0f,  0.0f,  0.0f, 0.0f, 1.0f, // bottom-right
+        1.0f,  1.0f,  1.0f,  1.0f,  0.0f,  0.0f, 1.0f, 0.0f, // top-left
+        1.0f, -1.0f,  1.0f,  1.0f,  0.0f,  0.0f, 0.0f, 0.0f, // bottom-left     
+        // bottom face
+        -1.0f, -1.0f, -1.0f,  0.0f, -1.0f,  0.0f, 0.0f, 1.0f, // top-right
+        1.0f, -1.0f, -1.0f,  0.0f, -1.0f,  0.0f, 1.0f, 1.0f, // top-left
+        1.0f, -1.0f,  1.0f,  0.0f, -1.0f,  0.0f, 1.0f, 0.0f, // bottom-left
+        1.0f, -1.0f,  1.0f,  0.0f, -1.0f,  0.0f, 1.0f, 0.0f, // bottom-left
+        -1.0f, -1.0f,  1.0f,  0.0f, -1.0f,  0.0f, 0.0f, 0.0f, // bottom-right
+        -1.0f, -1.0f, -1.0f,  0.0f, -1.0f,  0.0f, 0.0f, 1.0f, // top-right
+        // top face
+        -1.0f,  1.0f, -1.0f,  0.0f,  1.0f,  0.0f, 0.0f, 1.0f, // top-left
+        1.0f,  1.0f , 1.0f,  0.0f,  1.0f,  0.0f, 1.0f, 0.0f, // bottom-right
+        1.0f,  1.0f, -1.0f,  0.0f,  1.0f,  0.0f, 1.0f, 1.0f, // top-right     
+        1.0f,  1.0f,  1.0f,  0.0f,  1.0f,  0.0f, 1.0f, 0.0f, // bottom-right
+        -1.0f,  1.0f, -1.0f,  0.0f,  1.0f,  0.0f, 0.0f, 1.0f, // top-left
+        -1.0f,  1.0f,  1.0f,  0.0f,  1.0f,  0.0f, 0.0f, 0.0f  // bottom-left        
+    };
+
+    cube_vao.bind();
+    auto vao = freeze::make_vertex_buffer();
+    vao.bind();
+    vao.copy_data(cube_vertices, sizeof(cube_vertices));
+    auto cube_vertex = freeze::make_vertex();
+    cube_vertex.set(0, 3, GL_FLOAT, 8 * sizeof(float), 0);
+    cube_vertex.set(1, 3, GL_FLOAT, 8 * sizeof(float), 3 * sizeof(float));
+    cube_vertex.set(2, 2, GL_FLOAT, 8 * sizeof(float), 6 * sizeof(float));
+    vao.unbind();
+    cube_vao.unbind();
+}
+
+void renderer::set_quad()
+{
+}
+
+void renderer::draw_plane()
+{
+    auto light_position = glm::vec3{ -2.0f,4.0f,-1.0f };
+    float near_plane = 1.0f;
+    float far_plane = 7.5f;
+    auto proj = glm::ortho(-10.0f, 10.0f, -10.0f, 10.0f, near_plane, far_plane);
+    auto view = glm::lookAt(light_position, glm::vec3{ 0.0f }, glm::vec3{ 0.0f,1.0f,0.0f });
+    shadow_shader.use();
+    shadow_shader.set_mat4("view", proj * view);
+
+    glViewport(0, 0, 1024, 1024);
+    shadow_fbo.bind();
+    freeze::depth::clear();
+    quad_texture.active();
+    quad_texture.bind();
+    auto model = glm::mat4{ 1.0f };
+    shadow_shader.set_mat4("model"s, model);
+    plane_vao.bind();
+    glDrawArrays(GL_TRIANGLES, 0, 6);
+    plane_vao.unbind();
+    shadow_fbo.unbind();
+
+}
+
+void renderer::draw_cube()
+{
+    shadow_fbo.bind();
+    auto model = glm::translate(glm::mat4{ 1.0f }, glm::vec3{ 0.0f,1.0f,0.0f });
+    model = glm::scale(model, glm::vec3{ 0.5f });
+    shadow_shader.use();
+    shadow_shader.set_mat4("model"s, model);
+    quad_texture.active();
+    quad_texture.bind();
+    cube_vao.bind();
+    glDrawArrays(GL_TRIANGLES, 0, 36);
+    cube_vao.unbind();
+    shadow_fbo.unbind();
+
+    cube_vao.bind();
+    glDrawArrays(GL_TRIANGLES, 0, 36);
+    cube_vao.unbind();
+}
+
+void renderer::draw_quad()
+{
+    glViewport(0, 0, 600, 400);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    quad_shader.use();
+    quad_shader.set_float("near_plane"s, 1.0f);
+    quad_shader.set_float("far_plane"s, 7.5f);
+    quad_texture.active();
+    quad_texture.bind();
+    quad_vao.bind();
+    glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+    quad_vao.unbind();
 }
 
 

@@ -40,10 +40,16 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="resource\shaders\triangle.vert">
+    <None Include="resource\shaders\shadow.vert">
       <Filter>资源文件\resource\shaders</Filter>
     </None>
-    <None Include="resource\shaders\triangle.frag">
+    <None Include="resource\shaders\shadow.frag">
+      <Filter>资源文件\resource\shaders</Filter>
+    </None>
+    <None Include="resource\shaders\quad.vert">
+      <Filter>资源文件\resource\shaders</Filter>
+    </None>
+    <None Include="resource\shaders\quad.frag">
       <Filter>资源文件\resource\shaders</Filter>
     </None>
   </ItemGroup>

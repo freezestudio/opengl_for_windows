@@ -22,8 +22,8 @@ int main()
         auto color = freeze::make_color(0.1f, 0.1f, 0.1f, 1.0f);
         color.clear();
         render->draw();
-        freegl.poll_events();
         window.swap_buffers();
+        freegl.poll_events();
     }
 
 	return 0;
