@@ -10,16 +10,19 @@ namespace freeze {
     struct void_program : make_object<void_program<void>,false>{
         GLuint create(){
             return glCreateProgram();
+            assert_error();
         }
 
         void destroy(GLuint program){
             glDeleteProgram(program);
+            assert_error();
         }
 
         template<GLenum Target,typename = void>
         struct void_shader : make_object<void_shader<Target,void>,false>{
             GLuint create(){
                 auto id = glCreateShader(Target);
+                assert_error();
                 if(id == 0){
                     //GL_NO_ERROR 0
                     //GL_INVALID_ENUM 0x0500
@@ -36,10 +39,12 @@ namespace freeze {
 
             void destroy(GLuint shader){
                 glDeleteShader(shader);
+                assert_error();
             }
             void source(std::string const& source) {
                 auto code = source.c_str();
                 glShaderSource(this->ref(), 1, &code, nullptr);
+                assert_error();
 
                 glCompileShader(this->ref());
                 GLint success;
@@ -225,7 +230,9 @@ namespace freeze {
     private:
         auto get_loc(std::string const& name)  const
         {
-            return glGetUniformLocation(this->ref(), name.c_str());
+            auto loc = glGetUniformLocation(this->ref(), name.c_str());
+            assert_error();
+            return loc;
         }
 
         std::string source_from_file(std::string const& file)

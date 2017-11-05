@@ -2,6 +2,7 @@
 
 in  vec2 TexCoords;
 out vec4 FragColor;
+
 uniform sampler2D WoodTexture;
 uniform float near_plane;
 uniform float far_plane;

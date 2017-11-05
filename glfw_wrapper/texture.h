@@ -12,6 +12,7 @@ namespace freeze {
         static void set(GLenum target, GLenum pname, GLfloat param)
         {
             glTexParameterf(target, pname, param);
+            assert_error();
         }
     };
 
@@ -21,6 +22,7 @@ namespace freeze {
         static void set(GLenum target, GLenum pname, GLint param)
         {
             glTexParameteri(target, pname, param);
+            assert_error();
         }
     };
 
@@ -43,37 +45,44 @@ namespace freeze {
         void create(GLuint* textures)
         {
             glGenTextures(1, textures);
+            assert_error();
         }
 
         void destroy(GLuint const* textures)
         {
             glDeleteTextures(1, textures);
+            assert_error();
         }
 
     public:
         void active(std::size_t index = 0)
         {
             glActiveTexture(GL_TEXTURE0 + index);
+            assert_error();
         }
 
         void bind()
         {
             glBindTexture(Target, this->ref());
+            assert_error();
         }
 
         void unbind(){
             glBindTexture(Target,0);
+            assert_error();
         }
 
         void mipmap()
         {
             glGenerateMipmap(Target);
+            assert_error();
         }
 
         //GL_TEXTURE_BORDER_COLOR or GL_TEXTURE_SWIZZLE_RGBA
         void set_parameter(GLenum pname, const GLfloat* params)
         {
             glTexParameterfv(Target, pname, params);
+            assert_error();
         }
 
         //T: GLfloat,GLint
@@ -227,6 +236,7 @@ namespace freeze
         {
             glTexImage2D(GL_TEXTURE_2D, 0, internalFormat,
                          width, height, 0, format, type, pixels);
+            assert_error();
         }
         //别忘了先绑定
         void set_image(std::vector<char> const& data){
@@ -270,6 +280,7 @@ namespace freeze
                        GLenum type, const void* pixels ){
             glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + index,0,internalFormat,
             width,height,0,format,type,pixels);
+            assert_error();
         }
 
         void set_image(std::vector<std::vector<char>> const& datas){

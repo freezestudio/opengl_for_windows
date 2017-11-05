@@ -11,10 +11,12 @@ namespace freeze {
     struct any_buffer : make_object<any_buffer<Target>> {
         void create(GLuint *buffers) {
             glGenBuffers(1, buffers);
+            assert_error();
         }
 
         void destroy(GLuint const *buffers) {
             glDeleteBuffers(1, buffers);
+            assert_error();
         }
 
         void bind() {
@@ -23,31 +25,29 @@ namespace freeze {
 
         void unbind() {
             glBindBuffer(Target, 0);
+            assert_error();
         }
 
         void copy_data(void const *data, GLsizeiptr size, GLenum usage = GL_STATIC_DRAW) {
             glBufferData(Target, size, data, usage);
-            auto err = glGetError();
-            if(err != GL_NO_ERROR){
-                LOGE("copy data to buffer error : %d",err);
-            }
+            assert_error();
         }
 
         void copy_subdata(void const *data, GLsizeiptr size, GLintptr offset) {
             glBufferSubData(Target, offset, size, data);
-            auto err = glGetError();
-            if(err != GL_NO_ERROR){
-                LOGE("copy sub data to buffer error : %d",err);
-            }
+            assert_error();
         }
 
         //直接赋值支持
         void *map_buffer(GLintptr offset, GLsizeiptr length, GLbitfield access) const {
-            return glMapBufferRange(Target, offset, length, access);
+            auto pbuffer = glMapBufferRange(Target, offset, length, access);
+            assert_error();
+            return pbuffer;
         }
 
         bool unmap_buffer() {
             auto unmap = glUnmapBuffer(Target);
+            assert_error();
             return unmap == GL_TRUE;
         }
     };
@@ -55,21 +55,25 @@ namespace freeze {
 
 namespace freeze {
     template<typename = void>
-    struct void_vertex_array_buffer : make_object<void_vertex_array_buffer<void>>{
-        void create(GLuint* buffers){
-            glGenVertexArrays(1,buffers);
+    struct void_vertex_array_buffer : make_object<void_vertex_array_buffer<void>> {
+        void create(GLuint* buffers) {
+            glGenVertexArrays(1, buffers);
+            assert_error();
         }
 
-        void destroy(GLuint const* buffers){
-            glDeleteVertexArrays(1,buffers);
+        void destroy(GLuint const* buffers) {
+            glDeleteVertexArrays(1, buffers);
+            assert_error();
         }
 
-        void bind(){
+        void bind() {
             glBindVertexArray(this->ref());
+            assert_error();
         }
 
-        void unbind(){
+        void unbind() {
             glBindVertexArray(0);
+            assert_error();
         }
     };
 }
@@ -79,42 +83,51 @@ namespace freeze {
 namespace freeze {
     template<typename = void>
     struct void_uniform_buffer : any_buffer<GL_UNIFORM_BUFFER> {
-        void block_binding(GLuint program,std::string const& name,GLuint index){
-            auto block_index = glGetUniformBlockIndex(program,name.c_str());
-            glUniformBlockBinding(program,block_index,index);
+        void block_binding(GLuint program, std::string const& name, GLuint index) {
+            auto block_index = glGetUniformBlockIndex(program, name.c_str());
+            assert_error();
+            glUniformBlockBinding(program, block_index, index);
+            assert_error();
         }
 
-        void bind_base(GLuint index){
-            glBindBufferBase(GL_UNIFORM_BUFFER,index,this->ref());
+        void bind_base(GLuint index) {
+            glBindBufferBase(GL_UNIFORM_BUFFER, index, this->ref());
+            assert_error();
         }
 
-        void bind_range(GLuint index,GLintptr offset,GLsizeiptr size){
-            glBindBufferRange(GL_UNIFORM_BUFFER,index,this->ref(),offset,size);
+        void bind_range(GLuint index, GLintptr offset, GLsizeiptr size) {
+            glBindBufferRange(GL_UNIFORM_BUFFER, index, this->ref(), offset, size);
+            assert_error();
         }
     };
 }
 
 namespace freeze {
     template<typename = void>
-    struct void_render_buffer : make_object<void_render_buffer<void>>{
-        void create(GLuint* buffers){
-            glGenRenderbuffers(1,buffers);
+    struct void_render_buffer : make_object<void_render_buffer<void>> {
+        void create(GLuint* buffers) {
+            glGenRenderbuffers(1, buffers);
+            assert_error();
         }
 
-        void destroy(GLuint const* buffers){
-            glDeleteRenderbuffers(1,buffers);
+        void destroy(GLuint const* buffers) {
+            glDeleteRenderbuffers(1, buffers);
+            assert_error();
         }
 
-        void bind(){
-            glBindRenderbuffer(GL_RENDERBUFFER,this->ref());
+        void bind() {
+            glBindRenderbuffer(GL_RENDERBUFFER, this->ref());
+            assert_error();
         }
 
-        void unbind(){
-            glBindRenderbuffer(GL_RENDERBUFFER,0);
+        void unbind() {
+            glBindRenderbuffer(GL_RENDERBUFFER, 0);
+            assert_error();
         }
 
-        void storage(GLsizei width,GLsizei height){
-            glRenderbufferStorage(GL_RENDERBUFFER,GL_DEPTH24_STENCIL8,width,height);
+        void storage(GLsizei width, GLsizei height) {
+            glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, width, height);
+            assert_error();
         }
     };
 }
@@ -128,21 +141,25 @@ namespace freeze {
     //GL_DRAW_FRAMEBUFFER  (== GL_FRAMEBUFFER)
     //GL_READ_FRAMEBUFFER
     template<GLenum FrameBuffer>
-    struct void_frame_buffer : make_object<void_frame_buffer<FrameBuffer>>{
-        void create(GLuint* buffers){
-            glGenFramebuffers(1,buffers);
+    struct void_frame_buffer : make_object<void_frame_buffer<FrameBuffer>> {
+        void create(GLuint* buffers) {
+            glGenFramebuffers(1, buffers);
+            assert_error();
         }
 
-        void destroy(GLuint const* buffers){
-            glDeleteFramebuffers(1,buffers);
+        void destroy(GLuint const* buffers) {
+            glDeleteFramebuffers(1, buffers);
+            assert_error();
         }
 
-        void bind(){
-            glBindFramebuffer(FrameBuffer,this->ref());
+        void bind() {
+            glBindFramebuffer(FrameBuffer, this->ref());
+            assert_error();
         }
 
-        void unbind(){
-            glBindFramebuffer(FrameBuffer,0);
+        void unbind() {
+            glBindFramebuffer(FrameBuffer, 0);
+            assert_error();
         }
 
         // GL_FRAMEBUFFER_COMPLETE 0x8CD5==36053
@@ -152,51 +169,61 @@ namespace freeze {
         // GL_FRAMEBUFFER_UNSUPPORTED
         // GL_FRAMEBUFFER_INCOMPLETE_MULTISAMPLE
         // GL_FRAMEBUFFER_INCOMPLETE_LAYER_TARGETS
-        GLenum check_status(){
+        GLenum check_status() {
             auto status = glCheckFramebufferStatus(FrameBuffer);
+            assert_error();
             return status;
         }
 
-        bool is_complete(){
-            auto status =  check_status();
+        bool is_complete() {
+            auto status = check_status();
+            assert_error();
             return status == GL_FRAMEBUFFER_COMPLETE;
         }
 
         template<typename Texture>
-        void attachement_color(Texture const& texture,GLint level = 0){
-            glFramebufferTexture(FrameBuffer,GL_COLOR_ATTACHMENT0,texture->ref(),level);
+        void attachement_color(Texture const& texture, GLint level = 0) {
+            glFramebufferTexture(FrameBuffer, GL_COLOR_ATTACHMENT0, texture->ref(), level);
+            assert_error();
         }
 
-        void attachement_texture2d(GLenum attachment,GLuint texture,GLuint level = 0){
-            glFramebufferTexture2D(FrameBuffer,attachment,GL_TEXTURE_2D,texture,level);
+        void attachement_texture2d(GLenum attachment, GLuint texture, GLuint level = 0) {
+            glFramebufferTexture2D(FrameBuffer, attachment, GL_TEXTURE_2D, texture, level);
+            assert_error();
         }
 
-        void attachement_depth(GLuint texture){
-            glFramebufferTexture2D(FrameBuffer,GL_DEPTH_ATTACHMENT,GL_TEXTURE_2D,texture,0);
+        void attachement_depth(GLuint texture) {
+            glFramebufferTexture2D(FrameBuffer, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, texture, 0);
+            assert_error();
         }
 
-        void attachement_stencil(GLuint texture){
-            glFramebufferTexture2D(FrameBuffer,GL_STENCIL_ATTACHMENT,GL_TEXTURE_2D,texture,0);
+        void attachement_stencil(GLuint texture) {
+            glFramebufferTexture2D(FrameBuffer, GL_STENCIL_ATTACHMENT, GL_TEXTURE_2D, texture, 0);
+            assert_error();
         }
 
         // glTexImage2D( GL_TEXTURE_2D, 0, GL_DEPTH24_STENCIL8, 800, 600, 0,
         //               GL_DEPTH_STENCIL, GL_UNSIGNED_INT_24_8, NULL);
-        void attachement_depth_stencil(GLuint texture){
-            glFramebufferTexture2D(FrameBuffer,GL_DEPTH_STENCIL_ATTACHMENT,GL_TEXTURE_2D,texture,0);
+        void attachement_depth_stencil(GLuint texture) {
+            glFramebufferTexture2D(FrameBuffer, GL_DEPTH_STENCIL_ATTACHMENT, GL_TEXTURE_2D, texture, 0);
+            assert_error();
         }
 
-        void attachement_render(GLuint renderbuffer){
-            glFramebufferRenderbuffer(FrameBuffer,GL_DEPTH_STENCIL_ATTACHMENT,GL_RENDERBUFFER,renderbuffer);
+        void attachement_render(GLuint renderbuffer) {
+            glFramebufferRenderbuffer(FrameBuffer, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, renderbuffer);
+            assert_error();
         }
 
         void draw_buffer(GLenum buf)
         {
             glDrawBuffer(buf);
+            assert_error();
         }
 
         void read_buffer(GLenum mode)
         {
             glReadBuffer(mode);
+            assert_error();
         }
     };
 }

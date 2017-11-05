@@ -15,14 +15,17 @@ namespace freeze {
 
         color(float r,float g,float b,float a= 1.0f) : r{r},g{g},b{b},a{a}{
             glClearColor(this->r,this->g,this->b,this->a);
+            assert_error();
         }
 
         color(glm::vec4 rgba) : r{rgba.r},g{rgba.g},b{rgba.b},a{rgba.a}{
             glClearColor(this->r,this->g,this->b,this->a);
+            assert_error();
         }
 
         color(glm::vec3 rgb) : r{rgb.r},g{rgb.g},b{rgb.b},a{1.0f}{
             glClearColor(this->r,this->g,this->b,this->a);
+            assert_error();
         }
 
         color set(float r,float g,float b,float a=1.0){
@@ -42,11 +45,13 @@ namespace freeze {
 
         color set(){
             glClearColor(this->r,this->g,this->b,this->a);
+            assert_error();
             return *this;
         }
 
         color clear(){
             glClear(GL_COLOR_BUFFER_BIT);
+            assert_error();
             return *this;
         }
     private:
@@ -56,6 +61,7 @@ namespace freeze {
             this->b=b;
             this->a=a;
             glClearColor(this->r,this->g,this->b,this->a);
+            assert_error();
         }
     };
 }

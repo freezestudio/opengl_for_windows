@@ -42,6 +42,7 @@ namespace freeze{
             }else{
                 object_name = std::make_shared<GLuint>(pT->create());
             }
+            assert(object_name);
         }
 
         make_object(make_object const& rhs) : object_name{rhs.object_name}{
@@ -73,6 +74,8 @@ namespace freeze{
                     pT->destroy(ref());
                 }
             }
+
+            assert(object_name.use_count() <= 1);
         }
 
         auto ref() const{

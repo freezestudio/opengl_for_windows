@@ -69,7 +69,7 @@ namespace freeze {
             Yaw = yaw;
             Pitch = pitch;
 
-            updateCameraVectors();
+            update_camera_vectors();
         }
 
         // 使用标量值构造
@@ -87,17 +87,17 @@ namespace freeze {
             Yaw = yaw;
             Pitch = pitch;
 
-            updateCameraVectors();
+            update_camera_vectors();
         }
 
         // 返回使用欧拉角和LookAt矩阵计算的视图矩阵
-        glm::mat4 GetViewMatrix() {
+        glm::mat4 get_view_matrix() {
             return glm::lookAt(Position, Position + Front, Up);
         }
 
         // 处理从任何类似键盘的输入系统接收的输入。
         // 以摄像机定义的ENUM形式接受输入参数（从窗口系统抽象）
-        void ProcessKeyboard(camera_movement direction, float deltaTime) {
+        void process_keyboard(camera_movement direction, float deltaTime) {
             //速度
             float velocity = MovementSpeed * deltaTime;
             //W,S,A,D
@@ -110,7 +110,7 @@ namespace freeze {
         }
 
         // 处理从鼠标输入系统接收的输入。 期望x和y方向上的偏移值。
-        void ProcessMouseMovement(float xoffset, float yoffset, bool constrainPitch = true) {
+        void process_mouse_movement(float xoffset, float yoffset, bool constrainPitch = true) {
             xoffset *= MouseSensitivity;
             yoffset *= MouseSensitivity;
 
@@ -126,11 +126,11 @@ namespace freeze {
             }
 
             // Update Front, Right and Up Vectors using the updated Eular angles
-            updateCameraVectors();
+            update_camera_vectors();
         }
 
         // Processes input received from a mouse scroll-wheel event. Only requires input on the vertical wheel-axis
-        void ProcessMouseScroll(float yoffset) {
+        void process_mouse_scroll(float yoffset) {
             if (Zoom >= 1.0f && Zoom <= 45.0f)
                 Zoom -= yoffset;
             if (Zoom <= 1.0f)
@@ -141,7 +141,7 @@ namespace freeze {
 
     private:
         // 从相机的（更新的）欧拉角计算前向量
-        void updateCameraVectors() {
+        void update_camera_vectors() {
             // Calculate the new Front vector
             glm::vec3 front;
             front.x = cosf(glm::radians(Yaw)) * cosf(glm::radians(Pitch));

@@ -41,6 +41,7 @@
 #include <array>
 #include <codecvt>
 #include <filesystem>
+#include <cassert>
 
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
@@ -762,6 +763,13 @@ extern AAssetManager* g_asset_managerp;                                         
 
 #endif //defined(_WIN32) || defined(WIN32) || defined(__WIN32__)
 
+
+#define assert_error()                        \
+auto err = glGetError();                      \
+if (err != GL_NO_ERROR)                       \
+{                                             \
+    LOGE("%s error : %d", __FUNCTION__, err); \
+}
 
 /**
 * freeze lib

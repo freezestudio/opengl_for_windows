@@ -466,21 +466,23 @@ namespace freeze {
         std::vector<char> texture_data_from_file(std::string const &path) {
             std::string filename = mDirectory + "/" + path;
 
-            std::vector<char> tdata;
-            std::ifstream ifs{filename};
+            std::vector<char> buffer;
+
+            std::ifstream ifs{filename,std::ios::in |std::ios::binary};
             if (ifs.is_open()) {
                 ifs.seekg(0,std::ios_base::end);
                 auto length = ifs.tellg();
                 if(length <= 0){
                     LOGE("texture_data_from_file(%s) length error.",filename.c_str());
-                    return tdata;
+                    return buffer;
                 }
                 ifs.seekg(0,std::ios_base::beg);
-                tdata.resize(length);
-                ifs.read(tdata.data(),length);
+                buffer.resize(length);
+                ifs.read(buffer.data(),length);
                 ifs.close();
             }
-            return tdata;
+
+            return buffer;
         }
 
         ////////////////////////////////////////////////////////////////////////////////////////////

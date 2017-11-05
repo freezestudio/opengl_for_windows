@@ -17,6 +17,7 @@ namespace freeze {
         {
             internal_set(index, size, type, stride, pointer);
             glEnableVertexAttribArray(index);
+            assert_error();
         }
 
 //        template<typename ArrayBuffer>
@@ -33,10 +34,7 @@ namespace freeze {
             glVertexAttribPointer(index,
                                   size, type, GL_FALSE, stride,
                                   reinterpret_cast<const void*>(pointer));
-            auto err = glGetError();
-            if(err != GL_NO_ERROR){
-                LOGE("glVertexAttribPointer error : %d",err);
-            }
+            assert_error();
         }
     };
 }
