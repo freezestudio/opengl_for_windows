@@ -73,10 +73,10 @@ namespace freeze {
         }
 
         // 使用标量值构造
-        void_camera(float posX, float posY, float posZ, //位置
-                    float upX, float upY, float upZ,    //世界坐标系中的向上方向
-                    float yaw,                           //y偏航
-                    float pitch )                        //x俯仰
+        void_camera(float posX, float posY, float posZ,                      //位置
+                    float upX = 0.0f, float upY = 1.0f, float upZ = 0.0f,    //世界坐标系中的向上方向
+                    float yaw = YAW,                                         //y偏航
+                    float pitch = PITCH)                                     //x俯仰
                 : Front{0.0f, 0.0f, -1.0f}
                 , MovementSpeed(SPEED)
                 , MouseSensitivity(SENSITIVTY)

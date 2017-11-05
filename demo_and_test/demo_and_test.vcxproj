@@ -90,7 +90,9 @@
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>..\glfw\include;..\glfw\deps;..\glfw_wrapper;..\thirdparty;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\glfw\include;..\glfw_wrapper;..\thirdparty;..\thirdparty\glad\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <DisableSpecificWarnings>4819</DisableSpecificWarnings>
+      <LanguageStandard>stdcpplatest</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -153,70 +155,16 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\glfw\deps\glad.c" />
+    <ClCompile Include="..\thirdparty\glad\src\glad.c" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="renderer.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="basic_lighting_22.fs" />
-    <None Include="basic_lighting_22.vs" />
-    <None Include="box.fs" />
-    <None Include="box.vs" />
-    <None Include="camera_20.fs" />
-    <None Include="camera_20.vs" />
-    <None Include="colors_21.fs" />
-    <None Include="colors_21.vs" />
-    <None Include="coordinate_systems_19.fs" />
-    <None Include="coordinate_systems_19.vs" />
-    <None Include="lamp_23.fs" />
-    <None Include="lamp_23.vs" />
-    <None Include="lamp_21.fs" />
-    <None Include="lamp_21.vs" />
-    <None Include="lamp_22.fs" />
-    <None Include="lamp_22.vs" />
-    <None Include="lamp_24.fs" />
-    <None Include="lamp_24.vs" />
-    <None Include="lamp_25.fs" />
-    <None Include="lamp_25.vs" />
-    <None Include="light.fs" />
-    <None Include="light.vs" />
-    <None Include="lighting_maps_24.fs" />
-    <None Include="lighting_maps_24.vs" />
-    <None Include="lighting_maps_25.fs" />
-    <None Include="lighting_maps_25.vs" />
-    <None Include="materials_23.fs" />
-    <None Include="materials_23.vs" />
-    <None Include="model_loading_32.fs" />
-    <None Include="model_loading_32.vs" />
-    <None Include="shader_10.fs" />
-    <None Include="shader_10.vs" />
-    <None Include="shader_11.fs" />
-    <None Include="shader_11.vs" />
-    <None Include="shader_8.fs" />
-    <None Include="shader_8.vs" />
-    <None Include="shader_9.fs" />
-    <None Include="shader_9.vs" />
-    <None Include="texture_12.fs" />
-    <None Include="texture_12.vs" />
-    <None Include="texture_13.fs" />
-    <None Include="texture_13.vs" />
-    <None Include="texture_14.fs" />
-    <None Include="texture_14.vs" />
-    <None Include="texture_15.fs" />
-    <None Include="texture_15.vs" />
-    <None Include="texture_16.fs" />
-    <None Include="texture_16.vs" />
-    <None Include="transform_17.fs" />
-    <None Include="transform_17.vs" />
-    <None Include="transform_18.fs" />
-    <None Include="transform_18.vs" />
+    <ClInclude Include="renderer.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="camera_test.h" />
-    <ClInclude Include="free.h" />
-    <ClInclude Include="orig\camera.h" />
-    <ClInclude Include="orig\mesh.h" />
-    <ClInclude Include="orig\model.h" />
-    <ClInclude Include="orig\shader_m.h" />
+    <None Include="resource\shaders\triangle.frag" />
+    <None Include="resource\shaders\triangle.vert" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

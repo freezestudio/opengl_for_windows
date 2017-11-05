@@ -133,7 +133,7 @@ namespace freeze {
 //            }
 //        }
 
-        //纹理环绕方式(S,T,R,Q)
+        //纹理环绕方式(S,T,R,Q)(X,Y,Z,W)
         //GL_REPEAT	              对纹理的默认行为。重复纹理图像。
         //GL_MIRRORED_REPEAT	  和GL_REPEAT一样，但每次重复图片是镜像放置的。
         //GL_MIRROR_CLAMP_TO_EDGE (ver >= 4.4)
@@ -299,7 +299,28 @@ namespace freeze
 }
 
 namespace  freeze {
+#if defined(_WIN32) || defined(WIN32) || defined(__WIN32__)
+    inline std::vector<char> load_image_from_file(std::string const& file)
+    {
+        std::vector<char> buffer;
 
+        auto path = fs::path{ file };
+        auto file_size = fs::file_size(path);
+        if (file_size <= 0)return buffer;
+
+        std::ifstream ifs;
+        ifs.open(file, std::ios::in | std::ios::binary);
+        if (ifs.bad())return buffer;
+
+        buffer.resize(file_size);
+        ifs.read(buffer.data(), file_size);
+        ifs.close();
+
+        return buffer;
+    }
+#endif
+
+#if defined(ANDROID) || defined(__ANDROID__)
     template<typename TextureType,typename AssetManager>
     inline TextureType load_texture_from_assets(AssetManager const& assetmgr,std::string const& file){
         TextureType texture;
@@ -416,6 +437,8 @@ namespace  freeze {
 
         return std::move(texture);
     }
+
+#endif //#if defined(ANDROID) || defined(__ANDROID__)
 }
 
 #endif //CDS_TEXTURE_H

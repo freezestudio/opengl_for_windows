@@ -66,7 +66,37 @@ namespace freeze {
         constexpr static auto make_fragment_shader = make<shader<GL_FRAGMENT_SHADER>>;
         constexpr static auto make_geometry_shader = make<shader<GL_GEOMETRY_SHADER>>;
 
-        void compile(std::vector<std::string> const& shader_sources){
+        void compile_file(std::vector<std::string> const& shader_files)
+        {
+            if (shader_files.size() < 2)
+            {
+                LOGE("compile file must at least 2 files");
+                return;
+            }
+
+            compile_file(shader_files[0], shader_files[1], shader_files[2]);
+        }
+
+        void compile_file(std::string const& vs, std::string const& fs, std::string const& gs = "")
+        {
+            auto vssource = source_from_file(vs);
+            auto fssource = source_from_file(fs);
+            std::string gssource;
+            if (!gs.empty())
+            {
+                gssource = source_from_file(gs);
+            }
+
+            compile(vssource, fssource, gssource);
+        }
+
+        void compile(std::vector<std::string> const& shader_sources)
+        {
+            if (shader_sources.size() < 2)
+            {
+                LOGE("compile must at least 2 sources");
+                return;
+            }
             compile(shader_sources[0],shader_sources[1],shader_sources[2]);
         }
 
@@ -196,6 +226,18 @@ namespace freeze {
         auto get_loc(std::string const& name)  const
         {
             return glGetUniformLocation(this->ref(), name.c_str());
+        }
+
+        std::string source_from_file(std::string const& file)
+        {
+            std::ifstream ifs;
+            ifs.open(file, std::ios::in | std::ios::binary);
+            if (ifs.bad())return ""s;
+            std::stringstream ss;
+            ss << ifs.rdbuf();
+            auto source = ss.str();
+            ifs.close();
+            return source;
         }
     };
 }

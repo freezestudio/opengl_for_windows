@@ -79,25 +79,26 @@ namespace freeze {
             test(GL_GEQUAL);
         }
 
+#if defined(ANDROID) || defined(__ANDROID__)
         static inline void ranger(GLfloat near = 0.0f,GLfloat far = 1.0f){
             glDepthRangef(near,far);
         }
-
+#endif
         //static inline void range_array(GLuint first,GLsizei count,GLfloat const* v){
         //    glDepthRangeArrayv(first,count,v);
         //}
 
-        static inline float linear_buffer(float z,float near,float far){
-            return (z-near)/(far-near);
+        static inline float linear_buffer(float z,float fnear,float ffar){
+            return (z-fnear)/(ffar-fnear);
         }
 
-        static inline float nonlinear_buffer(float z,float near,float far){
-            return (1/z - 1/near)/(1/far-1/near);
+        static inline float nonlinear_buffer(float z,float fnear,float ffar){
+            return (1/z - 1/fnear)/(1/ffar-1/fnear);
         }
 
-        static inline float nonlinear_to_linear(float linear,float near,float far){
+        static inline float nonlinear_to_linear(float linear,float fnear,float ffar){
             float z = linear *2.0f -1.0f; //back to NDC
-            return (2.0f * near * far)/(far + near - z *(far - near));
+            return (2.0f * fnear * ffar)/(ffar + fnear - z *(ffar - fnear));
         }
     };
 }

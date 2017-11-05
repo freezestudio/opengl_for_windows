@@ -2,25 +2,41 @@
 #ifndef FREEZE_COMMON_H
 #define FREEZE_COMMON_H
 
+
+/**
+* stl
+*/
+
+#include <string>
+#include <vector>
+#include <map>
+#include <memory>
+#include <sstream>
+#include <fstream>
+#include <cstdlib>
+#include <type_traits>
+#include <algorithm>
+
+#include "stb_image.h"
+
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>//translate,rotate,scale,perpective
+#include <glm/gtc/constants.hpp>//PI
+#include <glm/gtc/type_ptr.hpp>
+
 #if defined(_WIN32) || defined(WIN32) || defined(__WIN32__)
 #if defined(_MSC_VER)
-
 
 #pragma once
 
 //#include <Windows.h>
 
 #include <iostream>
-#include <string>
 #include <utility>
-#include <memory>
 #include <future>
 #include <chrono>
-#include <type_traits>
 #include <functional>
 #include <algorithm>
-#include <fstream>
-#include <sstream>
 #include <set>
 #include <array>
 #include <codecvt>
@@ -29,67 +45,76 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
-#define STB_IMAGE_IMPLEMENTATION
-#include "stb_image.h"
-
-#include <glm/glm.hpp>
-#include <glm/gtc/matrix_transform.hpp>//translate,rotate,scale,perpective
-#include <glm/gtc/constants.hpp>//PI
-#include <glm/gtc/type_ptr.hpp>
+//for load 3d model
+#include <assimp/Importer.hpp>
+#include <assimp/scene.h>
+#include <assimp/postprocess.h>
 
 using namespace std::literals;
 namespace fs = std::experimental::filesystem;
 
-template<typename T, typename = void>
-struct make_impl;
+#ifdef _DEBUG
+#define LOGI(...) ((void)printf(__VA_ARGS__))
+#define LOGW(...) ((void)printf(__VA_ARGS__))
+#define LOGE(...) ((void)printf(__VA_ARGS__))
+#else
+#define LOGI(...)
+#define LOGW(...)
+#define LOGE(...)
+#endif
 
-template<bool condition>
-struct when;
+namespace freeze {
+    template<typename T, typename = void>
+    struct make_impl;
 
-template<typename T, typename>
-struct make_impl : make_impl<T, when<true>>
-{
-};
+    template<bool condition>
+    struct when;
 
-template<typename T, bool condition>
-struct make_impl<T, when<condition>>
-{
-    template<typename... Args>
-    static constexpr auto make_helper(int, Args&&... args)
+    template<typename T, typename>
+    struct make_impl : make_impl<T, when<true>>
     {
-        return T{ std::forward<decltype(args)>(args)... };
-    }
+    };
 
-    template<typename... Args>
-    static constexpr auto make_helper(long, Args&&... args)
+    template<typename T, bool condition>
+    struct make_impl<T, when<condition>>
     {
-        static_assert((sizeof...(args), false));
-    }
+        template<typename... Args>
+        static constexpr auto make_helper(int, Args&&... args)
+        {
+            return T{ std::forward<decltype(args)>(args)... };
+        }
 
-    template<typename... Args>
-    static constexpr decltype(auto) apply(Args&&... args)
+        template<typename... Args>
+        static constexpr auto make_helper(long, Args&&... args)
+        {
+            static_assert((sizeof...(args), false));
+        }
+
+        template<typename... Args>
+        static constexpr decltype(auto) apply(Args&&... args)
+        {
+            return make_helper(int{}, std::forward<decltype(args)>(args)...);
+        }
+    };
+
+    //template<typename T>
+    //constexpr auto make_t = [](auto&&... x) {
+    //    return make_impl<T>::apply(std::forward<decltype(args)>(args)...);
+    //};
+
+    template<typename T>
+    struct make_t
     {
-        return make_helper(int{}, std::forward<decltype(args)>(args)...);
-    }
-};
+        template<typename... Args>
+        constexpr decltype(auto) operator()(Args&&... args) const
+        {
+            return make_impl<T>::apply(std::forward<decltype(args)>(args)...);
+        }
+    };
 
-//template<typename T>
-//constexpr auto make_t = [](auto&&... x) {
-//    return make_impl<T>::apply(std::forward<decltype(args)>(args)...);
-//};
-
-template<typename T>
-struct make_t
-{
-    template<typename... Args>
-    constexpr decltype(auto) operator()(Args&&... args) const
-    {
-        return make_impl<T>::apply(std::forward<decltype(args)>(args)...);
-    }
-};
-
-template<typename T>
-constexpr make_t<T> make{};
+    template<typename T>
+    constexpr make_t<T> make{};
+}
 
 /////////////////////////////////////////////////////////////////////////
 
@@ -294,39 +319,39 @@ namespace glfw
 {
     namespace detail {
 
-        int make_version(int major, int minor)
+        inline int make_version(int major, int minor)
         {
             return MAKELONG(major, minor);
         }
 
-        int major_version(int version)
+        inline int major_version(int version)
         {
             return LOWORD(version);
         }
 
-        int minor_version(int version)
+        inline int minor_version(int version)
         {
             return HIWORD(version);
         }
 
-        bool init()
+        inline bool init()
         {
             return glfwInit() == GLFW_TRUE;
         }
 
 #pragma region 在调用 init() 之前可用
 
-        void terminate()
+        inline void terminate()
         {
             glfwTerminate();
         }
 
-        void get_version(int& major, int& minor, int& rev)
+        inline void get_version(int& major, int& minor, int& rev)
         {
             glfwGetVersion(&major, &minor, &rev);
         }
 
-        std::string get_version_string()
+        inline std::string get_version_string()
         {
             return glfwGetVersionString();
         }
@@ -338,32 +363,37 @@ namespace glfw
         //	return glfwCreateWindow(width, height, title.c_str(), _monitor, share);
         //}
 
-        void window_hint(window_hint_type hint, int value)
+        inline void window_hint(window_hint_type hint, int value)
         {
             glfwWindowHint(static_cast<int>(hint), value);
         }
 
-        bool load_gl_loader()
+        inline bool load_gl_loader()
         {
             return gladLoadGLLoader((GLADloadproc)glfwGetProcAddress) == GLFW_TRUE;
         }
 
-        void poll_events()
+        //inline bool gl_loader()
+        //{
+        //    return gladLoadGL();
+        //}
+
+        inline void poll_events()
         {
             glfwPollEvents();
         }
 
-        void wait_events()
+        inline void wait_events()
         {
             glfwWaitEvents();
         }
 
-        void swap_interval(int interval = 0) //fast 0,normal 1
+        inline void swap_interval(int interval = 0) //fast 0,normal 1
         {
             glfwSwapInterval(interval);
         }
 
-        double get_time()
+        inline double get_time()
         {
             return glfwGetTime();
         }
@@ -394,7 +424,7 @@ namespace glfw {
             detail::terminate();
         }
 
-        //feature
+        //initilize
     public:
         //void set_opengl_version(int version)
         //{
@@ -417,6 +447,8 @@ namespace glfw {
             detail::window_hint(window_hint_type::opengl_profile, profile);
         }
 
+        //feature
+    public:
         void swap_interval(int interval = 0)
         {
             detail::swap_interval(interval);
@@ -642,32 +674,32 @@ namespace glfw {
 //glfw::function
 namespace glfw {
 
-    void set_window_should_close(window::pointer win, bool _close = true)
+    inline void set_window_should_close(window::pointer win, bool _close = true)
     {
         glfwSetWindowShouldClose(win, _close ? GL_TRUE : GL_FALSE);
     }
 
-    int get_key(window::pointer win, int key)
+    inline int get_key(window::pointer win, int key)
     {
         return glfwGetKey(win, key);
     }
 
-    void set_cursor_mode(window::pointer win, window::cursor_mode mode)
+    inline void set_cursor_mode(window::pointer win, window::cursor_mode mode)
     {
         glfwSetInputMode(win, static_cast<int>(input_mode::cursor), static_cast<int>(mode));
     }
 
-    void set_cursor_normal(window::pointer win)
+    inline void set_cursor_normal(window::pointer win)
     {
         glfwSetInputMode(win, static_cast<int>(input_mode::cursor), static_cast<int>(window::cursor_mode::normal));
     }
 
-    void set_cursor_disable(window::pointer win)
+    inline void set_cursor_disable(window::pointer win)
     {
         glfwSetInputMode(win, static_cast<int>(input_mode::cursor), static_cast<int>(window::cursor_mode::disabled));
     }
 
-    void set_cursor_hidden(window::pointer win)
+    inline void set_cursor_hidden(window::pointer win)
     {
         glfwSetInputMode(win, static_cast<int>(input_mode::cursor), static_cast<int>(window::cursor_mode::hidden));
     }
@@ -675,1383 +707,11 @@ namespace glfw {
 
 ////////////////////////////////////////////////////////////////////////
 
-//gl::enum
-namespace gl {
-    enum class shader_type
-    {
-        fragment_shader = GL_FRAGMENT_SHADER,
-        vertex_shader = GL_VERTEX_SHADER,
-        //compute_shader         = GL_COMPUTE_SHADER,
-        //tess_control_shader    = GL_TESS_CONTROL_SHADER,
-        //tess_evaluation_shader = GL_TESS_EVALUATION_SHADER,
-        //geometry_shader        = GL_GEOMETRY_SHADER,
-
-    };
-
-    enum class shader_status
-    {
-        shader_type = GL_SHADER_TYPE,
-        delete_status = GL_DELETE_STATUS,
-        compile_status = GL_COMPILE_STATUS,
-        info_log_length = GL_INFO_LOG_LENGTH,
-        shader_source_length = GL_SHADER_SOURCE_LENGTH,
-    };
-
-    enum class program_status
-    {
-        delete_status = GL_DELETE_STATUS,
-        link_status = GL_LINK_STATUS,
-        validate_status = GL_VALIDATE_STATUS,
-        info_log_length = GL_INFO_LOG_LENGTH,
-        attached_shaders = GL_ATTACHED_SHADERS,
-        //active_atomic_counter_buffers = GL_ACTIVE_ATOMIC_COUNTER_BUFFERS,
-        active_attributes = GL_ACTIVE_ATTRIBUTES,
-        active_attribute_max_length = GL_ACTIVE_ATTRIBUTE_MAX_LENGTH,
-        active_uniforms = GL_ACTIVE_UNIFORMS,
-        active_uniform_blocks = GL_ACTIVE_UNIFORM_BLOCKS,
-        active_uniform_block_max_name_length = GL_ACTIVE_UNIFORM_BLOCK_MAX_NAME_LENGTH,
-        active_uniform_max_length = GL_ACTIVE_UNIFORM_MAX_LENGTH,
-        //compute_work_group_size = GL_COMPUTE_WORK_GROUP_SIZE,
-        //program_binary_length = GL_PROGRAM_BINARY_LENGTH,
-        transform_feedback_buffer_mode = GL_TRANSFORM_FEEDBACK_BUFFER_MODE,
-        transform_feedback_varyings = GL_TRANSFORM_FEEDBACK_VARYINGS,
-        transform_feedback_varing_max_length = GL_TRANSFORM_FEEDBACK_VARYING_MAX_LENGTH,
-        geometry_vertices_out = GL_GEOMETRY_VERTICES_OUT,
-        geometry_input_type = GL_GEOMETRY_INPUT_TYPE,
-        geometry_output_type = GL_GEOMETRY_OUTPUT_TYPE,
-    };
-
-    enum class buffer_type
-    {
-        //Buffer ---------------- Binding Target --------------------- Purpose -------------
-        array_buffer = GL_ARRAY_BUFFER,                           //Vertex attributes
-                                                                  //atomic_counter_buffer = GL_ATOMIC_COUNTER_BUFFER,       //Atomic counter storage
-                                                                  copy_read_buffer = GL_COPY_READ_BUFFER,                   //Buffer copy source
-                                                                  copy_write_buffer = GL_COPY_WRITE_BUFFER,                 //Buffer copy destination
-                                                                                                                            //dispatch_indirect_buffer = GL_DISPATCH_INDIRECT_BUFFER, //Indirect compute dispatch commands
-                                                                                                                            //draw_indirect_buffer = GL_DRAW_INDIRECT_BUFFER,         //Indirect command arguments
-                                                                                                                            element_array_buffer = GL_ELEMENT_ARRAY_BUFFER,           //Vertex array indices
-                                                                                                                            pixel_pack_buffer = GL_PIXEL_PACK_BUFFER,                 //Pixel read target
-                                                                                                                            pixel_unpack_buffer = GL_PIXEL_UNPACK_BUFFER,             //Texture data source
-                                                                                                                                                                                      //query_buffer = GL_QUERY_BUFFER,                         //Query result buffer
-                                                                                                                                                                                      //shader_storage_buffer = GL_SHADER_STORAGE_BUFFER,       //Read - write storage for shaders
-                                                                                                                                                                                      texture_buffer = GL_TEXTURE_BUFFER,                       //Texture data buffer
-                                                                                                                                                                                      transform_feedback_buffer = GL_TRANSFORM_FEEDBACK_BUFFER, //Transform feedback buffer
-                                                                                                                                                                                      uniform_buffer = GL_UNIFORM_BUFFER,                       //Uniform block storage
-    };
-
-    enum class buffer_usage_type
-    {
-        stream_draw = GL_STREAM_DRAW,   //数据每次绘制时都会改变
-        stream_read = GL_STREAM_READ, 	//
-        stream_copy = GL_STREAM_COPY, 	//
-        static_draw = GL_STATIC_DRAW, 	//数据不会或几乎不会改变
-        static_read = GL_STATIC_READ, 	//
-        static_copy = GL_STATIC_COPY,	//
-        dynamic_draw = GL_DYNAMIC_DRAW,	//数据会被改变很多
-        dynamic_read = GL_DYNAMIC_READ,	//
-        dynamic_copy = GL_DYNAMIC_COPY,	//
-    };
-
-    enum class data_type
-    {
-        //glVertexAttribPointer and glVertexAttribIPointer
-        _byte = GL_BYTE,
-        _unsigned_byte = GL_UNSIGNED_BYTE,
-        _short = GL_SHORT,
-        _unsigned_short = GL_UNSIGNED_SHORT,
-        _int = GL_INT,
-        _unsigned_int = GL_UNSIGNED_INT,
-
-        //glVertexAttribPointer
-        _half_float = GL_HALF_FLOAT,
-        _float = GL_FLOAT,
-        _double = GL_DOUBLE, //glVertexAttribLPointer
-                             //_fixed = GL_FIXED, 
-                             //_int_2_10_10_10_rev =GL_INT_2_10_10_10_REV,
-                             _unsigned_int_2_10_10_10_rev = GL_UNSIGNED_INT_2_10_10_10_REV,
-                             unsigned_int_10f_11f_11f_rev = GL_UNSIGNED_INT_10F_11F_11F_REV,
-    };
-
-    enum class enable_status
-    {
-        blend = GL_BLEND,
-        clip_distance_0 = GL_CLIP_DISTANCE0,
-        clip_distance_1 = GL_CLIP_DISTANCE1,
-        clip_distance_2 = GL_CLIP_DISTANCE2,
-        clip_distance_3 = GL_CLIP_DISTANCE3,
-        clip_distance_4 = GL_CLIP_DISTANCE4,
-        clip_distance_5 = GL_CLIP_DISTANCE5,
-        clip_distance_6 = GL_CLIP_DISTANCE6,
-        clip_distance_7 = GL_CLIP_DISTANCE7,
-        max_clip_distances = GL_MAX_CLIP_DISTANCES,
-        color_logic_op = GL_COLOR_LOGIC_OP,
-        cull_face = GL_CULL_FACE,
-        depth_clamp = GL_DEPTH_CLAMP,
-        debug_output = GL_DEBUG_OUTPUT,
-        debug_output_synchronous = GL_DEBUG_OUTPUT_SYNCHRONOUS,
-        depth_test = GL_DEPTH_TEST,
-        dither = GL_DITHER,
-        framebuffer_srgb = GL_FRAMEBUFFER_SRGB,
-        line_smooth = GL_LINE_SMOOTH,
-        multisample = GL_MULTISAMPLE,
-        polygon_smooth = GL_POLYGON_SMOOTH,
-        polygon_offset_fill = GL_POLYGON_OFFSET_FILL,
-        polygon_offset_line = GL_POLYGON_OFFSET_LINE,
-        polygon_offset_point = GL_POLYGON_OFFSET_POINT,
-        program_point_size = GL_PROGRAM_POINT_SIZE,
-        primitive_restart = GL_PRIMITIVE_RESTART,
-        sample_alpha_to_coverage = GL_SAMPLE_ALPHA_TO_COVERAGE,
-        sample_alpha_to_one = GL_SAMPLE_ALPHA_TO_ONE,
-        sample_coverage = GL_SAMPLE_COVERAGE,
-        sample_mask = GL_SAMPLE_MASK,
-        scissor_test = GL_SCISSOR_TEST,
-        stencil_test = GL_STENCIL_TEST,
-        texture_cube_map_seamless = GL_TEXTURE_CUBE_MAP_SEAMLESS,
-    };
-
-    enum class bit_field
-    {
-        color_buffer_bit = GL_COLOR_BUFFER_BIT,
-        depth_buffer_bit = GL_DEPTH_BUFFER_BIT,
-        stencil_buffer_bit = GL_STENCIL_BUFFER_BIT,
-    };
-
-    enum class draw_mode
-    {
-        points = GL_POINTS,
-        line_strip = GL_LINE_STRIP,
-        line_loop = GL_LINE_LOOP,
-        lines = GL_LINES,
-        line_strip_adjacency = GL_LINE_STRIP_ADJACENCY,
-        lines_adjacency = GL_LINES_ADJACENCY,
-        triangle_strip = GL_TRIANGLE_STRIP,
-        triangle_fan = GL_TRIANGLE_FAN,
-        triangles = GL_TRIANGLES,
-        triangle_strip_adjacency = GL_TRIANGLE_STRIP_ADJACENCY,
-        triangles_adjacency = GL_TRIANGLES_ADJACENCY,
-        //patches = GL_PATCHES,
-    };
-
-    enum class texture_type
-    {
-        _1d = GL_TEXTURE_1D,
-        _1d_array = GL_TEXTURE_1D_ARRAY,
-        _2d = GL_TEXTURE_2D,
-        _2d_array = GL_TEXTURE_2D_ARRAY,
-        _2d_multisample = GL_TEXTURE_2D_MULTISAMPLE,
-        _2d_multisample_array = GL_TEXTURE_2D_MULTISAMPLE_ARRAY,
-        _3d = GL_TEXTURE_3D,
-        cube_map = GL_TEXTURE_CUBE_MAP,
-        //cube_map_array = GL_TEXTURE_CUBE_MAP_ARRAY,
-        rectangle = GL_TEXTURE_RECTANGLE,
-    };
-
-    enum class texture_feature
-    {
-        //depth_stencil_texture_mode = GL_DEPTH_STENCIL_TEXTURE_MODE,
-        base_level = GL_TEXTURE_BASE_LEVEL,
-        compare_func = GL_TEXTURE_COMPARE_FUNC,
-        compare_mode = GL_TEXTURE_COMPARE_MODE,
-        lod_bais = GL_TEXTURE_LOD_BIAS,
-        min_filter = GL_TEXTURE_MIN_FILTER,
-        mag_filter = GL_TEXTURE_MAG_FILTER,
-        min_lod = GL_TEXTURE_MIN_LOD,
-        max_lod = GL_TEXTURE_MAX_LOD,
-        max_level = GL_TEXTURE_MAX_LEVEL,
-        //swizzle_r = GL_TEXTURE_SWIZZLE_R, 
-        //swizzle_g = GL_TEXTURE_SWIZZLE_G, 
-        //swizzle_b = GL_TEXTURE_SWIZZLE_B, 
-        //swizzle_a = GL_TEXTURE_SWIZZLE_A,
-        wrap_s = GL_TEXTURE_WRAP_S,
-        wrap_t = GL_TEXTURE_WRAP_T,
-        wrap_r = GL_TEXTURE_WRAP_R,
-
-        //For the vector commands(glTexParameter*v), pname can also be one of 
-        border_color = GL_TEXTURE_BORDER_COLOR,
-        //swizzle_rgba = GL_TEXTURE_SWIZZLE_RGBA,
-    };
-
-    enum class texture_format
-    {
-        red = GL_RED,
-        rg = GL_RG,
-        rgb = GL_RGB,
-        bgr = GL_BGR,
-        rgba = GL_RGBA,
-        bgra = GL_BGRA,
-        red_integer = GL_RED_INTEGER,
-        rg_integer = GL_RG_INTEGER,
-        rgb_integer = GL_RGB_INTEGER,
-        bgr_integer = GL_BGR_INTEGER,
-        rbga_integer = GL_RGBA_INTEGER,
-        bgra_integer = GL_BGRA_INTEGER,
-        stencil_index = GL_STENCIL_INDEX,
-        depth_component = GL_DEPTH_COMPONENT,
-        depth_stencil = GL_DEPTH_STENCIL,
-    };
-
-    enum class pixel_data_type
-    {
-        _unsigned_byte = GL_UNSIGNED_BYTE,
-        _byte = GL_BYTE,
-        _unsigned_short = GL_UNSIGNED_SHORT,
-        _short = GL_SHORT,
-        _unsigned_int = GL_UNSIGNED_INT,
-        _int = GL_INT,
-        _float = GL_FLOAT,
-        _unsigned_byte_3_3_2 = GL_UNSIGNED_BYTE_3_3_2,
-        _unsigned_byte_2_3_3_rev = GL_UNSIGNED_BYTE_2_3_3_REV,
-        _unsigned_short_5_6_5 = GL_UNSIGNED_SHORT_5_6_5,
-        _unsigned_short_5_6_5_rev = GL_UNSIGNED_SHORT_5_6_5_REV,
-        _unsigned_short_4_4_4_4 = GL_UNSIGNED_SHORT_4_4_4_4,
-        _unsigned_short_4_4_4_4_rev = GL_UNSIGNED_SHORT_4_4_4_4_REV,
-        _unsigned_short_5_5_5_1 = GL_UNSIGNED_SHORT_5_5_5_1,
-        _unsigned_short_1_5_5_5_rev = GL_UNSIGNED_SHORT_1_5_5_5_REV,
-        _unsigned_int_8_8_8_8 = GL_UNSIGNED_INT_8_8_8_8,
-        _unsigned_int_8_8_8_8_rev = GL_UNSIGNED_INT_8_8_8_8_REV,
-        _unsigned_int_10_10_10_2 = GL_UNSIGNED_INT_10_10_10_2,
-        _unsigned_int_2_10_10_10_rev = GL_UNSIGNED_INT_2_10_10_10_REV
-    };
-}
-
-//gl::detail
-namespace gl
-{
-    namespace detail {
-
-        //misc
-
-        void view_port(int x, int y, int width, int height)
-        {
-            glViewport(x, y, width, height);
-        }
-
-        int get_uniform_location(unsigned program_id, char const* name)
-        {
-            return glGetUniformLocation(program_id, name);
-        }
-
-        void uniform(int loc, int value)
-        {
-            glUniform1i(loc, value);
-        }
-
-        void uniform(int loc, float value)
-        {
-            glUniform1f(loc, value);
-        }
-
-        void uniform(int loc, unsigned count, int const* values)
-        {
-            glUniform1iv(loc, count, values);
-        }
-
-        void uniform(int loc, unsigned count, float const* values)
-        {
-            glUniform1fv(loc, count, values);
-        }
-
-        void uniform2(int loc, int v0, int v1)
-        {
-            glUniform2i(loc, v0, v1);
-        }
-
-        void uniform2(int loc, float v0, float v1)
-        {
-            glUniform2f(loc, v0, v1);
-        }
-
-        void uniform2(int loc, unsigned count, int const* values)
-        {
-            glUniform2iv(loc, count, values);
-        }
-
-        void uniform2(int loc, unsigned count, float const* values)
-        {
-            glUniform2fv(loc, count, values);
-        }
-
-        void uniform3(int loc, int v0, int v1, int v2)
-        {
-            glUniform3i(loc, v0, v1, v2);
-        }
-
-        void uniform3(int loc, float v0, float v1, float v2)
-        {
-            glUniform3f(loc, v0, v1, v2);
-        }
-
-        void uniform3(int loc, unsigned count, int const* values)
-        {
-            glUniform3iv(loc, count, values);
-        }
-
-        void uniform3(int loc, unsigned count, float const* values)
-        {
-            glUniform3fv(loc, count, values);
-        }
-
-        void uniform4(int loc, int v0, int v1, int v2, int v3)
-        {
-            glUniform4i(loc, v0, v1, v2, v3);
-        }
-
-        void uniform4(int loc, float v0, float v1, float v2, float v3)
-        {
-            glUniform4f(loc, v0, v1, v2, v3);
-        }
-
-        void uniform4(int loc, unsigned count, int const* values)
-        {
-            glUniform4iv(loc, count, values);
-        }
-
-        void uniform4(int loc, unsigned count, float const* values)
-        {
-            glUniform4fv(loc, count, values);
-        }
-
-        void uniform_matrix(int loc, unsigned count, bool transpose, float const* value)
-        {
-            glUniformMatrix4fv(loc, count, transpose ? GL_TRUE : GL_FALSE, value);
-        }
-
-        void enable_vertex_attrib_array(int loc)
-        {
-            glEnableVertexAttribArray(loc);
-        }
-
-        void set_attribute(int loc_in_vs, unsigned loc_t_size, data_type dt, bool normalized, unsigned stride, void const* next)
-        {
-            glVertexAttribPointer(loc_in_vs, loc_t_size, static_cast<unsigned>(dt), normalized ? GL_TRUE : GL_FALSE, stride, next);
-        }
-
-        void clear_color(float red, float green, float blue, float alpha)
-        {
-            glClearColor(red, green, blue, alpha);
-        }
-
-        void clear(bit_field mask)
-        {
-            glClear(static_cast<unsigned>(mask));
-        }
-
-        //buffers
-
-        void create_buffers(unsigned* buffers, int n)
-        {
-            glGenBuffers(n, buffers);
-        }
-
-        void delete_buffers(unsigned const* buffers, int n)
-        {
-            glDeleteBuffers(n, buffers);
-        }
-
-        void bind_buffer(buffer_type buffer_t, unsigned buffer)
-        {
-            glBindBuffer(static_cast<int>(buffer_t), buffer);
-        }
-
-        void unbind_buffer(buffer_type buffer_t)
-        {
-            glBindBuffer(static_cast<int>(buffer_t), 0);
-        }
-
-        void buffer_data(buffer_type buffer_t, int size, void const* data, buffer_usage_type usage)
-        {
-            glBufferData(static_cast<int>(buffer_t), size, data, static_cast<int>(usage));
-        }
-
-        void create_vertex_arrays(unsigned* buffers, int n)
-        {
-            glGenVertexArrays(n, buffers);
-        }
-
-        void delete_vertex_arrays(unsigned const* buffers, int n)
-        {
-            glDeleteVertexArrays(n, buffers);
-        }
-
-        void bind_vertex_array(unsigned buffer)
-        {
-            glBindVertexArray(buffer);
-        }
-
-        void unbind_vertex_array()
-        {
-            glBindVertexArray(0);
-        }
-
-        //texture
-
-        void create_textures(unsigned* textures, int n)
-        {
-            glGenTextures(n, textures);
-        }
-
-        void bind_texture(texture_type type, unsigned texture_id)
-        {
-            glBindTexture(static_cast<unsigned>(type), texture_id);
-        }
-
-        //level -- Specifies the level-of-detail number. 
-        //         Level 0 is the base image level.
-        //         Level n is the nth mipmap reduction image. 
-        //         If target is GL_TEXTURE_RECTANGLE or GL_PROXY_TEXTURE_RECTANGLE,level must be 0.
-        void texture_image_2d(int level,
-            texture_format internel_format,
-            int width, int height,
-            texture_format format,
-            pixel_data_type type,
-            void const* pixels)
-        {
-            glTexImage2D(static_cast<unsigned>(texture_type::_2d),
-                level,
-                static_cast<int>(internel_format),
-                width, height, 0,
-                static_cast<unsigned>(format),
-                static_cast<unsigned>(type), pixels);
-        }
-
-        void texture_create_mipmap()
-        {
-            glGenerateMipmap(static_cast<unsigned>(texture_type::_2d));
-        }
-
-        void texture_parameter(texture_type type, texture_feature feature, int value)
-        {
-            glTexParameteri(static_cast<unsigned>(type), static_cast<unsigned>(feature), value);
-        }
-
-        void texture_parameter(texture_type type, texture_feature feature, float value)
-        {
-            glTexParameterf(static_cast<unsigned>(type), static_cast<unsigned>(feature), value);
-        }
-
-        void texture_parameter_vector(texture_type type, texture_feature feature, const float* values)
-        {
-            glTexParameterfv(static_cast<unsigned>(type), static_cast<unsigned>(feature), values);
-        }
-
-        void texture_active(int id)
-        {
-            if (id >= GL_TEXTURE0 && id < GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS)
-            {
-                glActiveTexture(id);
-            }
-        }
-
-        //shader
-
-        unsigned create_shader(shader_type shader_t)
-        {
-            auto res = glCreateShader(static_cast<int>(shader_t));
-            if (res == 0/*error*/ || res == GL_INVALID_ENUM/*parameter error*/)
-            {
-
-            }
-
-            return res;
-        }
-
-        void shader_source(unsigned shader_id, int count, char const* const* string, int const* length)
-        {
-            glShaderSource(shader_id, count, string, length);
-        }
-
-        void compile_shader(unsigned shader_id)
-        {
-            glCompileShader(shader_id);
-        }
-
-        bool get_shader_status(unsigned shader_id, shader_status status)
-        {
-            int success;
-            glGetShaderiv(shader_id, static_cast<unsigned>(status), &success);
-            return success == GL_TRUE;
-        }
-
-        std::string get_shader_info_log(unsigned shader_id)
-        {
-            std::string ret_string;
-
-            int length;
-            glGetShaderiv(shader_id, GL_INFO_LOG_LENGTH, &length);
-            if (length > 0)
-            {
-                char* err = new char[length + 1];
-                glGetShaderInfoLog(shader_id, length + 1, nullptr, err);
-                ret_string = err;
-                delete[] err;
-            }
-            return ret_string;
-
-        }
-
-        void delete_shader(unsigned shader_id)
-        {
-            glDeleteShader(shader_id);
-        }
-
-        bool is_shader(unsigned shader_id)
-        {
-            return glIsShader(shader_id) == GL_TRUE;
-        }
-
-        //program
-
-        unsigned create_program()
-        {
-            return glCreateProgram();
-        }
-
-        void attach_shader(unsigned program_id, unsigned shader_id)
-        {
-            glAttachShader(program_id, shader_id);
-        }
-
-        void detach_shadeer(unsigned program_id, unsigned shader_id)
-        {
-            glDetachShader(program_id, shader_id);
-        }
-
-        void link_program(unsigned program_id)
-        {
-            glLinkProgram(program_id);
-        }
-
-        void use_program(unsigned program_id)
-        {
-            glUseProgram(program_id);
-        }
-
-        bool get_program_status(unsigned program_id, program_status status)
-        {
-            int success;
-            glGetProgramiv(program_id, static_cast<unsigned>(status), &success);
-            return success == GL_TRUE;
-        }
-
-        std::string get_program_info_log(unsigned program_id)
-        {
-            std::string ret_string;
-
-            int length;
-            glGetProgramiv(program_id, GL_INFO_LOG_LENGTH, &length);
-            if (length > 0)
-            {
-                char* err = new char[length + 1];
-                glGetProgramInfoLog(program_id, length + 1, nullptr, err);
-                ret_string = err;
-                delete[] err;
-            }
-
-            return ret_string;
-        }
-
-        void delete_program(unsigned program_id)
-        {
-            glDeleteProgram(program_id);
-        }
-
-        bool is_program(unsigned program_id)
-        {
-            return glIsProgram(program_id) == GL_TRUE;
-        }
-
-        //misc
-        bool is_enabled(enable_status status, int index = -1)
-        {
-            return index >= 0 ?
-                glIsEnabledi(static_cast<unsigned>(status), index) == GL_TRUE :
-                glIsEnabled(static_cast<unsigned>(status)) == GL_TRUE;
-        }
-
-        bool enabled(enable_status status, int index = -1, bool enable = true)
-        {
-            index >= 0 ?
-                enable ? glEnablei(static_cast<unsigned>(status), index) : glDisablei(static_cast<unsigned>(status), index) :
-                enable ? glEnable(static_cast<unsigned>(status)) : glDisable(static_cast<unsigned>(status));
-
-
-            return is_enabled(status, index);
-
-        }
-
-        //render
-        void draw_arrays(draw_mode mode, int first, int count)
-        {
-            glDrawArrays(static_cast<unsigned>(mode), first, count);
-        }
-
-        void draw_elements(draw_mode mode, int count, data_type dt, void const* indices)
-        {
-            glDrawElements(static_cast<unsigned>(mode), count, static_cast<unsigned>(dt), indices);
-        }
-    }
-
-}
-
-//gl::detail::function
-namespace gl {
-
-    namespace detail {
-        std::string load_shader(std::string const& glslFile)
-        {
-            std::string str;
-
-            auto glslpath = fs::path{ glslFile };
-            if (!fs::exists(glslpath))return str;
-
-            std::ostringstream oss;
-            std::ifstream ifs{ glslFile };
-            if (!ifs.is_open())return str;
-
-            oss << ifs.rdbuf();
-            str = oss.str();
-
-            ifs.clear();
-            ifs.close();
-
-            return str;
-        }
-    }
-}
-
-//gl::class
-namespace gl {
-
-    class shader
-    {
-    public:
-        shader(shader_type type)
-            : shader(type, ""s)
-        {
-
-        }
-
-        shader(shader_type type, std::string const& source_file)
-            : shader_id_(detail::create_shader(type))
-        {
-            if (shader_id_ > 0 && !source_file.empty())
-            {
-                load_source(source_file);
-            }
-        }
-
-    public:
-        void load_source(std::string const& source_file)
-        {
-            std::string source = detail::load_shader(source_file);
-            const char* source_string = source.c_str();
-            detail::shader_source(shader_id_, 1, &source_string, nullptr);
-        }
-
-        void load_source_code(std::string const& source_code)
-        {
-            const char* source_string = source_code.c_str();
-            detail::shader_source(shader_id_, 1, &source_string, nullptr);
-        }
-
-        bool compile()
-        {
-            detail::compile_shader(shader_id_);
-
-            bool success = detail::get_shader_status(shader_id_, shader_status::compile_status);
-            if (!success)
-            {
-                error_message_ = detail::get_shader_info_log(shader_id_);
-            }
-
-            return success;
-        }
-
-        bool enabled() const
-        {
-            return detail::is_shader(shader_id_);
-        }
-
-        unsigned get() const
-        {
-            return shader_id_;
-        }
-
-        void reset()
-        {
-            detail::delete_shader(shader_id_);
-        }
-
-        std::string get_error_message() const
-        {
-            return error_message_;
-        }
-
-    private:
-        unsigned shader_id_;
-        std::string error_message_;
-    };
-
-    class shader_program
-    {
-    public:
-        shader_program()
-            : program_id_(detail::create_program())
-        {
-
-        }
-
-        ~shader_program()
-        {
-            shader_set_.clear();
-        }
-
-    public:
-        void attach(shader const& _shader)
-        {
-            unsigned shader_id = _shader.get();
-            detail::attach_shader(program_id_, shader_id);
-            shader_set_.emplace(shader_id);
-        }
-
-        void detach(shader const& _shader)
-        {
-            unsigned shader_id = _shader.get();
-            detail::attach_shader(program_id_, shader_id);
-            shader_set_.erase(shader_id);
-        }
-
-        bool link()
-        {
-            detail::link_program(program_id_);
-            bool success = detail::get_program_status(program_id_, program_status::link_status);
-
-            if (!success)
-            {
-                error_message_ = detail::get_program_info_log(program_id_);
-            }
-            else
-            {
-                for (auto shader_id : shader_set_)
-                {
-                    detail::delete_shader(shader_id);
-                }
-
-                shader_set_.clear();
-            }
-
-            return success;
-        }
-
-        bool enabled() const
-        {
-            return detail::is_program(program_id_);
-        }
-
-        void use()
-        {
-            detail::use_program(program_id_);
-        }
-
-        unsigned get() const
-        {
-            return program_id_;
-        }
-
-        void reset()
-        {
-            detail::delete_program(program_id_);
-        }
-
-        std::string get_error_message() const
-        {
-            return error_message_;
-        }
-
-    public:
-        void set_bool(const std::string &name, bool value)
-        {
-            auto loc = detail::get_uniform_location(program_id_, name.c_str());
-            detail::uniform(loc, value ? 1 : 0);
-        }
-
-        void set_int(const std::string &name, int value)
-        {
-            auto loc = detail::get_uniform_location(program_id_, name.c_str());
-            detail::uniform(loc, value);
-        }
-
-        void set_float(const std::string &name, float value)
-        {
-            auto loc = detail::get_uniform_location(program_id_, name.c_str());
-            detail::uniform(loc, value);
-        }
-
-        void set_vec2(const std::string &name, const glm::vec2 &value)
-        {
-            auto loc = detail::get_uniform_location(program_id_, name.c_str());
-            detail::uniform2(loc, 1, glm::value_ptr(value));
-        }
-        void set_vec2(const std::string &name, float x, float y)
-        {
-            auto loc = detail::get_uniform_location(program_id_, name.c_str());
-            detail::uniform2(loc, x, y);
-        }
-
-        void set_vec3(const std::string &name, const glm::vec3 &value)
-        {
-            auto loc = detail::get_uniform_location(program_id_, name.c_str());
-            detail::uniform3(loc, 1, glm::value_ptr(value));
-        }
-        void set_vec3(const std::string &name, float x, float y, float z)
-        {
-            auto loc = detail::get_uniform_location(program_id_, name.c_str());
-            detail::uniform3(loc, x, y, z);
-        }
-
-        void set_vec4(const std::string &name, const glm::vec4 &value)
-        {
-            auto loc = detail::get_uniform_location(program_id_, name.c_str());
-            detail::uniform4(loc, 1, glm::value_ptr(value));
-        }
-        void set_vec4(const std::string &name, float x, float y, float z, float w)
-        {
-            auto loc = detail::get_uniform_location(program_id_, name.c_str());
-            detail::uniform4(loc, x, y, z, w);
-        }
-
-        void set_mat4(const std::string &name, const glm::mat4 &mat)
-        {
-            auto loc = detail::get_uniform_location(program_id_, name.c_str());
-            detail::uniform_matrix(loc, 1, false, glm::value_ptr(mat));
-        }
-    private:
-        unsigned program_id_;
-        std::set<unsigned> shader_set_;
-        std::string error_message_;
-    };
-
-    //
-    //顶点数组对象： Vertex  Array  Object，VAO
-    //顶点缓冲对象： Vertex  Buffer Object，VBO
-    //索引缓冲对象： Element Buffer Object，EBO 或
-    //索引缓冲对象： Index   Buffer Object，IBO
-    //
-
-    namespace detail
-    {
-        template<unsigned N>
-        struct buffer_t
-        {
-            using value_type = decltype(N);
-            constexpr static auto value = value_type{ N };
-            constexpr static auto first = value_type{ 0 };
-            constexpr static auto second = value_type{ 1 };
-            constexpr static auto third = value_type{ 2 };
-            constexpr static auto fourth = value_type{ 3 };
-            constexpr static auto fifth = value_type{ 4 };
-            constexpr static auto sixth = value_type{ 5 };
-            constexpr static auto seventh = value_type{ 6 };
-
-            std::array<value_type, value> buffer{};
-
-            constexpr value_type get(value_type index = 0)
-            {
-                return buffer.at(index);
-            }
-        };
-
-        template<unsigned N>
-        struct texture_t
-        {
-            using value_type = decltype(N);
-            constexpr static auto value = N;
-
-            std::array<value_type, value> texture{};
-
-            constexpr value_type get(value_type index = 0)
-            {
-                return texture.at(index);
-            }
-        };
-
-        struct vertex_attribute
-        {
-            //
-            //loc_in_vs  :   指定要配置的顶点属性。
-            //               在顶点着色器中使用layout(location = 0)
-            //               定义了position顶点属性的位置值(Location)
-            //
-            //loc_t_size :   指定顶点属性的大小。顶点属性是一个vec3，它由3个值组成，所以大小是3
-            //
-            //data_t     :   指定数据的类型，这里是GL_FLOAT(GLSL中vec*都是由浮点数值组成的)
-            //
-            //normalized :   是否希望数据被标准化(Normalize)。
-            //               如果我们设置为GL_TRUE，
-            //               所有数据都会被映射到0（对于有符号型signed数据是-1）到1之间。
-            //
-            //stride     :   步长(Stride)，它告诉我们在连续的顶点属性组之间的间隔。
-            //               要注意的是如果这个数组是紧密排列的（在两个顶点属性之间没有空隙）
-            //               我们也可以设置为0来让OpenGL决定具体步长是多少（只有当数值是紧密排列时才可用）
-            //               一旦有更多的顶点属性，必须更小心地定义每个顶点属性之间的间隔。
-            //               这个参数的意思简单说就是从这个属性第二次出现的地方到整个数组0位置之间有多少字节
-            //
-            //next       :   参数的类型是void*，所以需要进行强制类型转换。
-            //               它表示位置数据在缓冲中起始位置的偏移量(Offset)
-            //
-            void set(int loc_in_vs,
-                unsigned loc_t_size,
-                data_type data_t,
-                bool normalized,
-                unsigned stride, int next)
-            {
-                detail::set_attribute(loc_in_vs,
-                    loc_t_size,
-                    data_t,
-                    normalized,
-                    stride,
-                    reinterpret_cast<void*>(next));
-                detail::enable_vertex_attrib_array(loc_in_vs);
-            }
-        };
-
-        struct texture_attribute
-        {
-            void set(texture_feature feature, int value)
-            {
-                detail::texture_parameter(texture_type::_2d, feature, value);
-            }
-
-            void set(texture_feature feature, float value)
-            {
-                detail::texture_parameter(texture_type::_2d, feature, value);
-            }
-
-            void set(texture_feature feature, float const* values)
-            {
-                detail::texture_parameter_vector(texture_type::_2d, feature, values);
-            }
-        };
-
-        struct copy_buffer_data
-        {
-            void from(void const* data, int size, buffer_usage_type usage_type = buffer_usage_type::static_draw)
-            {
-                detail::buffer_data(buffer_type::array_buffer, size, data, usage_type);
-            }
-        };
-
-        struct copy_element_data
-        {
-            void from(void const* data, int size, buffer_usage_type usage_type = buffer_usage_type::static_draw)
-            {
-                detail::buffer_data(buffer_type::element_array_buffer, size, data, usage_type);
-            }
-        };
-
-        struct copy_texture_data
-        {
-            int width;
-            int height;
-
-            void from(std::string const& image_file = ""s, bool flip = false)
-            {
-                if (!image_file.empty())
-                {
-                    if (flip)
-                    {
-                        stbi_set_flip_vertically_on_load(flip);
-                    }
-
-                    int comp;
-                    auto data = stbi_load(image_file.c_str(), &width, &height, &comp, 0);
-                    if (data)
-                    {
-                        texture_format format;
-                        if (comp == 1)format = texture_format::red;
-                        else if (comp == 3)format = texture_format::rgb;
-                        else if (comp == 4)format = texture_format::rgba;
-                        else
-                        {
-                            //error
-                            stbi_image_free(data);
-                            return;
-                        }
-
-                        detail::texture_image_2d(0,
-                            format,
-                            width, height,
-                            format,
-                            pixel_data_type::_unsigned_byte,
-                            data);
-                    }
-                    stbi_image_free(data);
-                }
-            }
-
-            void create_mipmap()
-            {
-                detail::texture_create_mipmap();
-            }
-        };
-
-        template<unsigned N, template<unsigned> typename BufferT>
-        struct vao_t : BufferT<N>
-        {
-            vao_t()
-            {
-                detail::create_vertex_arrays(this->buffer.data(), N);
-
-            }
-
-            ~vao_t()
-            {
-                detail::delete_vertex_arrays(static_cast<unsigned*>(this->buffer.data()), N);
-            }
-
-            void bind(typename BufferT<N>::value_type index = 0)
-            {
-                detail::bind_vertex_array(this->get(index));
-            }
-
-            void unbind()
-            {
-                detail::unbind_vertex_array();
-            }
-        };
-
-        template<unsigned N, template<unsigned> typename BufferT>
-        struct vbo_t : BufferT<N>, copy_buffer_data, vertex_attribute
-        {
-            vbo_t()
-            {
-                detail::create_buffers(this->buffer.data(), N);
-            }
-
-            ~vbo_t()
-            {
-                detail::delete_buffers(this->buffer.data(), N);
-            }
-
-            void bind(typename BufferT<N>::value_type index = 0)
-            {
-                detail::bind_buffer(buffer_type::array_buffer, this->get(index));
-            }
-
-            void unbind()
-            {
-                detail::unbind_buffer(buffer_type::array_buffer);
-            }
-        };
-
-        template<unsigned N, template<unsigned> typename BufferT>
-        struct ebo_t : BufferT<N>, copy_element_data
-        {
-            ebo_t()
-            {
-                detail::create_buffers(this->buffer.data(), N);
-            }
-
-            ~ebo_t()
-            {
-                detail::delete_buffers(this->buffer.data(), N);
-            }
-
-            void bind(typename BufferT<N>::value_type index = 0)
-            {
-                detail::bind_buffer(buffer_type::element_array_buffer, this->get(index));
-            }
-        };
-
-        template<unsigned N, template<unsigned> typename TextureT>
-        struct texture_2d_t : texture_t<N>, texture_attribute, copy_texture_data
-        {
-            texture_2d_t()
-            {
-                detail::create_textures(this->texture.data(), N);
-            }
-
-            void bind(typename texture_t<N>::value_type index = 0)
-            {
-                detail::bind_texture(texture_type::_2d, this->get(index));
-            }
-
-            void active(typename texture_t<N>::value_type index = 0)
-            {
-                auto actived = this->get(index);
-                if (actived > 0)
-                {
-                    detail::texture_active(GL_TEXTURE0 + actived - 1);
-                }
-            }
-        };
-    }
-
-    template<unsigned N>
-    using multi_vao = detail::vao_t<N, detail::buffer_t>;
-    template<unsigned N>
-    using multi_vbo = detail::vbo_t<N, detail::buffer_t>;
-    template<unsigned N>
-    using multi_ebo = detail::ebo_t<N, detail::buffer_t>;
-    template<unsigned N>
-    using multi_texture2d = detail::texture_2d_t<N, detail::texture_t>;
-
-    using single_vao = detail::vao_t<1, detail::buffer_t>;
-    using single_vbo = detail::vbo_t<1, detail::buffer_t>;
-    using single_ebo = detail::ebo_t<1, detail::buffer_t>;
-    using single_texture2d = detail::texture_2d_t<1, detail::texture_t>;
-
-    class camera
-    {
-    public:
-        enum class movement
-        {
-            forwrad,
-            backward,
-            left,
-            right,
-        };
-
-        //欧拉角：俯仰角(Pitch)、偏航角(Yaw)和滚转角(Roll)
-        constexpr static float yaw = -90.0f;
-        constexpr static float pitch = 0.0f;
-
-        constexpr static float speed = 2.5f;
-        constexpr static float sensitivty = 0.1f; //灵敏度
-        constexpr static float zoom = 45.0f;
-    public:
-        camera(glm::vec3 _pos = { 0.0f,0.0f,0.0f })
-            : position_{ _pos }
-            , up_{ 0.0f,1.0f,0.0f }
-            , front_{ 0.0f,0.0f,-1.0f }
-            , right_{ 1.0f,0.0f,0.0f }
-            , world_up_{ 0.0f,1.0f,0.0f }
-        {
-            update();
-        }
-    public:
-        glm::mat4 get_view() const
-        {
-            auto view = glm::lookAt(position_, position_ + front_, up_);
-            return view;
-        }
-
-        glm::mat4 get_look() const
-        {
-            return get_view();
-        }
-
-        glm::mat4 lookat() const
-        {
-            return get_view();
-        }
-
-        float get_zoom() const
-        {
-            return zoom_;
-        }
-
-        auto get_position() const
-        {
-            return position_;
-        }
-
-    public:
-        void key_press(movement direction, float delta_time)
-        {
-            auto velocity = speed * delta_time;
-            switch (direction)
-            {
-            case movement::forwrad:
-                position_ += front_ * velocity;
-                break;
-            case movement::backward:
-                position_ -= front_ * velocity;
-                break;
-            case movement::left:
-                position_ += right_ * velocity;
-                break;
-            case movement::right:
-                position_ -= right_ * velocity;
-                break;
-            default:
-                break;
-            }
-        }
-
-        void mouse_move(float xoffset, float yoffset, bool constrain_pitch = true)
-        {
-            xoffset *= sensitivty;
-            yoffset *= sensitivty;
-
-            yaw_ += xoffset;
-            pitch_ += yoffset;
-
-            if (constrain_pitch)
-            {
-                if (pitch_ > 89.9f)pitch_ = 89.9f;
-                if (pitch_ < -89.9f)pitch_ = -89.9f;
-            }
-
-            update();
-        }
-
-        void scroll(float yoffset)
-        {
-            if (zoom_ >= 1.0f && zoom_ <= 45.0f) zoom_ -= yoffset;
-            if (zoom_ <= 1.0f) zoom_ = 1.0f;
-            if (zoom_ >= 45.0f) zoom_ = 45.0f;
-        }
-    private:
-        void update()
-        {
-            auto vfront = glm::vec3{
-                std::cos(glm::radians(yaw_)) * std::cos(glm::radians(pitch_)),
-                std::sin(glm::radians(pitch_)),
-                std::sin(glm::radians(yaw_)) * std::cos(glm::radians(pitch_)),
-            };
-
-            front_ = glm::normalize(vfront);
-            right_ = glm::normalize(glm::cross(front_, world_up_));
-            up_ = glm::normalize(glm::cross(right_, front_));
-        }
-    private:
-        glm::vec3 position_;
-        glm::vec3 up_;
-        glm::vec3 front_;
-        glm::vec3 right_;
-        glm::vec3 world_up_;
-
-        float yaw_ = camera::yaw;
-        float pitch_ = camera::pitch;
-        float zoom_ = camera::zoom;
-    };
-}
-
-//gl::function
-namespace gl {
-
-    void clear_color(float red, float green, float blue, float alpha = 1.0f)
-    {
-        detail::clear_color(red, green, blue, alpha);
-    }
-
-    void clear(bit_field mask)
-    {
-        detail::clear(mask);
-    }
-
-    bool enable_depth_test(bool enable = true)
-    {
-        return detail::enabled(enable_status::depth_test, -1, enable);
-    }
-
-    void view_port(int x, int y, int width, int height)
-    {
-        detail::view_port(x, y, width, height);
-    }
-
-    void draw_arrays(draw_mode mode, int first, int count)
-    {
-        detail::draw_arrays(mode, first, count);
-    }
-
-    void draw_elements(draw_mode mode, int count, data_type dt, void const* indices)
-    {
-        detail::draw_elements(mode, count, dt, indices);
-    }
-
-    shader make_vertex_shader(std::string const& source)
-    {
-        return make<shader>(shader_type::vertex_shader, source);
-    }
-
-    shader make_fragment_shader(std::string const& source)
-    {
-        return make<shader>(shader_type::fragment_shader, source);
-    }
-
-    auto make_empty_program()
-    {
-        return make<shader_program>();
-    }
-
-    auto make_shader_program(std::string const& vs, std::string const& fs)
-    {
-        auto sp = make_empty_program();
-        std::string err;
-
-        auto vss = make_vertex_shader(vs);
-        if (!vss.compile())
-        {
-            err = vss.get_error_message();
-            sp.reset();
-            return sp;
-        }
-
-        auto fss = make_fragment_shader(fs);
-        if (!fss.compile())
-        {
-            err = fss.get_error_message();
-            sp.reset();
-            return sp;
-        }
-
-        sp.attach(vss);
-        sp.attach(fss);
-
-        if (!sp.link())
-        {
-            err = sp.get_error_message();
-            sp.detach(vss);
-            sp.detach(fss);
-            sp.reset();
-            return sp;
-        }
-
-        return sp;
-    }
-
-    auto make_single_texture(std::string const& texture_file, bool flip = false)
-    {
-        auto single_texture2d = make<gl::single_texture2d>();
-        single_texture2d.bind(0);
-
-        single_texture2d.set(gl::texture_feature::wrap_s, GL_REPEAT);
-        single_texture2d.set(gl::texture_feature::wrap_t, GL_REPEAT);
-        single_texture2d.set(gl::texture_feature::min_filter, GL_LINEAR);
-        single_texture2d.set(gl::texture_feature::mag_filter, GL_LINEAR);
-
-        single_texture2d.from(texture_file.c_str(), flip);
-        single_texture2d.create_mipmap();
-
-        return single_texture2d;
-    }
-}
-
-
-#endif //defined(_MSC_VER
+#endif //defined(_MSC_VER)
 
 #else //defined(_WIN32) || defined(WIN32) || defined(__WIN32__)
 
-#if define(ANDROID) || define(__ANDROID__)
-
-#if __ANDROID_API__ >= 24
-
-/**
-* stl
-*/
-
-#include <string>
-#include <vector>
-#include <map>
-#include <memory>
-#include <sstream>
-#include <fstream>
-#include <cstdlib>
-#include <type_traits>
-#include <algorithm>
+#if defined(ANDROID) || defined(__ANDROID__)
 
 /**
 *  ndk
@@ -2067,10 +727,6 @@ namespace gl {
 #include <gles2/gl2ext.h>
 #include <gles3/gl32.h>
 #include <gles3/gl3ext.h>
-
-#include <glm/glm.hpp>
-#include <glm/gtc/matrix_transform.hpp>
-#include <glm/gtc/type_ptr.hpp>
 
 /**
 * jni
@@ -2102,18 +758,14 @@ extern AAssetManager* g_asset_managerp;                                         
 #define LOGV(...)
 #endif
 
+#endif //define(ANDROID) || define(__ANDROID__)
 
-                                                                                   /**
-                                                                                   * freeze lib
-                                                                                   */
+#endif //defined(_WIN32) || defined(WIN32) || defined(__WIN32__)
 
-                                                                                   //for load texture
-#include "stb_image.h"
 
-                                                                                   //for load 3d model
-#include <assimp/Importer.hpp>
-#include <assimp/scene.h>
-#include <assimp/postprocess.h>
+/**
+* freeze lib
+*/
 
 #include "core.h"
 #include "any_buffer.h"
@@ -2127,12 +779,6 @@ extern AAssetManager* g_asset_managerp;                                         
 #include "stencil.h"
 #include "light.h"
 #include "material.h"
-
-#endif //__ANDROID_API__ >= 24
-
-#endif //define(ANDROID) || define(__ANDROID__)
-
-#endif //defined(_WIN32) || defined(WIN32) || defined(__WIN32__)
 
 //////////////////////////////////////////////////////////////////////////
 #endif

@@ -5,8 +5,8 @@
 #ifndef CDS_CORE_H
 #define CDS_CORE_H
 
+#if defined(ANDROID) || defined(__ANDROID__)
 #include <bits/shared_ptr.h>
-
 namespace freeze{
 
     template<typename...>
@@ -24,6 +24,8 @@ namespace freeze{
         }
     };
 }
+
+#endif
 
 namespace freeze{
 
