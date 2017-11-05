@@ -8,7 +8,7 @@ freeGL 3D基础类库，[glfw](http://www.glfw.org/)库的c++浅层封装,简化[OpenGL](http
 
 ## Introduction
 
-freeGL，基于OpenGL3.3及以上版本、c++14、Windows原生简明封装。
+freeGL，是基于OpenGL3.3及以上版本、c++17的Windows及Android原生简明封装。
 
 ## Download
 
@@ -18,67 +18,77 @@ freeGL，基于OpenGL3.3及以上版本、c++14、Windows原生简明封装。
 
 1. 编译glfw动态链接库;
 2. 程序需要在源码中包含`glad.c`;
-3. 设置好文件引用路径后，程序中只需`#include <free_gl.h>`
+3. 设置好文件引用路径后，代码中只需`#include <common.h>`
 3. 编译并运行示例。
 
 ```c++
-#include <free_gl.h>
+#include <common.h>
 
 int __stdcall wWinMain(HINSTANCE hInstance, HINSTANCE, LPWSTR, int)
 {
     //初始化
-    auto free_gl = make<glfw::glfw>();
-    free_gl.set_opengl_version(3, 3);
-    free_gl.set_opengl_core_profile();
+    auto freegl = freeze::make<glfw::glfw>(3, 3);
     
     //窗口
-    auto free_window = make<glfw::window>(800, 600, "hello"s);
-    free_window.make_context_current();
-    free_window.set_key_callback([](glfw::window::pointer w, int key, int scancode, int action, int mods) {
-    	glfw::set_window_should_close(w);
+    auto window = freeze::make<glfw::window>(600, 400);
+    window.make_context_current();
+    window.set_key_callback([](glfw::window::pointer w, int key, int scancode, int action, int mods) {
+        glfw::set_window_should_close(w);
     });
-    free_window.set_frame_buffer_size_callback([](glfw::window::pointer w, int width, int height) {
-    	gl::view_port(0, 0, width, height);
+    window.set_frame_buffer_size_callback([](glfw::window::pointer w, int width, int height) {
+        glViewport(0, 0, width, height);
     });
     
     //加载glad
-    free_gl.load_loader();
-    free_gl.swap_interval(1);
+    freegl.load_loader();
+    //更佳的双缓冲切换
+    freegl.swap_interval(1);
     
     //着色器程序
-    auto shader_program = gl::make_shader_program("vertex.glsl"s, "fragment.glsl"s);
+    auto shader = freeze::make_program();
+    shader.compile(
+        "#version 330 core                     \n"
+        "layout(location=0)in vec3 pos;        \n"
+        "void main(){                          \n"
+        "    gl_Position = vec4(pos,1.0f);     \n"
+        "}                                     \n"s,
+        "#version 330 core                     \n"
+        "out vec4 color;                       \n"
+        "void main(){                          \n"
+        "    color = vec4(0.4f,0.3f,0.2f,1.0f);\n"
+        "}                                     \n"s);
     
     //顶点数据
-    float verties[] = {	/*左*/-0.5f,-0.5f,1.0f,/*右*/0.5f,-0.5f,1.0f,/*顶*/0.0f, 0.5f,1.0f,};
-    auto single_vao = make<gl::single_vao>();
-    auto single_vbo = make<gl::single_vbo>();
-    
-    //传递到GPU
-    single_vao.bind(0);
-    {
-    	single_vbo.bind(0);
-    	{
-    		single_vbo.from(verties, sizeof(verties));
-    		single_vbo.set(0, 3, gl::data_type::_float, true, 0, 0);
-    	}
-    	single_vbo.unbind();
-    }
-    single_vao.unbind();
+    float vertices[] = {	
+        /*左*/-0.5f,-0.5f,1.0f,
+        /*右*/0.5f,-0.5f,1.0f,
+        /*顶*/0.0f, 0.5f,1.0f, };
+
+    auto vao = freeze::make_vertex_array_buffer();
+    vao.bind();
+    auto vbo = freeze::make_vertex_buffer();
+    vbo.bind();
+    vbo.copy_data(vertices, sizeof(vertices));
+    auto vbo_vertex = freeze::make_vertex();
+    vbo_vertex.set(0, 3, GL_FLOAT, 3 * sizeof(float), 0);
+    vbo.unbind();
+    vao.unbind();
     
     //渲染
-    while (!free_window.should_close())
+    while (!window.should_close())
     {
-    	gl::clear_color(0.2f, 0.3f, 0.4f);
-    	gl::clear(gl::bit_field::color_buffer_bit);
-    
-    	shader_program.use();
-    	single_vao.bind(0);
-    
-    	gl::draw_arrays(gl::draw_mode::triangles, 0, 3);
-    
-    	free_window.swap_buffers();
-    	free_gl.poll_events();
+    	auto color = freeze::make_color(0.1f, 0.1f, 0.1f, 1.0f);
+        color.clear();
+
+        shader.use();
+        vao.bind();
+        glDrawArrays(GL_TRIANGLES, 0, 3);
+        vao.unbind();
+
+        window.swap_buffers();
+        freegl.poll_events();
     }
+
     return 0;
 }
 ```

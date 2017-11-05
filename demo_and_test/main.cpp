@@ -15,7 +15,7 @@ int main()
 
     freegl.load_loader();
     freegl.swap_interval(1);
-
+        
     auto render = std::make_shared<renderer>();
     render->init();
 
@@ -31,7 +31,7 @@ int main()
         freeze::depth::clear();
 
         render->draw();
-
+        
         window.swap_buffers();
         freegl.poll_events();
     }
