@@ -28,8 +28,8 @@ namespace freeze {
         float x, y, z;   //Position
         float nx, ny, nz;//Normals;
         float u, v;      //TexCoords;
-        float tx, ty, tz;//Tangent
-        float bx, by, bz;//Bitangent
+        float tx, ty, tz;//Tangent 切线
+        float bx, by, bz;//Bitangent 副切线
     };
 
     enum class texture_type {
@@ -40,7 +40,7 @@ namespace freeze {
         emissive = aiTextureType_EMISSIVE,
         height = aiTextureType_HEIGHT,
         normals = aiTextureType_NORMALS,
-        shiniess = aiTextureType_SHININESS,
+        shininess = aiTextureType_SHININESS,
         opacity = aiTextureType_OPACITY,
         displacement = aiTextureType_DISPLACEMENT,
         lightmap = aiTextureType_LIGHTMAP,
@@ -85,19 +85,19 @@ namespace freeze {
     template<typename Type, typename Name>
     struct texture_map {
         texture_map() {
-            map_type_name.insert(std::make_pair(Type::none,         "texture_none"));
-            map_type_name.insert(std::make_pair(Type::diffuse,      "texture_diffuse"));
-            map_type_name.insert(std::make_pair(Type::specular,     "texture_specular"));
-            map_type_name.insert(std::make_pair(Type::ambient,      "texture_ambient"));
-            map_type_name.insert(std::make_pair(Type::emissive,     "texture_emissive"));
-            map_type_name.insert(std::make_pair(Type::height,       "texture_height"));
-            map_type_name.insert(std::make_pair(Type::normals,      "texture_normals"));
-            map_type_name.insert(std::make_pair(Type::shiniess,     "texture_shiniess"));
-            map_type_name.insert(std::make_pair(Type::opacity,      "texture_opacity"));
-            map_type_name.insert(std::make_pair(Type::displacement, "texture_displacement"));
-            map_type_name.insert(std::make_pair(Type::lightmap,     "texture_lightmap"));
-            map_type_name.insert(std::make_pair(Type::reflection,   "texture_reflection"));
-            map_type_name.insert(std::make_pair(Type::unknown,      "texture_unknown"));
+            map_type_name.insert(std::make_pair(Type::none,         "none"));
+            map_type_name.insert(std::make_pair(Type::diffuse,      "diffuse"));
+            map_type_name.insert(std::make_pair(Type::specular,     "specular"));
+            map_type_name.insert(std::make_pair(Type::ambient,      "ambient"));
+            map_type_name.insert(std::make_pair(Type::emissive,     "emissive"));
+            map_type_name.insert(std::make_pair(Type::height,       "height"));
+            map_type_name.insert(std::make_pair(Type::normals,      "normals"));
+            map_type_name.insert(std::make_pair(Type::shininess,     "shininess"));
+            map_type_name.insert(std::make_pair(Type::opacity,      "opacity"));
+            map_type_name.insert(std::make_pair(Type::displacement, "displacement"));
+            map_type_name.insert(std::make_pair(Type::lightmap,     "lightmap"));
+            map_type_name.insert(std::make_pair(Type::reflection,   "reflection"));
+            map_type_name.insert(std::make_pair(Type::unknown,      "unknown"));
         }
 
         Name get(Type type) const {
@@ -113,6 +113,15 @@ namespace freeze {
             auto name = get(type);
             if (!name.empty()) {
                 name += to_string(index);
+            }
+            return name;
+        }
+
+        Name get(std::string const& struct_name,Type type) const{
+            auto name=struct_name +".";
+            auto type_name = get(type);
+            if(!name.empty()){
+                name += type_name;
             }
             return name;
         }
@@ -143,73 +152,12 @@ namespace freeze {
             return mDelay;
         }
 
-        void draw(program const &pid, texture_map<texture_type, std::string> const &tmap) {
-            auto none = 1;
-            auto diffuse = 1;
-            auto specular = 1;
-            auto ambient = 1;
-            auto emissive = 1;
-            auto height = 1;
-            auto normals = 1;
-            auto shiniess = 1;
-            auto opacity = 1;
-            auto displacement = 1;
-            auto lightmap = 1;
-            auto reflection = 1;
-            auto unknown = 1;
+        void draw(program const &shader, texture_map<texture_type, std::string> const &tmap) {
 
-            auto index = 0;
-            for (auto &texture_desc : mTextureDescs) {
-                glActiveTexture(GL_TEXTURE0 + index);
-                std::string name;
-                switch (texture_desc.type) {
-                    case texture_type::none         :
-                        name = tmap.get(texture_desc.type, none++);
-                        break;
-                    case texture_type::diffuse      :
-                        name = tmap.get(texture_desc.type, diffuse++);
-                        break;
-                    case texture_type::specular     :
-                        name = tmap.get(texture_desc.type, specular++);
-                        break;
-                    case texture_type::ambient      :
-                        name = tmap.get(texture_desc.type, ambient++);
-                        break;
-                    case texture_type::emissive     :
-                        name = tmap.get(texture_desc.type, emissive++);
-                        break;
-                    case texture_type::height       :
-                        name = tmap.get(texture_desc.type, height++);
-                        break;
-                    case texture_type::normals      :
-                        name = tmap.get(texture_desc.type, normals++);
-                        break;
-                    case texture_type::shiniess     :
-                        name = tmap.get(texture_desc.type, shiniess++);
-                        break;
-                    case texture_type::opacity      :
-                        name = tmap.get(texture_desc.type, opacity++);
-                        break;
-                    case texture_type::displacement :
-                        name = tmap.get(texture_desc.type, displacement++);
-                        break;
-                    case texture_type::lightmap     :
-                        name = tmap.get(texture_desc.type, lightmap++);
-                        break;
-                    case texture_type::reflection   :
-                        name = tmap.get(texture_desc.type, reflection++);
-                        break;
-                    case texture_type::unknown      :
-                        name = tmap.get(texture_desc.type, unknown++);
-                        break;
-                    default:
-                        break;
-                }
-
-                pid.set_int(name, index);
-                texture_desc.instance.bind();
-
-                ++index;
+            if(material_name.empty()){
+                set_textures(shader,tmap);
+            }else{
+                set_material_textures(shader,tmap);
             }
 
             mVao.bind();
@@ -226,6 +174,10 @@ namespace freeze {
             }
 
             load_vertices();
+        }
+
+        void set_material(std::string const& name){
+            material_name = name;
         }
 
     private:
@@ -282,6 +234,94 @@ namespace freeze {
             mVao.unbind();
         }
 
+        void set_textures(program const& shader,texture_map<texture_type, std::string> const &tmap){
+            auto none = 1;
+            auto diffuse = 1;
+            auto specular = 1;
+            auto ambient = 1;
+            auto emissive = 1;
+            auto height = 1;
+            auto normals = 1;
+            auto shininess = 1;
+            auto opacity = 1;
+            auto displacement = 1;
+            auto lightmap = 1;
+            auto reflection = 1;
+            auto unknown = 1;
+
+            auto index = 0;
+            for (auto &texture_desc : mTextureDescs) {
+                glActiveTexture(GL_TEXTURE0 + index);
+                std::string name;
+                switch (texture_desc.type) {
+                    case texture_type::none         :
+                        //name = tmap.get(texture_desc.type, none++);
+                        break;
+                    case texture_type::diffuse      :
+                        name = tmap.get(texture_desc.type, diffuse++);
+                        break;
+                    case texture_type::specular     :
+                        name = tmap.get(texture_desc.type, specular++);
+                        break;
+                    case texture_type::ambient      :
+                        name = tmap.get(texture_desc.type, ambient++);
+                        break;
+                    case texture_type::emissive     :
+                        name = tmap.get(texture_desc.type, emissive++);
+                        break;
+                    case texture_type::height       :
+                        name = tmap.get(texture_desc.type, height++);
+                        break;
+                    case texture_type::normals      :
+                        name = tmap.get(texture_desc.type, normals++);
+                        break;
+                    case texture_type::shininess     :
+                        //name = tmap.get(texture_desc.type, shininess++);
+                        break;
+                    case texture_type::opacity      :
+                        //name = tmap.get(texture_desc.type, opacity++);
+                        break;
+                    case texture_type::displacement :
+                        //name = tmap.get(texture_desc.type, displacement++);
+                        break;
+                    case texture_type::lightmap     :
+                        name = tmap.get(texture_desc.type, lightmap++);
+                        break;
+                    case texture_type::reflection   :
+                        name = tmap.get(texture_desc.type, reflection++);
+                        break;
+                    case texture_type::unknown      :
+                        //name = tmap.get(texture_desc.type, unknown++);
+                        break;
+                    default:
+                        break;
+                }
+
+                shader.set_int(name, index);
+                texture_desc.instance.bind();
+
+                ++index;
+            }
+        }
+
+        void set_material_textures(program const& shader,texture_map<texture_type, std::string> const &tmap){
+            int index = 0;
+            for (auto &texture_desc : mTextureDescs){
+
+                glActiveTexture(GL_TEXTURE0+index);
+
+                auto name = tmap.get(material_name,texture_desc.type);
+                if(texture_desc.type == texture_type::shininess){
+                    shader.set_float(name,32.0f);
+                }else{
+                    shader.set_int(name,index);
+                    texture_desc.instance.bind();
+                }
+
+                ++index;
+            }
+        }
+
     private:
         std::vector<Vertex> mVertices;
         std::vector<GLuint> mIndices;
@@ -291,6 +331,8 @@ namespace freeze {
         element_buffer mEbo;
         //texture_map<texture_type,std::string> mTextureMap;
         bool mDelay; //是否为延迟的
+
+        std::string material_name;
     };
 }
 
@@ -322,6 +364,10 @@ namespace freeze {
             }
         }
 
+        void set_material(std::string const& name){
+            material_name = name;
+        }
+
         void load(std::string const &full_path_file) {
             auto pos = full_path_file.find_last_of("\\/");
             mDirectory = full_path_file.substr(0, pos);
@@ -348,6 +394,10 @@ namespace freeze {
             for (auto& sub_mesh : mMeshs) {
                 if (sub_mesh.is_delay()) {
                     sub_mesh.setup();
+                }
+
+                if(!material_name.empty()){
+                    sub_mesh.set_material(material_name);
                 }
             }
         }
@@ -385,6 +435,7 @@ namespace freeze {
                     vertex.TexCoords = glm::vec2{0.0f, 0.0f};
                 }
 
+                //切线与副切线，用于法线贴图
                 vertex.Tangent = glm::vec3{sub_mesh->mTangents[i].x, sub_mesh->mTangents[i].y,
                                            sub_mesh->mTangents[i].z};
                 vertex.Bitangent = glm::vec3{sub_mesh->mBitangents[i].x, sub_mesh->mBitangents[i].y,
@@ -405,17 +456,27 @@ namespace freeze {
             //材质
             aiMaterial *material = mScene->mMaterials[sub_mesh->mMaterialIndex];
 
+            //环境贴图
+            auto ambients = load_textures_delay(material, texture_type::ambient);
+            //漫射贴图
             auto diffuses = load_textures_delay(material, texture_type::diffuse);
+            //高光贴图
             auto speculars = load_textures_delay(material, texture_type::specular);
-            auto normals = load_textures_delay(material, texture_type::ambient);
+            //高度贴图
             auto heights = load_textures_delay(material, texture_type::height);
+            //放射光贴图
+            auto emissives = load_textures_delay(material,texture_type::emissive);
+            //法线贴图
+            auto normals = load_textures_delay(material,texture_type::normals);
 
             //纹理
             std::vector<TextureDesc> textures;
-            textures.insert(textures.end(), diffuses.begin(), diffuses.end());
-            textures.insert(textures.end(), speculars.begin(), speculars.end());
-            textures.insert(textures.end(), normals.begin(), normals.end());
-            textures.insert(textures.end(), heights.begin(), heights.end());
+            if(ambients.size()>0) textures.insert(textures.end(), ambients.begin(), ambients.end());
+            if(diffuses.size()>0) textures.insert(textures.end(), diffuses.begin(), diffuses.end());
+            if(speculars.size()>0)textures.insert(textures.end(), speculars.begin(), speculars.end());
+            if(heights.size()>0)  textures.insert(textures.end(), heights.begin(), heights.end());
+            if(emissives.size()>0)textures.insert(textures.end(), emissives.begin(), emissives.end());
+            if(normals.size()>0)  textures.insert(textures.end(), normals.begin(), normals.end());
 
             //返回网格对象
             return make<MeshType>(vertices, indices, textures);
@@ -440,7 +501,7 @@ namespace freeze {
                 }
 
                 if (!skip) {
-                    TextureDesc texture = {};
+                    TextureDesc texture = { };
 //                    //texture_desc_delay
 //                    texture.instance_data = texture_data_from_file(file);
 //                    texture.type = type;
@@ -466,23 +527,23 @@ namespace freeze {
         std::vector<char> texture_data_from_file(std::string const &path) {
             std::string filename = mDirectory + "/" + path;
 
-            std::vector<char> buffer;
-
-            std::ifstream ifs{filename,std::ios::in |std::ios::binary};
+            std::vector<char> vec_buffer;
+            std::ifstream ifs{filename};
             if (ifs.is_open()) {
                 ifs.seekg(0,std::ios_base::end);
                 auto length = ifs.tellg();
                 if(length <= 0){
-                    LOGE("texture_data_from_file(%s) length error.",filename.c_str());
-                    return buffer;
+                    LOGE("Error : texture_data_from_file(%s) length = %d",filename.c_str(),length);
+                    return vec_buffer;
                 }
+
                 ifs.seekg(0,std::ios_base::beg);
-                buffer.resize(length);
-                ifs.read(buffer.data(),length);
+                vec_buffer.resize(length);
+                ifs.read(vec_buffer.data(),length);
+
                 ifs.close();
             }
-
-            return buffer;
+            return vec_buffer;
         }
 
         ////////////////////////////////////////////////////////////////////////////////////////////
@@ -582,6 +643,8 @@ namespace freeze {
         std::string mDirectory;
         aiScene *mScene;
         texture_map<texture_type, std::string> mTextureMap;
+
+        std::string material_name;
     };
 }
 

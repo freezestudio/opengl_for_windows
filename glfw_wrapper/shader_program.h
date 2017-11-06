@@ -184,6 +184,7 @@ namespace freeze {
         void set_vec3(const std::string &name, const glm::vec3 &value) const
         {
             auto loc = get_loc(name);
+            if(loc < 0 )return;
             glUniform3fv(loc, 1, &value[0]);
         }
         void set_vec3(const std::string &name, float x, float y, float z) const
