@@ -216,7 +216,12 @@ namespace freeze {
 
         void draw_buffer(GLenum buf)
         {
+#if defined(WIN32) || defined(_WIN32) || defined(__WIN32__)
             glDrawBuffer(buf);
+#endif
+#if defined(ANDROID) || defined(__ANDROID__)
+            glDrawBuffers(1,&buf);
+#endif
             assert_error();
         }
 

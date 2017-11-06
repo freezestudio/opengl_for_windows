@@ -7,6 +7,7 @@
 
 #if defined(ANDROID) || defined(__ANDROID__)
 #include <bits/shared_ptr.h>
+
 namespace freeze{
 
     template<typename...>
@@ -25,7 +26,7 @@ namespace freeze{
     };
 }
 
-#endif
+#endif //defined(ANDROID) || defined(__ANDROID__)
 
 namespace freeze{
 
@@ -74,8 +75,6 @@ namespace freeze{
                     pT->destroy(ref());
                 }
             }
-
-            assert(object_name.use_count() <= 1);
         }
 
         auto ref() const{

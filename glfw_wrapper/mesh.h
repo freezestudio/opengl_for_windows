@@ -533,7 +533,7 @@ namespace freeze {
                 ifs.seekg(0,std::ios_base::end);
                 auto length = ifs.tellg();
                 if(length <= 0){
-                    LOGE("Error : texture_data_from_file(%s) length = %d",filename.c_str(),length);
+                    LOGE("Error : texture_data_from_file(%s) length = %d",filename.c_str(),static_cast<int>(length));
                     return vec_buffer;
                 }
 

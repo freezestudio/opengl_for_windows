@@ -24,6 +24,11 @@
 #include <glm/gtc/constants.hpp>//PI
 #include <glm/gtc/type_ptr.hpp>
 
+//for load 3d model
+#include <assimp/Importer.hpp>
+#include <assimp/scene.h>
+#include <assimp/postprocess.h>
+
 #if defined(_WIN32) || defined(WIN32) || defined(__WIN32__)
 #if defined(_MSC_VER)
 
@@ -45,11 +50,6 @@
 
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
-
-//for load 3d model
-#include <assimp/Importer.hpp>
-#include <assimp/scene.h>
-#include <assimp/postprocess.h>
 
 using namespace std::literals;
 namespace fs = std::experimental::filesystem;
@@ -710,7 +710,8 @@ namespace glfw {
 
 #endif //defined(_MSC_VER)
 
-#else //defined(_WIN32) || defined(WIN32) || defined(__WIN32__)
+#endif //defined(_WIN32) || defined(WIN32) || defined(__WIN32__)
+
 
 #if defined(ANDROID) || defined(__ANDROID__)
 
@@ -761,16 +762,19 @@ extern AAssetManager* g_asset_managerp;                                         
 
 #endif //define(ANDROID) || define(__ANDROID__)
 
-#endif //defined(_WIN32) || defined(WIN32) || defined(__WIN32__)
-
-
-#define assert_error()                        \
-auto err = glGetError();                      \
-if (err != GL_NO_ERROR)                       \
-{                                             \
-    LOGE("%s error : %d", __FUNCTION__, err); \
+#if defined(DEBUG) || defined(_DEBUG)
+inline void __assert_error__(char const* func)
+{
+    auto err = glGetError();
+    if(GL_NO_ERROR != err)
+    {
+        LOGE("%s error : %d",func,err);
+    }
 }
+#define assert_error()  __assert_error__(__FUNCTION__)
+#endif
 
+using namespace std::literals;
 /**
 * freeze lib
 */
