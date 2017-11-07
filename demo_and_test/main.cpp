@@ -1,6 +1,7 @@
 //
 //
 #include "common.h"
+
 #include "renderer.h"
 
 int main()

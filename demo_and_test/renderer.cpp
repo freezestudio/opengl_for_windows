@@ -188,7 +188,7 @@ void renderer::set_textures()
     plane_texture.bind();
     plane_texture.set_image(freeze::load_image_from_file("resource/textures/wood.png"s));
     plane_texture.mipmap();
-    plane_texture.set_min_filter(GL_LINEAR);
+    plane_texture.set_min_filter(GL_LINEAR_MIPMAP_LINEAR);
     plane_texture.set_mag_filter(GL_LINEAR);
     plane_texture.set_wrap_s(plane_texture.get_format() == GL_RGBA ? GL_CLAMP_TO_EDGE : GL_REPEAT);
     plane_texture.set_wrap_t(plane_texture.get_format() == GL_RGBA ? GL_CLAMP_TO_EDGE : GL_REPEAT);
@@ -205,7 +205,7 @@ void renderer::set_plane()
 
          25.0f, -0.5f,  25.0f,  0.0f, 1.0f, 0.0f,  25.0f,  0.0f,
         -25.0f, -0.5f, -25.0f,  0.0f, 1.0f, 0.0f,   0.0f, 25.0f,
-         25.0f, -0.5f, -25.0f,  0.0f, 1.0f, 0.0f,  25.0f, 10.0f,
+         25.0f, -0.5f, -25.0f,  0.0f, 1.0f, 0.0f,  25.0f, 25.0f,
     };
 
     plane_vao.bind();
