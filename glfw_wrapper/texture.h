@@ -216,6 +216,11 @@ namespace freeze {
             set_parameter(GL_TEXTURE_SWIZZLE_A, param);
         }
 
+        void set_border_color(GLfloat const* colors)
+        {
+            glTexParameterfv(Target, GL_TEXTURE_BORDER_COLOR, colors);
+        }
+
 //        void set_swizzle_rgba(GLfloat const* param)
 //        {
 //            set_parameter(GL_TEXTURE_SWIZZLE_RGBA, param);
@@ -247,23 +252,26 @@ namespace freeze
                        GLsizei width, GLsizei height, GLenum format,
                        GLenum type, const void* pixels)
         {
+            this->format = format;
             glTexImage2D(GL_TEXTURE_2D, 0, internalFormat,
                          width, height, 0, format, type, pixels);
             assert_error();
         }
+
         //别忘了先绑定
         void set_image(std::vector<char> const& data){
             int x,y,channels;
-            GLenum format;
+            
             auto image_data = stbi_load_from_memory((stbi_uc*)data.data(),data.size(),&x,&y,&channels,0);
             if(!image_data)return;
 
             switch (channels){
                 default:
-                case 3:format=GL_RGB;break;
-                case 4:format=GL_RGBA;break;
+                case 3:this->format=GL_RGB;break;
+                case 4:this->format=GL_RGBA;break;
             }
-            set_image(format,x,y,format,GL_UNSIGNED_BYTE,image_data);
+            glTexImage2D(GL_TEXTURE_2D, 0, this->format, 
+                x, y, 0, this->format, GL_UNSIGNED_BYTE, (void const*)image_data);
             stbi_image_free(image_data);
         }
 
@@ -271,6 +279,13 @@ namespace freeze
 //        void set_image(DataType&& data){
 //            set_image(data.format,data.x,data.y,data.format,GL_UNSIGNED_BYTE,data.data.data());
 //        }
+
+        GLenum get_format() const
+        {
+            return format;
+        }
+    private:
+        GLenum format = GL_RGB;
     };
 
     template<typename = void>

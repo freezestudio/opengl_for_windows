@@ -1,5 +1,10 @@
 #pragma once
 
+#define SCR_WIDTH 1280
+#define SCR_HEIGHT 720
+#define SHADOW_WIDTH 1024
+#define SHADOW_HEIGHT 1024
+
 class renderer : public std::enable_shared_from_this<renderer>
 {
 public:
@@ -28,19 +33,16 @@ private:
 private:
     void set_plane();
     void set_cube();
-    void set_quad();
-    void draw_plane();
+    void draw_scene(freeze::program& shader);
     void draw_cube();
-    void draw_quad();
 private:
     freeze::camera              scene_camera;
 private:
+    freeze::frame_buffer        depth_fbo;
     freeze::vertex_array_buffer plane_vao;
     freeze::vertex_array_buffer cube_vao;
-    freeze::vertex_array_buffer quad_vao;
+    freeze::program             depth_shader;
     freeze::program             shadow_shader;
-    freeze::program             quad_shader;
-    freeze::frame_buffer        shadow_fbo;
-    freeze::texture2d           shadow_texture;
-    freeze::texture2d           quad_texture;
+    freeze::texture2d           depth_texture;
+    freeze::texture2d           plane_texture;
 };

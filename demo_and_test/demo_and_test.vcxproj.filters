@@ -46,10 +46,10 @@
     <None Include="resource\shaders\shadow.frag">
       <Filter>资源文件\resource\shaders</Filter>
     </None>
-    <None Include="resource\shaders\quad.vert">
+    <None Include="resource\shaders\depth.vert">
       <Filter>资源文件\resource\shaders</Filter>
     </None>
-    <None Include="resource\shaders\quad.frag">
+    <None Include="resource\shaders\depth.frag">
       <Filter>资源文件\resource\shaders</Filter>
     </None>
   </ItemGroup>

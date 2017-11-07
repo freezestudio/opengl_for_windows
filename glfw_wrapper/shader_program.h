@@ -232,7 +232,7 @@ namespace freeze {
         auto get_loc(std::string const& name)  const
         {
             auto loc = glGetUniformLocation(this->ref(), name.c_str());
-            assert_error();
+            assert_name_error(name.c_str());
             return loc;
         }
 

@@ -163,8 +163,8 @@
     <ClInclude Include="renderer.h" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="resource\shaders\quad.frag" />
-    <None Include="resource\shaders\quad.vert" />
+    <None Include="resource\shaders\depth.frag" />
+    <None Include="resource\shaders\depth.vert" />
     <None Include="resource\shaders\shadow.frag" />
     <None Include="resource\shaders\shadow.vert" />
   </ItemGroup>

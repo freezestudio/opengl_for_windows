@@ -768,10 +768,42 @@ inline void __assert_error__(char const* func)
     auto err = glGetError();
     if(GL_NO_ERROR != err)
     {
-        LOGE("%s error : %d",func,err);
+        std::string errmsg;
+        switch (err)
+        {
+        case GL_INVALID_ENUM:errmsg = "枚举参数不合法"s; break;
+        case GL_INVALID_VALUE:errmsg = "值参数不合法"s; break;
+        case GL_INVALID_OPERATION:errmsg = "一个指令的状态对指令的参数不合法"s; break;
+        case GL_STACK_OVERFLOW:errmsg = "压栈操作造成栈上溢(Overflow)"s; break;
+        case GL_STACK_UNDERFLOW:errmsg = "弹栈操作时栈在最低点（栈下溢(Underflow)）"s; break;
+        case GL_OUT_OF_MEMORY:errmsg = "内存调用操作无法调用（足够的）内存"s; break;
+        case GL_INVALID_FRAMEBUFFER_OPERATION:errmsg = "读取或写入一个不完整的帧缓冲"s; break;
+        }
+        LOGE("%s error : %d, msg: %s\n",func,err,errmsg.c_str());
+    }
+}
+
+inline void __assert_error__(char const* func,char const* name)
+{
+    auto err = glGetError();
+    if (GL_NO_ERROR != err)
+    {
+        std::string errmsg;
+        switch (err)
+        {
+        case GL_INVALID_ENUM:errmsg = "枚举参数不合法"s; break;
+        case GL_INVALID_VALUE:errmsg = "值参数不合法"s; break;
+        case GL_INVALID_OPERATION:errmsg = "一个指令的状态对指令的参数不合法"s; break;
+        case GL_STACK_OVERFLOW:errmsg = "压栈操作造成栈上溢(Overflow)"s; break;
+        case GL_STACK_UNDERFLOW:errmsg = "弹栈操作时栈在最低点（栈下溢(Underflow)）"s; break;
+        case GL_OUT_OF_MEMORY:errmsg = "内存调用操作无法调用（足够的）内存"s; break;
+        case GL_INVALID_FRAMEBUFFER_OPERATION:errmsg = "读取或写入一个不完整的帧缓冲"s; break;
+        }
+        LOGE("%s error('%s') : %d, msg: %s\n", func, name, err, errmsg.c_str());
     }
 }
 #define assert_error()  __assert_error__(__FUNCTION__)
+#define assert_name_error(name) __assert_error__(__FUNCTION__,name)
 #endif
 
 using namespace std::literals;
