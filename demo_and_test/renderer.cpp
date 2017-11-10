@@ -4,7 +4,7 @@
 #include <stb_image.h>
 
 ////////////////////////////////////////////////////////////
-std::shared_ptr<renderer> renderer::ms_instance = nullptr;
+//std::shared_ptr<renderer> renderer::ms_instance = nullptr;
 ////////////////////////////////////////////////////////////
 
 renderer::renderer()
@@ -17,13 +17,13 @@ renderer::renderer()
 {    
 }
 
-std::shared_ptr<renderer> renderer::instance()
-{ 
-    assert(ms_instance);
-    return ms_instance;
-}
+//std::shared_ptr<renderer> renderer::instance()
+//{ 
+//    assert(ms_instance);
+//    return ms_instance;
+//}
 
-void renderer::init()
+void renderer::do_init()
 {
     ms_instance = shared_from_this();
 
@@ -119,32 +119,36 @@ void renderer::process_event(glfw::window::pointer window)
     }
 }
 
-void renderer::framebuffer_size_callback(glfw::window::pointer window, int width, int height)
-{
-    glViewport(0, 0, width, height);
-}
+//void renderer::framebuffer_size_callback(glfw::window::pointer window, 
+//    int width, int height)
+//{
+//    glViewport(0, 0, width, height);
+//}
 
-void renderer::mouse_callback(glfw::window::pointer window, double xpos, double ypos)
+void renderer::do_mouse_callback(/*glfw::window::pointer window,*/ 
+    double xpos, double ypos)
 {
     if (instance()->first_mouse)
     {
-        instance()->last_x = xpos;
-        instance()->last_y = ypos;
+        instance()->last_x = static_cast<float>(xpos);
+        instance()->last_y = static_cast<float>(ypos);
         instance()->first_mouse = false;
     }
 
-    auto xoffset = xpos - instance()->last_x;
-    auto yoffset = instance()->last_y - ypos;
+    auto xoffset = static_cast<float>(ypos) - instance()->last_x;
+    auto yoffset = instance()->last_y - static_cast<float>(ypos);
 
-    instance()->last_x = xpos;
-    instance()->last_y = ypos;
+    instance()->last_x = static_cast<float>(xpos);
+    instance()->last_y = static_cast<float>(ypos);
 
     instance()->scene_camera.process_mouse_movement(xoffset, yoffset);
 }
 
-void renderer::scroll_callback(glfw::window::pointer window, double xoffset, double yoffset)
+void renderer::do_scroll_callback(/*glfw::window::pointer window,*/ 
+    double xoffset, double yoffset)
 {
-    instance()->scene_camera.process_mouse_scroll(yoffset);
+    instance()->scene_camera.process_mouse_scroll(
+        static_cast<float>(yoffset));
 }
 
 void renderer::set_vertices()
@@ -155,12 +159,14 @@ void renderer::set_vertices()
 
 void renderer::set_shaders()
 {
-    shadow_shader.compile_file("resource/shaders/shadow.vert"s, "resource/shaders/shadow.frag"s);
+    shadow_shader.compile_file("resource/shaders/shadow.vert"s, 
+        "resource/shaders/shadow.frag"s);
     shadow_shader.use();
     shadow_shader.set_int("diffuseTexture"s, 0);
     shadow_shader.set_int("shadowMap"s, 1);
 
-    depth_shader.compile_file("resource/shaders/depth.vert"s, "resource/shaders/depth.frag"s);
+    depth_shader.compile_file("resource/shaders/depth.vert"s, 
+        "resource/shaders/depth.frag"s);
     
 }
 
@@ -168,7 +174,9 @@ void renderer::set_textures()
 {
     //阴影深度纹理
     depth_texture.bind();
-    depth_texture.set_image(GL_DEPTH_COMPONENT, SHADOW_WIDTH, SHADOW_HEIGHT, GL_DEPTH_COMPONENT, GL_FLOAT, nullptr);
+    depth_texture.set_image(GL_DEPTH_COMPONENT, 
+        SHADOW_WIDTH, SHADOW_HEIGHT, 
+        GL_DEPTH_COMPONENT, GL_FLOAT, nullptr);
     depth_texture.set_min_filter(GL_NEAREST);
     depth_texture.set_mag_filter(GL_NEAREST);
     depth_texture.set_wrap_s(GL_CLAMP_TO_BORDER);
@@ -186,12 +194,17 @@ void renderer::set_textures()
 
     //地板纹理
     plane_texture.bind();
-    plane_texture.set_image(freeze::load_image_from_file("resource/textures/wood.png"s));
+    plane_texture.set_image(
+        freeze::load_image_from_file("resource/textures/wood.png"s));
     plane_texture.mipmap();
     plane_texture.set_min_filter(GL_LINEAR_MIPMAP_LINEAR);
     plane_texture.set_mag_filter(GL_LINEAR);
-    plane_texture.set_wrap_s(plane_texture.get_format() == GL_RGBA ? GL_CLAMP_TO_EDGE : GL_REPEAT);
-    plane_texture.set_wrap_t(plane_texture.get_format() == GL_RGBA ? GL_CLAMP_TO_EDGE : GL_REPEAT);
+    plane_texture.set_wrap_s(
+        plane_texture.get_format() == GL_RGBA ? 
+        GL_CLAMP_TO_EDGE : GL_REPEAT);
+    plane_texture.set_wrap_t(
+        plane_texture.get_format() == GL_RGBA ? 
+        GL_CLAMP_TO_EDGE : GL_REPEAT);
     plane_texture.unbind();
 }
 

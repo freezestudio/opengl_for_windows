@@ -351,7 +351,7 @@ namespace  freeze {
         ifs.open(file, std::ios::in | std::ios::binary);
         if (ifs.bad())return buffer;
 
-        buffer.resize(file_size);
+        buffer.resize(static_cast<std::size_t>(file_size));
         ifs.read(buffer.data(), file_size);
         ifs.close();
 

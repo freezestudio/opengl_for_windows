@@ -38,6 +38,9 @@
     <ClInclude Include="renderer.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="renderer_base.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="resource\shaders\shadow.vert">
