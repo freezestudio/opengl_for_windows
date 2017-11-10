@@ -1,9 +1,9 @@
 //
-// Created by ysb on 2017/10/27.
+// Created by freezestudio on 2017/10/27.
 //
 
-#ifndef VENDOR_LIGHT_H
-#define VENDOR_LIGHT_H
+#ifndef FREEGL_LIGHT_H
+#define FREEGL_LIGHT_H
 
 namespace freeze {
     struct attenuation{
@@ -54,4 +54,4 @@ namespace freeze {
     };
 }
 
-#endif //VENDOR_LIGHT_H
+#endif //FREEGL_LIGHT_H

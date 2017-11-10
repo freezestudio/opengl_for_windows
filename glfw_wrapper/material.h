@@ -1,9 +1,9 @@
 //
-// Created by ysb on 2017/10/27.
+// Created by freezestudio on 2017/10/27.
 //
 
-#ifndef VENDOR_MATERIAL_H
-#define VENDOR_MATERIAL_H
+#ifndef FREEGL_MATERIAL_H
+#define FREEGL_MATERIAL_H
 
 namespace freeze {
     struct material {
@@ -45,4 +45,4 @@ namespace freeze {
     };
 }
 
-#endif //VENDOR_MATERIAL_H
+#endif //FREEGL_MATERIAL_H

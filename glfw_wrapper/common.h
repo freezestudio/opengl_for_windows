@@ -1,6 +1,9 @@
-//common.h
-#ifndef FREEZE_COMMON_H
-#define FREEZE_COMMON_H
+//
+// Created by freezestudio on 2017/10/11.
+//
+
+#ifndef FREEGL_COMMON_H
+#define FREEGL_COMMON_H
 
 
 /**
@@ -825,4 +828,4 @@ using namespace std::literals;
 #include "material.h"
 
 //////////////////////////////////////////////////////////////////////////
-#endif
+#endif //FREEGL_COMMON_H

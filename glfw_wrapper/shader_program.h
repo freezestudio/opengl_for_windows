@@ -1,43 +1,43 @@
 //
-// Created by ysb on 2017/10/11.
+// Created by freezestudio on 2017/10/11.
 //
 
-#ifndef CDS_SHADER_PROGRAM_H
-#define CDS_SHADER_PROGRAM_H
+#ifndef FREEGL_SHADER_PROGRAM_H
+#define FREEGL_SHADER_PROGRAM_H
 
 namespace freeze {
     template<typename = void>
-    struct void_program : make_object<void_program<void>,false>{
-        GLuint create(){
+    struct void_program : make_object<void_program<void>, false> {
+        GLuint create() {
             return glCreateProgram();
             assert_error();
         }
 
-        void destroy(GLuint program){
+        void destroy(GLuint program) {
             glDeleteProgram(program);
             assert_error();
         }
 
-        template<GLenum Target,typename = void>
-        struct void_shader : make_object<void_shader<Target,void>,false>{
-            GLuint create(){
+        template<GLenum Target, typename = void>
+        struct void_shader : make_object<void_shader<Target, void>, false> {
+            GLuint create() {
                 auto id = glCreateShader(Target);
                 assert_error();
-                if(id == 0){
+                if (id == 0) {
                     //GL_NO_ERROR 0
                     //GL_INVALID_ENUM 0x0500
                     std::string st;
-                    if(Target == GL_VERTEX_SHADER)st="vertex";
-                    else if(Target==GL_GEOMETRY_SHADER)st="geometry";
-                    else if(Target == GL_FRAGMENT_SHADER)st="fragment";
+                    if (Target == GL_VERTEX_SHADER)st = "vertex";
+                    else if (Target == GL_GEOMETRY_SHADER)st = "geometry";
+                    else if (Target == GL_FRAGMENT_SHADER)st = "fragment";
 
                     auto error = glGetError();
-                    LOGE("Create %s Shader Error -- %d",st.c_str(),error);
+                    LOGE("Create %s Shader Error -- %d", st.c_str(), error);
                 }
                 return id;
             }
 
-            void destroy(GLuint shader){
+            void destroy(GLuint shader) {
                 glDeleteShader(shader);
                 assert_error();
             }
@@ -52,13 +52,13 @@ namespace freeze {
                 if (!success) {
                     GLint length;
                     glGetShaderiv(this->ref(), GL_INFO_LOG_LENGTH, &length);
-                    auto info = (GLchar *) malloc(length);
+                    auto info = (GLchar *)malloc(length);
                     glGetShaderInfoLog(this->ref(), length, nullptr, info);
                     std::string st;
-                    if(Target == GL_VERTEX_SHADER)st="vertex";
-                    else if(Target==GL_GEOMETRY_SHADER)st="geometry";
-                    else if(Target == GL_FRAGMENT_SHADER)st="fragment";
-                    LOGE("Error: Compile %s Shader -- %s",st.c_str(),info);
+                    if (Target == GL_VERTEX_SHADER)st = "vertex";
+                    else if (Target == GL_GEOMETRY_SHADER)st = "geometry";
+                    else if (Target == GL_FRAGMENT_SHADER)st = "fragment";
+                    LOGE("Error: Compile %s Shader -- %s", st.c_str(), info);
                     free(info);
                 }
             }
@@ -102,27 +102,28 @@ namespace freeze {
                 LOGE("compile must at least 2 sources");
                 return;
             }
-            compile(shader_sources[0],shader_sources[1],shader_sources[2]);
+            compile(shader_sources[0], shader_sources[1], shader_sources[2]);
         }
 
-        void compile(std::string const& vs, std::string const& fs,std::string const& gs = "")
+        void compile(std::string const& vs, std::string const& fs, std::string const& gs = "")
         {
             auto vs_shader = make_vertex_shader();
             vs_shader.source(vs);
 
             auto gs_shader = make_geometry_shader();
-            if(!gs.empty()){
+            if (!gs.empty()) {
                 gs_shader.source(gs);
             }
 
             auto fs_shader = make_fragment_shader();
             fs_shader.source(fs);
 
-            if(!gs.empty()){
+            if (!gs.empty()) {
                 glAttachShader(this->ref(), vs_shader.ref());
-                glAttachShader(this->ref(),gs_shader.ref());
+                glAttachShader(this->ref(), gs_shader.ref());
                 glAttachShader(this->ref(), fs_shader.ref());
-            }else{
+            }
+            else {
                 glAttachShader(this->ref(), vs_shader.ref());
                 glAttachShader(this->ref(), fs_shader.ref());
             }
@@ -137,7 +138,7 @@ namespace freeze {
                 glGetProgramiv(this->ref(), GL_INFO_LOG_LENGTH, &length);
                 auto info = (GLchar*)malloc(length);
                 glGetProgramInfoLog(this->ref(), length, nullptr, info);
-                LOGE("Error: Link Program -- %s",info);
+                LOGE("Error: Link Program -- %s", info);
                 free(info);
             }
         }
@@ -150,89 +151,110 @@ namespace freeze {
         void set_bool(std::string const& name, bool value) const
         {
             auto loc = get_loc(name);
-            if(loc < 0 )return;
+            if (loc < 0)return;
             glUniform1i(loc, value ? GL_TRUE : GL_FALSE);
+            assert_error();
         }
 
         void set_int(std::string const& name, GLint value) const
         {
             auto loc = get_loc(name);
-            if(loc < 0 )return;
+            if (loc < 0)return;
             glUniform1i(loc, value);
+            assert_error();
         }
 
         void set_float(const std::string &name, float value) const
         {
             auto loc = get_loc(name);
-            if(loc < 0 )return;
+            if (loc < 0)return;
             glUniform1f(loc, value);
+            assert_error();
         }
 
         void set_vec2(const std::string &name, const glm::vec2 &value) const
         {
             auto loc = get_loc(name);
-            if(loc < 0 )return;
+            if (loc < 0)return;
             glUniform2fv(loc, 1, &value[0]);
+            assert_error();
         }
         void set_vec2(const std::string &name, float x, float y) const
         {
             auto loc = get_loc(name);
-            if(loc < 0 )return;
+            if (loc < 0)return;
             glUniform2f(loc, x, y);
+            assert_error();
         }
 
         void set_vec3(const std::string &name, const glm::vec3 &value) const
         {
             auto loc = get_loc(name);
-            if(loc < 0 )return;
+            if (loc < 0)return;
             glUniform3fv(loc, 1, &value[0]);
+            assert_error();
         }
         void set_vec3(const std::string &name, float x, float y, float z) const
         {
             auto loc = get_loc(name);
-            if(loc < 0 )return;
+            if (loc < 0)return;
             glUniform3f(loc, x, y, z);
+            assert_error();
         }
 
         void set_vec4(const std::string &name, const glm::vec4 &value) const
         {
             auto loc = get_loc(name);
-            if(loc < 0 )return;
+            if (loc < 0)return;
             glUniform4fv(loc, 1, &value[0]);
+            assert_error();
         }
         void set_vec4(const std::string &name, float x, float y, float z, float w) const
         {
             auto loc = get_loc(name);
-            if(loc < 0 )return;
+            if (loc < 0)return;
             glUniform4f(loc, x, y, z, w);
+            assert_error();
         }
 
         void set_mat2(const std::string &name, const glm::mat2 &mat) const
         {
             auto loc = get_loc(name);
-            if(loc < 0 )return;
+            if (loc < 0)return;
             glUniformMatrix2fv(loc, 1, GL_FALSE, &mat[0][0]);
+            assert_error();
         }
 
         void set_mat3(const std::string &name, const glm::mat3 &mat) const
         {
             auto loc = get_loc(name);
-            if(loc < 0 )return;
+            if (loc < 0)return;
             glUniformMatrix3fv(loc, 1, GL_FALSE, &mat[0][0]);
+            assert_error();
         }
 
         void set_mat4(const std::string &name, const glm::mat4 &mat) const
         {
             auto loc = get_loc(name);
-            if(loc < 0 )return;
+            if (loc < 0)return;
             glUniformMatrix4fv(loc, 1, GL_FALSE, &mat[0][0]);
+            assert_error();
+            assert_error();
+        }
+
+        void set_mat4(const std::string &name, const GLfloat* value) const
+        {
+            auto loc = get_loc(name);
+            if (loc < 0) return;
+            glUniformMatrix4fv(loc, 1, GL_FALSE, value);
+            assert_error();
         }
 
     private:
         auto get_loc(std::string const& name)  const
         {
             auto loc = glGetUniformLocation(this->ref(), name.c_str());
-            assert_name_error(name.c_str());
+            assert_error();
             return loc;
         }
 
@@ -255,4 +277,4 @@ namespace freeze {
     constexpr auto make_program = make<program>;
 }
 
-#endif //CDS_SHADER_PROGRAM_H
+#endif //FREEGL_SHADER_PROGRAM_H

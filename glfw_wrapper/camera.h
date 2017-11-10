@@ -1,9 +1,9 @@
 //
-// Created by ysb on 2017/10/13.
+// Created by freezestudio on 2017/10/13.
 //
 
-#ifndef CDS_CAMERA_H
-#define CDS_CAMERA_H
+#ifndef FREEGL_CAMERA_H
+#define FREEGL_CAMERA_H
 
 namespace freeze {
     // 定义摄像机移动的几种可能选项。用作抽象以避开特定于窗口系统的输入方法
@@ -161,4 +161,4 @@ namespace freeze {
 }
 
 
-#endif //CDS_CAMERA_H
+#endif //FREEGL_CAMERA_H

@@ -1,9 +1,9 @@
 //
-// Created by ysb on 2017/10/12.
+// Created by freezestudio on 2017/10/12.
 //
 
-#ifndef CDS_MESH_H
-#define CDS_MESH_H
+#ifndef FREEGL_MESH_H
+#define FREEGL_MESH_H
 
 namespace freeze {
     template<typename T>
@@ -736,4 +736,4 @@ namespace freeze {
 }
 
 
-#endif //CDS_MESH_H
+#endif //FREEGL_MESH_H

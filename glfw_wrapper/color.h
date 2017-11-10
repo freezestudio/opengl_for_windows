@@ -1,9 +1,9 @@
 //
-// Created by ysb on 2017/10/26.
+// Created by freezestudio on 2017/10/26.
 //
 
-#ifndef VENDOR_COLOR_H
-#define VENDOR_COLOR_H
+#ifndef FREEGL_COLOR_H
+#define FREEGL_COLOR_H
 
 namespace freeze {
     struct color{
@@ -69,4 +69,4 @@ namespace freeze {
 namespace freeze {
     constexpr auto make_color = make<color>;
 }
-#endif //VENDOR_COLOR_H
+#endif //FREEGL_COLOR_H

@@ -1,9 +1,9 @@
 //
-// Created by ysb on 2017/10/26.
+// Created by freezestudio on 2017/10/26.
 //
 
-#ifndef VENDOR_STENCIL_H
-#define VENDOR_STENCIL_H
+#ifndef FREEGL_STENCIL_H
+#define FREEGL_STENCIL_H
 
 namespace freeze {
     struct stencil {
@@ -116,4 +116,4 @@ namespace freeze {
         }
     };
 }
-#endif //VENDOR_STENCIL_H
+#endif //FREEGL_STENCIL_H

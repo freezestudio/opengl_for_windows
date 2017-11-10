@@ -1,9 +1,9 @@
 //
-// Created by ysb on 2017/10/11.
+// Created by freezestudio on 2017/10/11.
 //
 
-#ifndef CDS_ANY_BUFFER_H
-#define CDS_ANY_BUFFER_H
+#ifndef FREEGL_ANY_BUFFER_H
+#define FREEGL_ANY_BUFFER_H
 
 namespace freeze {
 
@@ -254,4 +254,4 @@ namespace freeze {
 }
 
 
-#endif //CDS_ANY_BUFFER_H
+#endif //FREEGL_ANY_BUFFER_H

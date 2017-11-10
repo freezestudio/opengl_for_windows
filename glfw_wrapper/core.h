@@ -1,9 +1,9 @@
 //
-// Created by ysb on 2017/10/11.
+// Created by freezestudio on 2017/10/11.
 //
 
-#ifndef CDS_CORE_H
-#define CDS_CORE_H
+#ifndef FREEGL_CORE_H
+#define FREEGL_CORE_H
 
 #if defined(ANDROID) || defined(__ANDROID__)
 #include <bits/shared_ptr.h>
@@ -111,4 +111,4 @@ namespace freeze {
 }
 
 
-#endif //CDS_CORE_H
+#endif //FREEGL_CORE_H

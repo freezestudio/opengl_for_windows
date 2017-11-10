@@ -1,9 +1,9 @@
 //
-// Created by ysb on 2017/10/11.
+// Created by freezestudio on 2017/10/11.
 //
 
-#ifndef CDS_VERTEX_H
-#define CDS_VERTEX_H
+#ifndef FREEGL_VERTEX_H
+#define FREEGL_VERTEX_H
 
 namespace freeze {
     template<typename = void>
@@ -44,4 +44,4 @@ namespace freeze {
     constexpr auto make_vertex = make<vertex>;
 }
 
-#endif //CDS_VERTEX_H
+#endif //FREEGL_VERTEX_H

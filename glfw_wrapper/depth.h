@@ -1,9 +1,9 @@
 //
-// Created by ysb on 2017/10/26.
+// Created by freezestudio on 2017/10/26.
 //
 
-#ifndef VENDOR_DEPTH_H
-#define VENDOR_DEPTH_H
+#ifndef FREEGL_DEPTH_H
+#define FREEGL_DEPTH_H
 
 namespace freeze {
     //
@@ -103,4 +103,4 @@ namespace freeze {
     };
 }
 
-#endif //VENDOR_DEPTH_H
+#endif //FREEGL_DEPTH_H

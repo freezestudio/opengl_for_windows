@@ -1,9 +1,9 @@
 //
-// Created by ysb on 2017/10/11.
+// Created by freezestudio on 2017/10/11.
 //
 
-#ifndef CDS_TEXTURE_H
-#define CDS_TEXTURE_H
+#ifndef FREEGL_TEXTURE_H
+#define FREEGL_TEXTURE_H
 
 namespace freeze {
     template<bool>
@@ -480,4 +480,4 @@ namespace  freeze {
 #endif //#if defined(ANDROID) || defined(__ANDROID__)
 }
 
-#endif //CDS_TEXTURE_H
+#endif //FREEGL_TEXTURE_H
