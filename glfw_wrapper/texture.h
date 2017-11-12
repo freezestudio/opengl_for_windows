@@ -142,7 +142,7 @@ namespace freeze {
 //            }
 //        }
 
-        //纹理环绕方式(S,T,R,Q)(X,Y,Z,W)
+        //纹理环绕方式S,T,R (S,T,P,Q)(X,Y,Z,W)
         //GL_REPEAT	              对纹理的默认行为。重复纹理图像。
         //GL_MIRRORED_REPEAT	  和GL_REPEAT一样，但每次重复图片是镜像放置的。
         //GL_MIRROR_CLAMP_TO_EDGE (ver >= 4.4)
@@ -153,11 +153,15 @@ namespace freeze {
             set_parameter(GL_TEXTURE_WRAP_S, param);
         }
 
+        //GL_CLAMP_TO_EDGE, GL_CLAMP_TO_BORDER, GL_MIRRORED_REPEAT, GL_REPEAT, 
+        //GL_MIRROR_CLAMP_TO_EDGE
         void set_wrap_t(GLint param)
         {
             set_parameter(GL_TEXTURE_WRAP_T, param);
         }
 
+        //GL_CLAMP_TO_EDGE, GL_CLAMP_TO_BORDER, GL_MIRRORED_REPEAT, GL_REPEAT, 
+        //GL_MIRROR_CLAMP_TO_EDGE
         void set_wrap_r(GLint param)
         {
             set_parameter(GL_TEXTURE_WRAP_R, param);
@@ -347,9 +351,15 @@ namespace  freeze {
         auto file_size = fs::file_size(path);
         if (file_size <= 0)return buffer;
 
-        std::ifstream ifs;
-        ifs.open(file, std::ios::in | std::ios::binary);
-        if (ifs.bad())return buffer;
+        std::ifstream ifs{ file, std::ios::in | std::ios::binary };
+        if (!ifs.is_open() || !ifs.good())
+        {
+            ifs.clear();
+            ifs.close();
+            ifs.open(file, std::ios::in | std::ios::binary);
+            if (ifs.bad())return buffer;
+        }
+        
 
         buffer.resize(static_cast<std::size_t>(file_size));
         ifs.read(buffer.data(), file_size);

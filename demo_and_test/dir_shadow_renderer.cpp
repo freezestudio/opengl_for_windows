@@ -1,5 +1,5 @@
 #include <common.h>
-#include "renderer.h"
+#include "dir_shadow_renderer.h"
 #define STB_IMAGE_IMPLEMENTATION
 #include <stb_image.h>
 
@@ -7,7 +7,7 @@
 //std::shared_ptr<renderer> renderer::ms_instance = nullptr;
 ////////////////////////////////////////////////////////////
 
-renderer::renderer()
+dir_shadow_renderer::dir_shadow_renderer()
     : scene_camera{0.0f,0.0f,3.0f}
     , last_x(SCR_WIDTH/2.0f)
     , last_y(SCR_HEIGHT/2.0f)
@@ -17,15 +17,13 @@ renderer::renderer()
 {    
 }
 
-//std::shared_ptr<renderer> renderer::instance()
-//{ 
-//    assert(ms_instance);
-//    return ms_instance;
-//}
-
-void renderer::do_init()
+dir_shadow_renderer::~dir_shadow_renderer()
 {
-    ms_instance = shared_from_this();
+}
+
+void dir_shadow_renderer::do_init()
+{
+    this->ms_instance = shared_from_this();
 
     freeze::depth::enable();
 
@@ -34,7 +32,7 @@ void renderer::do_init()
     set_shaders();
 }
 
-void renderer::draw()
+void dir_shadow_renderer::draw()
 {
     auto light_position = glm::vec3{ -2.0f,4.0f,-1.0f };
     float near_plane = 1.0f;
@@ -84,10 +82,8 @@ void renderer::draw()
 
 }
 
-void renderer::process_event(glfw::window::pointer window)
+void dir_shadow_renderer::process_event(glfw::window::pointer window)
 {
-    auto deltaTime = instance()->delta_time;
-
     auto key = glfw::get_key(window, GLFW_KEY_ESCAPE);
     if (key == GLFW_PRESS)
     {
@@ -97,67 +93,60 @@ void renderer::process_event(glfw::window::pointer window)
     key = glfw::get_key(window, GLFW_KEY_W);
     if (key == GLFW_PRESS)
     {
-        scene_camera.process_keyboard(freeze::camera_movement::FORWARD, deltaTime);
+        scene_camera.process_keyboard(freeze::camera_movement::FORWARD, delta_time);
     }
 
     key = glfw::get_key(window, GLFW_KEY_S);
     if (key == GLFW_PRESS)
     {
-        scene_camera.process_keyboard(freeze::camera_movement::BACKWARD, deltaTime);
+        scene_camera.process_keyboard(freeze::camera_movement::BACKWARD, delta_time);
     }
 
     key = glfw::get_key(window, GLFW_KEY_A);
     if (key == GLFW_PRESS)
     {
-        scene_camera.process_keyboard(freeze::camera_movement::LEFT, deltaTime);
+        scene_camera.process_keyboard(freeze::camera_movement::LEFT, delta_time);
     }
 
     key = glfw::get_key(window, GLFW_KEY_D);
     if (key == GLFW_PRESS)
     {
-        scene_camera.process_keyboard(freeze::camera_movement::RIGHT, deltaTime);
+        scene_camera.process_keyboard(freeze::camera_movement::RIGHT, delta_time);
     }
 }
 
-//void renderer::framebuffer_size_callback(glfw::window::pointer window, 
-//    int width, int height)
-//{
-//    glViewport(0, 0, width, height);
-//}
-
-void renderer::do_mouse_callback(/*glfw::window::pointer window,*/ 
+void dir_shadow_renderer::do_mouse_callback(
     double xpos, double ypos)
 {
-    if (instance()->first_mouse)
+    if (first_mouse)
     {
-        instance()->last_x = static_cast<float>(xpos);
-        instance()->last_y = static_cast<float>(ypos);
-        instance()->first_mouse = false;
+        last_x = static_cast<float>(xpos);
+        last_y = static_cast<float>(ypos);
+        first_mouse = false;
     }
 
-    auto xoffset = static_cast<float>(ypos) - instance()->last_x;
-    auto yoffset = instance()->last_y - static_cast<float>(ypos);
+    auto xoffset = static_cast<float>(ypos) - last_x;
+    auto yoffset = last_y - static_cast<float>(ypos);
 
-    instance()->last_x = static_cast<float>(xpos);
-    instance()->last_y = static_cast<float>(ypos);
+    last_x = static_cast<float>(xpos);
+    last_y = static_cast<float>(ypos);
 
-    instance()->scene_camera.process_mouse_movement(xoffset, yoffset);
+    scene_camera.process_mouse_movement(xoffset, yoffset);
 }
 
-void renderer::do_scroll_callback(/*glfw::window::pointer window,*/ 
+void dir_shadow_renderer::do_scroll_callback(
     double xoffset, double yoffset)
 {
-    instance()->scene_camera.process_mouse_scroll(
-        static_cast<float>(yoffset));
+    scene_camera.process_mouse_scroll(static_cast<float>(yoffset));
 }
 
-void renderer::set_vertices()
+void dir_shadow_renderer::set_vertices()
 {
     set_plane();
     set_cube();
 }
 
-void renderer::set_shaders()
+void dir_shadow_renderer::set_shaders()
 {
     shadow_shader.compile_file("resource/shaders/shadow.vert"s, 
         "resource/shaders/shadow.frag"s);
@@ -170,7 +159,7 @@ void renderer::set_shaders()
     
 }
 
-void renderer::set_textures()
+void dir_shadow_renderer::set_textures()
 {
     //阴影深度纹理
     depth_texture.bind();
@@ -208,7 +197,7 @@ void renderer::set_textures()
     plane_texture.unbind();
 }
 
-void renderer::set_plane()
+void dir_shadow_renderer::set_plane()
 {
     GLfloat plane_vertices[] = {
         // positions            // normals         // texcoords
@@ -233,7 +222,7 @@ void renderer::set_plane()
     plane_vao.unbind();
 }
 
-void renderer::set_cube()
+void dir_shadow_renderer::set_cube()
 {
     float cube_vertices[] = {
         // back face
@@ -292,7 +281,7 @@ void renderer::set_cube()
     cube_vao.unbind();
 }
 
-void renderer::draw_scene(freeze::program& shader)
+void dir_shadow_renderer::draw_scene(freeze::program& shader)
 {
     //floor
     auto model = glm::mat4{ 1.0f };
@@ -320,7 +309,7 @@ void renderer::draw_scene(freeze::program& shader)
 
 }
 
-void renderer::draw_cube()
+void dir_shadow_renderer::draw_cube()
 {
     cube_vao.bind();
     glDrawArrays(GL_TRIANGLES, 0, 36);

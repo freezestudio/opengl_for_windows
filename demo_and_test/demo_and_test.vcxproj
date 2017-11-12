@@ -157,10 +157,12 @@
   <ItemGroup>
     <ClCompile Include="..\thirdparty\glad\src\glad.c" />
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="renderer.cpp" />
+    <ClCompile Include="dir_shadow_renderer.cpp" />
+    <ClCompile Include="point_shadow_renderer.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="renderer.h" />
+    <ClInclude Include="dir_shadow_renderer.h" />
+    <ClInclude Include="point_shadow_renderer.h" />
     <ClInclude Include="renderer_base.h" />
   </ItemGroup>
   <ItemGroup>

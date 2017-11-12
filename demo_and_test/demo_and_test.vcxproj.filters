@@ -27,18 +27,24 @@
     <ClCompile Include="main.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="renderer.cpp">
+    <ClCompile Include="..\thirdparty\glad\src\glad.c">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="..\thirdparty\glad\src\glad.c">
+    <ClCompile Include="dir_shadow_renderer.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="point_shadow_renderer.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="renderer.h">
+    <ClInclude Include="renderer_base.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="renderer_base.h">
+    <ClInclude Include="dir_shadow_renderer.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="point_shadow_renderer.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>

@@ -239,7 +239,6 @@ namespace freeze {
             if (loc < 0)return;
             glUniformMatrix4fv(loc, 1, GL_FALSE, &mat[0][0]);
             assert_error();
-            assert_error();
         }
 
         void set_mat4(const std::string &name, const GLfloat* value) const
@@ -254,15 +253,21 @@ namespace freeze {
         auto get_loc(std::string const& name)  const
         {
             auto loc = glGetUniformLocation(this->ref(), name.c_str());
-            assert_error();
+            assert_name_error(name.c_str());
             return loc;
         }
 
         std::string source_from_file(std::string const& file)
         {
-            std::ifstream ifs;
-            ifs.open(file, std::ios::in | std::ios::binary);
-            if (ifs.bad())return ""s;
+            std::ifstream ifs{ file };
+            if (!ifs.good())
+            {
+                ifs.clear();
+                ifs.close();
+                ifs.open(file); if (ifs.bad() || !ifs.is_open())
+                    return ""s;
+            }
+            
             std::stringstream ss;
             ss << ifs.rdbuf();
             auto source = ss.str();

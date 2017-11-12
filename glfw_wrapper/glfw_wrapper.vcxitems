@@ -24,6 +24,7 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)light.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)material.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)mesh.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)quickly.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)shader_program.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)stb_image.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)stencil.h" />

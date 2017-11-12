@@ -826,6 +826,7 @@ using namespace std::literals;
 #include "stencil.h"
 #include "light.h"
 #include "material.h"
+#include "quickly.h"
 
 //////////////////////////////////////////////////////////////////////////
 #endif //FREEGL_COMMON_H

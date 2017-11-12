@@ -1,5 +1,32 @@
 #pragma once
 
+#include "common.h"
+
+#ifdef RENDERER
+#undef RENDERER
+#endif
+
+#define RENDERER
+
+struct renderer_core
+{
+    virtual void draw() = 0;
+    //virtual void do_init() = 0;
+};
+
+struct renderer_event
+{
+    virtual void process_event(glfw::window::pointer window) = 0;
+    //virtual void do_mouse_callback(double xpos, double ypos) = 0;
+    //virtual void do_scroll_callback(double xoffset, double yoffset) = 0;
+};
+
+struct renderer
+    : renderer_core
+    , renderer_event
+{
+};
+
 template<typename Singleton>
 class renderer_base
 {
@@ -30,18 +57,21 @@ public:
 protected:
     static std::shared_ptr<Singleton> ms_instance;
 public:
-    static void framebuffer_size_callback(glfw::window::pointer window, int width, int height)
+    static void framebuffer_size_callback(
+        glfw::window::pointer window, int width, int height)
     {
         glViewport(0, 0, width, height);
     }
-    static void mouse_callback(glfw::window::pointer window, double xpos, double ypos)
+    static void mouse_callback(
+        glfw::window::pointer window, double xpos, double ypos)
     {
         if (ms_instance)
         {
             ms_instance->do_mouse_callback(xpos, ypos);
         }
     }
-    static void scroll_callback(glfw::window::pointer window, double xoffset, double yoffset)
+    static void scroll_callback(
+        glfw::window::pointer window, double xoffset, double yoffset)
     {
         if (ms_instance)
         {
