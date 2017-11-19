@@ -53,4 +53,5 @@ private:
     freeze::program             shadow_shader;
     freeze::texture2d           depth_texture;
     freeze::texture2d           plane_texture;
+    freeze::delay_model         test_model;
 };

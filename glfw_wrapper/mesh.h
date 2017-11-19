@@ -113,6 +113,14 @@ namespace freeze
             map_type_name.insert(std::make_pair(Type::unknown,      "unknown"));
         }
 
+        ~texture_map()
+        {
+            if (!map_type_name.empty())
+            {
+                map_type_name.clear();
+            }            
+        }
+
         Name get(Type type) const 
         {
             auto iter = map_type_name.find(type);
@@ -150,6 +158,17 @@ namespace freeze
     private:
         std::map<Type, Name> map_type_name;
     };
+
+    //c++17 inline variables
+    //inline texture_map<texture_type, std::string> g_tmap;
+#if defined(WIN32) || defined(_WIN32) || defined(__WIN32__)
+#if defined(_MSC_VER)
+    //__declspec(selectany) texture_map<texture_type, std::string> g_tmap;
+#endif
+#endif
+
+    template<typename T,typename U>
+    texture_map<T, U> g_tmap = {};
 }
 
 namespace freeze 
@@ -179,15 +198,15 @@ namespace freeze
             return mDelay;
         }
 
-        void draw(program const &shader, texture_map<texture_type, std::string> const &tmap) {
+        void draw(program const &shader) {
 
             if(material_name.empty())
             {
-                set_textures(shader,tmap);
+                set_textures(shader);
             }
             else
             {
-                set_material_textures(shader,tmap);
+                set_material_textures(shader);
             }
 
             mVao.bind();
@@ -226,7 +245,7 @@ namespace freeze
                 tex.instance.set_wrap_t(GL_REPEAT);
                 tex.instance.set_min_filter(GL_NEAREST_MIPMAP_LINEAR);
                 tex.instance.set_mag_filter(GL_LINEAR);
-                tex.unbind();
+                tex.instance.unbind();
             }
         }
 
@@ -258,8 +277,10 @@ namespace freeze
             mVao.unbind();
         }
 
-        void set_textures(program const& shader,texture_map<texture_type, std::string> const &tmap)
+        void set_textures(program const& shader)
         {
+            auto gtmap = g_tmap<texture_type, std::string>;
+
             auto none = 1;
             auto diffuse = 1;
             auto specular = 1;
@@ -285,22 +306,22 @@ namespace freeze
                         //name = tmap.get(texture_desc.type, none++);
                         break;
                     case texture_type::diffuse      :
-                        name = tmap.get(texture_desc.type, diffuse++);
+                        name = gtmap.get(texture_desc.type, diffuse++);
                         break;
                     case texture_type::specular     :
-                        name = tmap.get(texture_desc.type, specular++);
+                        name = gtmap.get(texture_desc.type, specular++);
                         break;
                     case texture_type::ambient      :
-                        name = tmap.get(texture_desc.type, ambient++);
+                        name = gtmap.get(texture_desc.type, ambient++);
                         break;
                     case texture_type::emissive     :
-                        name = tmap.get(texture_desc.type, emissive++);
+                        name = gtmap.get(texture_desc.type, emissive++);
                         break;
                     case texture_type::height       :
-                        name = tmap.get(texture_desc.type, height++);
+                        name = gtmap.get(texture_desc.type, height++);
                         break;
                     case texture_type::normals      :
-                        name = tmap.get(texture_desc.type, normals++);
+                        name = gtmap.get(texture_desc.type, normals++);
                         break;
                     case texture_type::shininess     :
                         //name = tmap.get(texture_desc.type, shininess++);
@@ -312,10 +333,10 @@ namespace freeze
                         //name = tmap.get(texture_desc.type, displacement++);
                         break;
                     case texture_type::lightmap     :
-                        name = tmap.get(texture_desc.type, lightmap++);
+                        name = gtmap.get(texture_desc.type, lightmap++);
                         break;
                     case texture_type::reflection   :
-                        name = tmap.get(texture_desc.type, reflection++);
+                        name = gtmap.get(texture_desc.type, reflection++);
                         break;
                     case texture_type::unknown      :
                         //name = tmap.get(texture_desc.type, unknown++);
@@ -331,14 +352,15 @@ namespace freeze
             }
         }
 
-        void set_material_textures(program const& shader,texture_map<texture_type, std::string> const &tmap)
+        void set_material_textures(program const& shader)
         {
+            auto gtmap = g_tmap<texture_type, std::string>;
             int index = 0;
             for (auto &texture_desc : mTextureDescs)
             {
                 glActiveTexture(GL_TEXTURE0+index);
 
-                auto name = tmap.get(material_name,texture_desc.type);
+                auto name = gtmap.get(material_name,texture_desc.type);
                 if(texture_desc.type == texture_type::shininess)
                 {
                     shader.set_float(name,32.0f);
@@ -398,7 +420,7 @@ namespace freeze
         {
             for (auto &each_mesh : mMeshs) 
             {
-                each_mesh.draw(pid, mTextureMap);
+                each_mesh.draw(pid);
             }
         }
 
@@ -418,10 +440,11 @@ namespace freeze
             //aiProcessPreset_TargetRealtime_Quality
             //aiProcessPreset_TargetRealtime_MaxQuality
             mScene = const_cast<aiScene *>(
-                    importer.ReadFile(full_path_file, aiProcessPreset_TargetRealtime_MaxQuality |
-                                                      aiProcess_FlipUVs));
+                    importer.ReadFile(full_path_file, 
+                        aiProcessPreset_TargetRealtime_MaxQuality | aiProcess_FlipUVs));
 
-            if (!mScene || mScene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !mScene->mRootNode)return;
+            if (!mScene || mScene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !mScene->mRootNode)
+                return;
 
             process_node(mScene->mRootNode);
         }
@@ -450,14 +473,14 @@ namespace freeze
     private:
         void process_node(aiNode const *node)
         {
-            for (auto i = 0; i < node->mNumMeshes; ++i) 
+            for (auto i = 0U; i < node->mNumMeshes; ++i) 
             {
                 auto sub_mesh = mScene->mMeshes[node->mMeshes[i]];
                 //mMeshs.push_back(process_mesh(sub_mesh));
                 mMeshs.push_back(process_mesh_delay(sub_mesh));
             }
 
-            for (auto i = 0; i < node->mNumChildren; ++i)
+            for (auto i = 0U; i < node->mNumChildren; ++i)
             {
                 process_node(node->mChildren[i]);
             }
@@ -470,7 +493,7 @@ namespace freeze
         {
             //顶点
             std::vector<VertexType> vertices;
-            for (auto i = 0; i < sub_mesh->mNumVertices; ++i)
+            for (auto i = 0U; i < sub_mesh->mNumVertices; ++i)
             {
                 VertexType vertex = {};
                 vertex.Position = glm::vec3{sub_mesh->mVertices[i].x, sub_mesh->mVertices[i].y,
@@ -499,10 +522,10 @@ namespace freeze
 
             //索引
             std::vector<GLuint> indices;
-            for (auto i = 0; i < sub_mesh->mNumFaces; ++i) 
+            for (auto i = 0U; i < sub_mesh->mNumFaces; ++i) 
             {
                 auto face = sub_mesh->mFaces[i];
-                for (auto x = 0; x < face.mNumIndices; ++x)
+                for (auto x = 0U; x < face.mNumIndices; ++x)
                 {
                     indices.push_back(face.mIndices[x]);
                 }
@@ -542,14 +565,14 @@ namespace freeze
         {
             std::vector<TextureDesc> textures;
             auto aiType = static_cast<aiTextureType>(type);
-            for (auto i = 0; i < material->GetTextureCount(aiType); ++i)
+            for (auto i = 0U; i < material->GetTextureCount(aiType); ++i)
             {
                 aiString str;
                 material->GetTexture(aiType, i, &str);
                 std::string file = str.C_Str();
 
                 auto skip = false;
-                for (auto x = 0; x < mCacheTextures.size(); ++x) 
+                for (auto x = 0U; x < mCacheTextures.size(); ++x) 
                 {
                     if (mCacheTextures[x].file == file) 
                     {
@@ -598,7 +621,7 @@ namespace freeze
             if (ifs.is_open()) 
             {
                 ifs.seekg(0,std::ios_base::end);
-                auto length = ifs.tellg();
+                std::size_t length = static_cast<std::size_t>(ifs.tellg());
                 if(length <= 0)
                 {
                     LOGE("Error : texture_data_from_file(%s) length = %d",filename.c_str(),static_cast<int>(length));
@@ -727,8 +750,6 @@ namespace freeze
         std::vector<MeshType> mMeshs;
         std::string mDirectory;
         aiScene *mScene;
-        texture_map<texture_type, std::string> mTextureMap;
-
         std::string material_name;
     };
 }

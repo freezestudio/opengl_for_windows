@@ -165,13 +165,15 @@ namespace freeze
 
 namespace freeze 
 {
-    //附加至少一个缓冲（颜色、深度或模板缓冲）。
-    //至少有一个颜色附件(Attachment)。
-    //所有的附件都必须是完整的（保留了内存）。
-    //每个缓冲都应该有相同的样本数。
-    //GL_FRAMEBUFFER
-    //GL_DRAW_FRAMEBUFFER  (== GL_FRAMEBUFFER)
-    //GL_READ_FRAMEBUFFER
+    //
+    // 附加至少一个缓冲（颜色、深度或模板缓冲）。
+    // 至少有一个颜色附件(Attachment)。
+    // 所有的附件都必须是完整的（保留了内存）。
+    // 每个缓冲都应该有相同的样本数。
+    // GL_FRAMEBUFFER
+    // GL_DRAW_FRAMEBUFFER  (= GL_FRAMEBUFFER)
+    // GL_READ_FRAMEBUFFER
+    //
     template<GLenum FrameBuffer>
     struct void_frame_buffer
         : make_object<void_frame_buffer<FrameBuffer>> 

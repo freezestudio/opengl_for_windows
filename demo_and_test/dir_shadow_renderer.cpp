@@ -27,6 +27,9 @@ void dir_shadow_renderer::do_init()
 
     freeze::depth::enable();
 
+    test_model.load("resource/objects/cyborg/cyborg.obj");
+    test_model.setup();
+
     set_vertices();
     set_textures();
     set_shaders();
@@ -80,6 +83,8 @@ void dir_shadow_renderer::draw()
 
     draw_scene(shadow_shader);
 
+    //
+    test_model.draw(shadow_shader);
 }
 
 void dir_shadow_renderer::process_event(window_pointer window)
@@ -115,8 +120,7 @@ void dir_shadow_renderer::process_event(window_pointer window)
     }
 }
 
-void dir_shadow_renderer::do_mouse_callback(
-    double xpos, double ypos)
+void dir_shadow_renderer::do_mouse_callback(double xpos, double ypos)
 {
     if (first_mouse)
     {
@@ -125,7 +129,7 @@ void dir_shadow_renderer::do_mouse_callback(
         first_mouse = false;
     }
 
-    auto xoffset = static_cast<float>(ypos) - last_x;
+    auto xoffset = static_cast<float>(xpos) - last_x;
     auto yoffset = last_y - static_cast<float>(ypos);
 
     last_x = static_cast<float>(xpos);
@@ -148,13 +152,15 @@ void dir_shadow_renderer::set_vertices()
 
 void dir_shadow_renderer::set_shaders()
 {
-    shadow_shader.compile_file("resource/shaders/shadow.vert"s, 
+    shadow_shader.compile_file(
+        "resource/shaders/shadow.vert"s, 
         "resource/shaders/shadow.frag"s);
     shadow_shader.use();
     shadow_shader.set_int("diffuseTexture"s, 0);
     shadow_shader.set_int("shadowMap"s, 1);
 
-    depth_shader.compile_file("resource/shaders/depth.vert"s, 
+    depth_shader.compile_file(
+        "resource/shaders/depth.vert"s, 
         "resource/shaders/depth.frag"s);
     
 }
