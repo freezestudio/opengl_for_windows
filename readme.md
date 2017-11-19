@@ -101,3 +101,4 @@ int __stdcall wWinMain(HINSTANCE hInstance, HINSTANCE, LPWSTR, int)
 * 英文教程参考：<https://learnopengl.com/>
 * API文档参考：<https://www.khronos.org/registry/OpenGL-Refpages/gl4/>
 * API文档参考：<https://www.khronos.org/registry/OpenGL-Refpages/es3/>
+* WIKI  参考：https://www.khronos.org/opengl/wiki/
