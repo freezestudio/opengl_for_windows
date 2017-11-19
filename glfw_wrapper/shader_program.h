@@ -5,25 +5,34 @@
 #ifndef FREEGL_SHADER_PROGRAM_H
 #define FREEGL_SHADER_PROGRAM_H
 
-namespace freeze {
+namespace freeze 
+{
     template<typename = void>
-    struct void_program : make_object<void_program<void>, false> {
-        GLuint create() {
+    struct void_program
+        : make_object<void_program<void>, false> 
+    {
+        GLuint create()
+        {
             return glCreateProgram();
             assert_error();
         }
 
-        void destroy(GLuint program) {
+        void destroy(GLuint program) 
+        {
             glDeleteProgram(program);
             assert_error();
         }
 
         template<GLenum Target, typename = void>
-        struct void_shader : make_object<void_shader<Target, void>, false> {
-            GLuint create() {
+        struct void_shader
+            : make_object<void_shader<Target, void>, false>
+        {
+            GLuint create() 
+            {
                 auto id = glCreateShader(Target);
                 assert_error();
-                if (id == 0) {
+                if (id == 0)
+                {
                     //GL_NO_ERROR 0
                     //GL_INVALID_ENUM 0x0500
                     std::string st;
@@ -37,11 +46,14 @@ namespace freeze {
                 return id;
             }
 
-            void destroy(GLuint shader) {
+            void destroy(GLuint shader) 
+            {
                 glDeleteShader(shader);
                 assert_error();
             }
-            void source(std::string const& source) {
+
+            void source(std::string const& source)
+            {
                 auto code = source.c_str();
                 glShaderSource(this->ref(), 1, &code, nullptr);
                 assert_error();
@@ -49,7 +61,8 @@ namespace freeze {
                 glCompileShader(this->ref());
                 GLint success;
                 glGetShaderiv(this->ref(), GL_COMPILE_STATUS, &success);
-                if (!success) {
+                if (!success)
+                {
                     GLint length;
                     glGetShaderiv(this->ref(), GL_INFO_LOG_LENGTH, &length);
                     auto info = (GLchar *)malloc(length);
@@ -118,12 +131,14 @@ namespace freeze {
             auto fs_shader = make_fragment_shader();
             fs_shader.source(fs);
 
-            if (!gs.empty()) {
+            if (!gs.empty()) 
+            {
                 glAttachShader(this->ref(), vs_shader.ref());
                 glAttachShader(this->ref(), gs_shader.ref());
                 glAttachShader(this->ref(), fs_shader.ref());
             }
-            else {
+            else 
+            {
                 glAttachShader(this->ref(), vs_shader.ref());
                 glAttachShader(this->ref(), fs_shader.ref());
             }
@@ -179,6 +194,7 @@ namespace freeze {
             glUniform2fv(loc, 1, &value[0]);
             assert_error();
         }
+
         void set_vec2(const std::string &name, float x, float y) const
         {
             auto loc = get_loc(name);
@@ -194,6 +210,7 @@ namespace freeze {
             glUniform3fv(loc, 1, &value[0]);
             assert_error();
         }
+
         void set_vec3(const std::string &name, float x, float y, float z) const
         {
             auto loc = get_loc(name);
@@ -209,6 +226,7 @@ namespace freeze {
             glUniform4fv(loc, 1, &value[0]);
             assert_error();
         }
+
         void set_vec4(const std::string &name, float x, float y, float z, float w) const
         {
             auto loc = get_loc(name);
@@ -277,7 +295,8 @@ namespace freeze {
     };
 }
 
-namespace freeze {
+namespace freeze 
+{
     using program = void_program<>;
     constexpr auto make_program = make<program>;
 }

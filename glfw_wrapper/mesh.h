@@ -5,18 +5,22 @@
 #ifndef FREEGL_MESH_H
 #define FREEGL_MESH_H
 
-namespace freeze {
+namespace freeze 
+{
     template<typename T>
-    inline std::string to_string(T value) {
+    inline std::string to_string(T value) 
+    {
         std::ostringstream oss;
         oss << value;
         return oss.str();
     }
 }
 
-namespace freeze {
+namespace freeze
+{
 
-    struct mesh_vertex {
+    struct mesh_vertex 
+    {
         glm::vec3 Position;
         glm::vec3 Normal;
         glm::vec2 TexCoords;
@@ -24,7 +28,8 @@ namespace freeze {
         glm::vec3 Bitangent;
     };
 
-    struct delay_vertex {
+    struct delay_vertex 
+    {
         float x, y, z;   //Position
         float nx, ny, nz;//Normals;
         float u, v;      //TexCoords;
@@ -32,7 +37,8 @@ namespace freeze {
         float bx, by, bz;//Bitangent 副切线
     };
 
-    enum class texture_type {
+    enum class texture_type 
+    {
         none = aiTextureType_NONE,
         diffuse = aiTextureType_DIFFUSE,
         specular = aiTextureType_SPECULAR,
@@ -48,13 +54,15 @@ namespace freeze {
         unknown = aiTextureType_UNKNOWN,
     };
 
-    struct texture_desc {
+    struct texture_desc 
+    {
         texture2d instance;
         std::string file;
         texture_type type;
     };
 
-    struct texture_data {
+    struct texture_data 
+    {
         int x;
         int y;
         GLenum format;
@@ -62,29 +70,34 @@ namespace freeze {
     };
 
     //延迟装载
-    struct texture_desc_delay {
+    struct texture_desc_delay 
+    {
         texture_data instance_data;
         texture2d instance;
         std::string file;
         texture_type type;
     };
 
-    struct texture_desc_delay2 {
+    struct texture_desc_delay2 
+    {
         texture2d instance;
         std::string file;
         texture_type type;
         std::vector<char> instance_data;
     };
 
-    struct texture_desc_delay3 {
+    struct texture_desc_delay3 
+    {
         texture2d instance;
         std::string file;
         texture_type type;
     };
 
     template<typename Type, typename Name>
-    struct texture_map {
-        texture_map() {
+    struct texture_map 
+    {
+        texture_map() 
+        {
             map_type_name.insert(std::make_pair(Type::none,         "none"));
             map_type_name.insert(std::make_pair(Type::diffuse,      "diffuse"));
             map_type_name.insert(std::make_pair(Type::specular,     "specular"));
@@ -92,7 +105,7 @@ namespace freeze {
             map_type_name.insert(std::make_pair(Type::emissive,     "emissive"));
             map_type_name.insert(std::make_pair(Type::height,       "height"));
             map_type_name.insert(std::make_pair(Type::normals,      "normals"));
-            map_type_name.insert(std::make_pair(Type::shininess,     "shininess"));
+            map_type_name.insert(std::make_pair(Type::shininess,    "shininess"));
             map_type_name.insert(std::make_pair(Type::opacity,      "opacity"));
             map_type_name.insert(std::make_pair(Type::displacement, "displacement"));
             map_type_name.insert(std::make_pair(Type::lightmap,     "lightmap"));
@@ -100,27 +113,35 @@ namespace freeze {
             map_type_name.insert(std::make_pair(Type::unknown,      "unknown"));
         }
 
-        Name get(Type type) const {
+        Name get(Type type) const 
+        {
             auto iter = map_type_name.find(type);
-            if (iter != map_type_name.end()) {
+            if (iter != map_type_name.end()) 
+            {
                 return iter->second;
-            } else {
+            } 
+            else
+            {
                 return Name{};
             }
         }
 
-        Name get(Type type, int index) const {
+        Name get(Type type, int index) const
+        {
             auto name = get(type);
-            if (!name.empty()) {
+            if (!name.empty()) 
+            {
                 name += to_string(index);
             }
             return name;
         }
 
-        Name get(std::string const& struct_name,Type type) const{
+        Name get(std::string const& struct_name,Type type) const
+        {
             auto name=struct_name +".";
             auto type_name = get(type);
-            if(!name.empty()){
+            if(!name.empty())
+            {
                 name += type_name;
             }
             return name;
@@ -131,32 +152,41 @@ namespace freeze {
     };
 }
 
-namespace freeze {
+namespace freeze 
+{
     template<typename Vertex, typename TextureDesc>
-    struct spec_mesh {
+    struct spec_mesh 
+    {
         spec_mesh(std::vector<Vertex> const &vertices,
                   std::vector<GLuint> const &indices,
                   std::vector<TextureDesc> const &texture_descs,
-                  bool delay = true) : mDelay{delay} {
+                  bool delay = true) 
+            : mDelay{delay} 
+        {
             mVertices = vertices;
             mIndices = indices;
             mTextureDescs = texture_descs;
 
-            if (!delay) {
+            if (!delay) 
+            {
                 setup();
             }
         }
 
         //延迟载入
-        bool is_delay() const {
+        bool is_delay() const 
+        {
             return mDelay;
         }
 
         void draw(program const &shader, texture_map<texture_type, std::string> const &tmap) {
 
-            if(material_name.empty()){
+            if(material_name.empty())
+            {
                 set_textures(shader,tmap);
-            }else{
+            }
+            else
+            {
                 set_material_textures(shader,tmap);
             }
 
@@ -167,33 +197,25 @@ namespace freeze {
             glActiveTexture(GL_TEXTURE0);
         }
 
-        void setup() {
-
-            if (mDelay) {
-                load_texture();
-            }
-
+        void setup() 
+        {
+            load_texture();
             load_vertices();
         }
 
-        void set_material(std::string const& name){
+        void set_material(std::string const& name)
+        {
             material_name = name;
         }
 
     private:
-        void load_texture() {
-//            for (auto &tex : mTextureDescs) {
-//                tex.instance = load_texture_from_sdcard<decltype(tex.instance)>(tex.file);
-//
-//                if (!tex.instance) {
-//                    LOGE("create texture 2d failed! name:<%s>", tex.file.c_str());
-//                    continue;
-//                }
-//            }
-
-            for (auto &tex : mTextureDescs) {
+        void load_texture() 
+        {
+            for (auto &tex : mTextureDescs) 
+            {
                 tex.instance = make_texture2d();
-                if (!tex.instance) {
+                if (!tex.instance) 
+                {
                     LOGE("create texture 2d failed! name:<%s>",tex.file.c_str());
                     continue;
                 }
@@ -202,12 +224,14 @@ namespace freeze {
                 tex.instance.mipmap();
                 tex.instance.set_wrap_s(GL_REPEAT);
                 tex.instance.set_wrap_t(GL_REPEAT);
-                tex.instance.set_min_filter(GL_LINEAR_MIPMAP_LINEAR);
+                tex.instance.set_min_filter(GL_NEAREST_MIPMAP_LINEAR);
                 tex.instance.set_mag_filter(GL_LINEAR);
+                tex.unbind();
             }
         }
 
-        void load_vertices(){
+        void load_vertices()
+        {
 
             mVao = make_vertex_array_buffer();
             mVao.bind();
@@ -234,7 +258,8 @@ namespace freeze {
             mVao.unbind();
         }
 
-        void set_textures(program const& shader,texture_map<texture_type, std::string> const &tmap){
+        void set_textures(program const& shader,texture_map<texture_type, std::string> const &tmap)
+        {
             auto none = 1;
             auto diffuse = 1;
             auto specular = 1;
@@ -250,10 +275,12 @@ namespace freeze {
             auto unknown = 1;
 
             auto index = 0;
-            for (auto &texture_desc : mTextureDescs) {
+            for (auto &texture_desc : mTextureDescs) 
+            {
                 glActiveTexture(GL_TEXTURE0 + index);
                 std::string name;
-                switch (texture_desc.type) {
+                switch (texture_desc.type) 
+                {
                     case texture_type::none         :
                         //name = tmap.get(texture_desc.type, none++);
                         break;
@@ -304,16 +331,20 @@ namespace freeze {
             }
         }
 
-        void set_material_textures(program const& shader,texture_map<texture_type, std::string> const &tmap){
+        void set_material_textures(program const& shader,texture_map<texture_type, std::string> const &tmap)
+        {
             int index = 0;
-            for (auto &texture_desc : mTextureDescs){
-
+            for (auto &texture_desc : mTextureDescs)
+            {
                 glActiveTexture(GL_TEXTURE0+index);
 
                 auto name = tmap.get(material_name,texture_desc.type);
-                if(texture_desc.type == texture_type::shininess){
+                if(texture_desc.type == texture_type::shininess)
+                {
                     shader.set_float(name,32.0f);
-                }else{
+                }
+                else
+                {
                     shader.set_int(name,index);
                     texture_desc.instance.bind();
                 }
@@ -329,46 +360,55 @@ namespace freeze {
         vertex_array_buffer mVao;
         vertex_buffer mVbo;
         element_buffer mEbo;
-        //texture_map<texture_type,std::string> mTextureMap;
         bool mDelay; //是否为延迟的
 
         std::string material_name;
     };
 }
 
-namespace freeze {
+namespace freeze 
+{
     using mesh = spec_mesh<mesh_vertex, texture_desc>;
-//    using delay_mesh = spec_mesh<mesh_vertex, texture_desc_delay3>;
     using delay_mesh = spec_mesh<mesh_vertex, texture_desc_delay2>;
+//    using delay_mesh = spec_mesh<mesh_vertex, texture_desc_delay3>;
     constexpr auto make_mesh = make<mesh>;
     constexpr auto make_mesh_delay = make<delay_mesh>;
 }
 
-namespace freeze {
+namespace freeze
+{
     template<typename MeshType, typename VertexType, typename TextureDesc>
-    struct base_model {
-        base_model() {
+    struct base_model 
+    {
+        base_model() 
+        {
         }
 
-        base_model(std::string const &path) {
+        base_model(std::string const &path) 
+        {
             load(path);
         }
 
-        base_model(std::string const &path, std::string const &file) {
+        base_model(std::string const &path, std::string const &file) 
+        {
             load(path, file);
         }
 
-        void draw(program const &pid) {
-            for (auto &each_mesh : mMeshs) {
+        void draw(program const &pid) 
+        {
+            for (auto &each_mesh : mMeshs) 
+            {
                 each_mesh.draw(pid, mTextureMap);
             }
         }
 
-        void set_material(std::string const& name){
+        void set_material(std::string const& name)
+        {
             material_name = name;
         }
 
-        void load(std::string const &full_path_file) {
+        void load(std::string const &full_path_file)
+        {
             auto pos = full_path_file.find_last_of("\\/");
             mDirectory = full_path_file.substr(0, pos);
 
@@ -386,31 +426,39 @@ namespace freeze {
             process_node(mScene->mRootNode);
         }
 
-        void load(std::string const &path, std::string const &file) {
+        void load(std::string const &path, std::string const &file)
+        {
             load(path + file);
         }
 
-        void setup() {
-            for (auto& sub_mesh : mMeshs) {
-                if (sub_mesh.is_delay()) {
+        void setup() 
+        {
+            for (auto& sub_mesh : mMeshs)
+            {
+                if (sub_mesh.is_delay()) 
+                {
                     sub_mesh.setup();
                 }
 
-                if(!material_name.empty()){
+                if(!material_name.empty())
+                {
                     sub_mesh.set_material(material_name);
                 }
             }
         }
 
     private:
-        void process_node(aiNode const *node) {
-            for (auto i = 0; i < node->mNumMeshes; ++i) {
+        void process_node(aiNode const *node)
+        {
+            for (auto i = 0; i < node->mNumMeshes; ++i) 
+            {
                 auto sub_mesh = mScene->mMeshes[node->mMeshes[i]];
                 //mMeshs.push_back(process_mesh(sub_mesh));
                 mMeshs.push_back(process_mesh_delay(sub_mesh));
             }
 
-            for (auto i = 0; i < node->mNumChildren; ++i) {
+            for (auto i = 0; i < node->mNumChildren; ++i)
+            {
                 process_node(node->mChildren[i]);
             }
         }
@@ -418,20 +466,25 @@ namespace freeze {
         ////////////////////////////////////////////////////////////////////////////////////////////
         //延迟处理
 
-        MeshType process_mesh_delay(aiMesh const *sub_mesh) {
+        MeshType process_mesh_delay(aiMesh const *sub_mesh)
+        {
             //顶点
             std::vector<VertexType> vertices;
-            for (auto i = 0; i < sub_mesh->mNumVertices; ++i) {
+            for (auto i = 0; i < sub_mesh->mNumVertices; ++i)
+            {
                 VertexType vertex = {};
                 vertex.Position = glm::vec3{sub_mesh->mVertices[i].x, sub_mesh->mVertices[i].y,
                                             sub_mesh->mVertices[i].z};
                 vertex.Normal = glm::vec3{sub_mesh->mNormals[i].x, sub_mesh->mNormals[i].y,
                                           sub_mesh->mNormals[i].z};
 
-                if (sub_mesh->mTextureCoords[0]) {
+                if (sub_mesh->mTextureCoords[0]) 
+                {
                     vertex.TexCoords = glm::vec2{sub_mesh->mTextureCoords[0][i].x,
                                                  sub_mesh->mTextureCoords[0][i].y};
-                } else {
+                }
+                else
+                {
                     vertex.TexCoords = glm::vec2{0.0f, 0.0f};
                 }
 
@@ -446,9 +499,11 @@ namespace freeze {
 
             //索引
             std::vector<GLuint> indices;
-            for (auto i = 0; i < sub_mesh->mNumFaces; ++i) {
+            for (auto i = 0; i < sub_mesh->mNumFaces; ++i) 
+            {
                 auto face = sub_mesh->mFaces[i];
-                for (auto x = 0; x < face.mNumIndices; ++x) {
+                for (auto x = 0; x < face.mNumIndices; ++x)
+                {
                     indices.push_back(face.mIndices[x]);
                 }
             }
@@ -483,29 +538,39 @@ namespace freeze {
         }
 
         std::vector<TextureDesc>
-        load_textures_delay(aiMaterial const *material, texture_type type) {
+        load_textures_delay(aiMaterial const *material, texture_type type)
+        {
             std::vector<TextureDesc> textures;
             auto aiType = static_cast<aiTextureType>(type);
-            for (auto i = 0; i < material->GetTextureCount(aiType); ++i) {
+            for (auto i = 0; i < material->GetTextureCount(aiType); ++i)
+            {
                 aiString str;
                 material->GetTexture(aiType, i, &str);
                 std::string file = str.C_Str();
 
                 auto skip = false;
-                for (auto x = 0; x < mCacheTextures.size(); ++x) {
-                    if (mCacheTextures[i].file == file) {
-                        textures.push_back(mCacheTextures[x]);
+                for (auto x = 0; x < mCacheTextures.size(); ++x) 
+                {
+                    if (mCacheTextures[x].file == file) 
+                    {
+                        TextureDesc texture = {};
+                        texture.type = type;
+                        texture.file = file;
+                        //TODO:消除冗余数据
+                        texture.instance_data = mCacheTextures[x].instance_data;
+                        textures.push_back(texture);
                         skip = true;
                         break;
                     }
                 }
 
-                if (!skip) {
+                if (!skip) 
+                {
                     TextureDesc texture = { };
-//                    //texture_desc_delay
-//                    texture.instance_data = texture_data_from_file(file);
-//                    texture.type = type;
-//                    texture.file = file;
+                    //texture_desc_delay
+                    //texture.instance_data = texture_data_from_file(file);
+                    //texture.type = type;
+                    //texture.file = file;
 
                     //texture_desc_delay2
                     texture.type = type;
@@ -524,15 +589,18 @@ namespace freeze {
             return textures;
         }
 
-        std::vector<char> texture_data_from_file(std::string const &path) {
+        std::vector<char> texture_data_from_file(std::string const &path) 
+        {
             std::string filename = mDirectory + "/" + path;
 
             std::vector<char> vec_buffer;
             std::ifstream ifs{filename};
-            if (ifs.is_open()) {
+            if (ifs.is_open()) 
+            {
                 ifs.seekg(0,std::ios_base::end);
                 auto length = ifs.tellg();
-                if(length <= 0){
+                if(length <= 0)
+                {
                     LOGE("Error : texture_data_from_file(%s) length = %d",filename.c_str(),static_cast<int>(length));
                     return vec_buffer;
                 }
@@ -548,20 +616,25 @@ namespace freeze {
 
         ////////////////////////////////////////////////////////////////////////////////////////////
 
-        MeshType process_mesh(aiMesh const *sub_mesh) {
+        MeshType process_mesh(aiMesh const *sub_mesh)
+        {
             //顶点
             std::vector<VertexType> vertices;
-            for (auto i = 0; i < sub_mesh->mNumVertices; ++i) {
+            for (auto i = 0; i < sub_mesh->mNumVertices; ++i) 
+            {
                 VertexType vertex = {};
                 vertex.Position = glm::vec3{sub_mesh->mVertices[i].x, sub_mesh->mVertices[i].y,
                                             sub_mesh->mVertices[i].z};
                 vertex.Normal = glm::vec3{sub_mesh->mNormals[i].x, sub_mesh->mNormals[i].y,
                                           sub_mesh->mNormals[i].z};
 
-                if (sub_mesh->mTextureCoords[0]) {
+                if (sub_mesh->mTextureCoords[0]) 
+                {
                     vertex.TexCoords = glm::vec2{sub_mesh->mTextureCoords[0][i].x,
                                                  sub_mesh->mTextureCoords[0][i].y};
-                } else {
+                } 
+                else
+                {
                     vertex.TexCoords = glm::vec2{0.0f, 0.0f};
                 }
 
@@ -575,9 +648,11 @@ namespace freeze {
 
             //索引
             std::vector<GLuint> indices;
-            for (auto i = 0; i < sub_mesh->mNumFaces; ++i) {
+            for (auto i = 0; i < sub_mesh->mNumFaces; ++i)
+            {
                 auto face = sub_mesh->mFaces[i];
-                for (auto x = 0; x < face.mNumIndices; ++x) {
+                for (auto x = 0; x < face.mNumIndices; ++x) 
+                {
                     indices.push_back(face.mIndices[x]);
                 }
             }
@@ -601,24 +676,33 @@ namespace freeze {
             return make<MeshType>(vertices, indices, textures);
         }
 
-        std::vector<TextureDesc> load_textures(aiMaterial const *material, texture_type type) {
+        std::vector<TextureDesc> load_textures(aiMaterial const *material, texture_type type)
+        {
             std::vector<TextureDesc> textures;
             auto aiType = static_cast<aiTextureType>(type);
-            for (auto i = 0; i < material->GetTextureCount(aiType); ++i) {
+            for (auto i = 0; i < material->GetTextureCount(aiType); ++i) 
+            {
                 aiString str;
                 material->GetTexture(aiType, i, &str);
                 std::string file = str.C_Str();
 
                 auto skip = false;
-                for (auto x = 0; x < mCacheTextures.size(); ++x) {
-                    if (mCacheTextures[i].file == file) {
-                        textures.push_back(mCacheTextures[x]);
+                for (auto x = 0; x < mCacheTextures.size(); ++x)
+                {
+                    if (mCacheTextures[x].file == file)
+                    {
+                        TextureDesc texture = {};
+                        texture.instance = mCacheTextures[x].instance;
+                        texture.type = type;
+                        texture.file = file;
+                        textures.push_back(texture);
                         skip = true;
                         break;
                     }
                 }
 
-                if (!skip) {
+                if (!skip)
+                {
                     TextureDesc texture = {};
                     texture.instance = texture_from_file(file);
                     texture.type = type;
@@ -632,7 +716,8 @@ namespace freeze {
             return textures;
         }
 
-        auto texture_from_file(std::string const &path) {
+        auto texture_from_file(std::string const &path) 
+        {
             std::string filename = mDirectory + "/" + path;
             return load_texture_from_sdcard<decltype(TextureDesc::instance)>(filename);
         }
@@ -650,21 +735,25 @@ namespace freeze {
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-namespace freeze {
+namespace freeze 
+{
     template<typename Vertex = delay_vertex, typename DelayTexture = texture_desc_delay2>
-    struct mesh2 {
+    struct mesh2 
+    {
         void draw(program const &shader) {
 
         }
 
         //延迟加载gl
-        void setup() {
+        void setup() 
+        {
             setup_vertices();
             setup_textures();
         }
 
     private:
-        void setup_vertices() {
+        void setup_vertices()
+        {
             vao = make_vertex_array_buffer();
             vao.bind();
 
@@ -690,14 +779,18 @@ namespace freeze {
             vao.unbind();
         }
 
-        void setup_textures() {
+        void setup_textures() 
+        {
 
-            for (auto &tex : vec_textures) {
-                if (tex.instance_data.empty()) {
+            for (auto &tex : vec_textures) 
+            {
+                if (tex.instance_data.empty()) 
+                {
                     continue;
                 }
                 tex.instance = make_texture2d();
-                if (!tex.instance) {
+                if (!tex.instance) 
+                {
                     LOGE("delay mesh setup texture name:<%s> failed", tex.file.c_str());
                     continue;
                 }
@@ -727,7 +820,8 @@ namespace freeze {
     constexpr auto make_delay_mesh2 = make<delay_mesh>;
 }
 
-namespace freeze {
+namespace freeze 
+{
     using model = base_model<mesh, mesh_vertex, texture_desc>;
     //using delay_model = base_model<delay_mesh, mesh_vertex, texture_desc_delay3>;
     using delay_model = base_model<delay_mesh, mesh_vertex, texture_desc_delay2>;

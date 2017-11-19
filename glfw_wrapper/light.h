@@ -5,15 +5,17 @@
 #ifndef FREEGL_LIGHT_H
 #define FREEGL_LIGHT_H
 
-namespace freeze {
-    struct attenuation{
+namespace freeze 
+{
+    struct attenuation
+    {
         int d;
         float c;
         float l;
         float q;
     };
 
-    constexpr attenuation g_attenuation[]={
+    constexpr attenuation g_attenuation[] = {
             7	,    1.0f,	0.7f,    1.8f,
             13	,    1.0f,	0.35f,	0.44f,
             20	,    1.0f,	0.22f,	0.20f,
@@ -28,18 +30,23 @@ namespace freeze {
             3250,	 1.0f,	0.0014f,0.000007f,
     };
 
-    struct light {
+    struct light 
+    {
         glm::vec3 ambient;
         glm::vec3 diffuse;
         glm::vec3 specular;
     };
 
-    struct direction_light : light {
+    struct direction_light
+        : light 
+    {
         glm::vec3 direction;
     };
 
     //f = 1.0f/(c +l*d+q*d*d)
-    struct point_light : light {
+    struct point_light
+        : light
+    {
         glm::vec3 position;
         float constant;
         float linear;
@@ -47,7 +54,9 @@ namespace freeze {
     };
 
     //i = (theta-gamma)/(phi-gamma)
-    struct spot_light : point_light {
+    struct spot_light
+        : point_light
+    {
         glm::vec3 direction;
         float cut_off;
         float outer_cut_off;

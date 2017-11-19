@@ -67,7 +67,8 @@ namespace fs = std::experimental::filesystem;
 #define LOGE(...)
 #endif
 
-namespace freeze {
+namespace freeze 
+{
     template<typename T, typename = void>
     struct make_impl;
 
@@ -102,7 +103,8 @@ namespace freeze {
     };
 
     //template<typename T>
-    //constexpr auto make_t = [](auto&&... x) {
+    //constexpr auto make_t = [](auto&&... x) 
+    //{
     //    return make_impl<T>::apply(std::forward<decltype(args)>(args)...);
     //};
 
@@ -321,7 +323,8 @@ namespace glfw {
 //glfw::detail
 namespace glfw
 {
-    namespace detail {
+    namespace detail
+    {
 
         inline int make_version(int major, int minor)
         {
@@ -405,7 +408,8 @@ namespace glfw
 }
 
 //glfw::class
-namespace glfw {
+namespace glfw 
+{
 
     class glfw
     {
@@ -532,7 +536,8 @@ namespace glfw {
             disabled = GLFW_CURSOR_DISABLED,
         };
 
-        window() : windowp_(nullptr)
+        window() 
+            : windowp_(nullptr)
         {
 
         }
@@ -676,7 +681,8 @@ namespace glfw {
 }
 
 //glfw::function
-namespace glfw {
+namespace glfw 
+{
 
     inline void set_window_should_close(window::pointer win, bool _close = true)
     {

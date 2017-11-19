@@ -5,7 +5,8 @@
 #ifndef FREEGL_TEXTURE_H
 #define FREEGL_TEXTURE_H
 
-namespace freeze {
+namespace freeze
+{
     template<bool>
     struct parameter
     {
@@ -236,7 +237,8 @@ namespace freeze {
 namespace freeze
 {
     template<typename=void>
-    struct texture2d_impl : texture_base<GL_TEXTURE_2D>
+    struct texture2d_impl
+        : texture_base<GL_TEXTURE_2D>
     {
         //别忘了先绑定
         // internalFormat -- GL_DEPTH_COMPONENT,GL_DEPTH_STENCIL,GL_RED,GL_RG,GL_RGB,GL_RGBA
@@ -263,13 +265,15 @@ namespace freeze
         }
 
         //别忘了先绑定
-        void set_image(std::vector<char> const& data){
+        void set_image(std::vector<char> const& data)
+        {
             int x,y,channels;
             
             auto image_data = stbi_load_from_memory((stbi_uc*)data.data(),data.size(),&x,&y,&channels,0);
             if(!image_data)return;
 
-            switch (channels){
+            switch (channels)
+            {
                 default:
                 case 3:this->format=GL_RGB;break;
                 case 4:this->format=GL_RGBA;break;
@@ -293,7 +297,9 @@ namespace freeze
     };
 
     template<typename = void>
-    struct texture2dmultisample_impl : texture_base<GL_TEXTURE_2D_MULTISAMPLE>{
+    struct texture2dmultisample_impl
+        : texture_base<GL_TEXTURE_2D_MULTISAMPLE>
+    {
         //别忘了先绑定
         void set_image(GLsizei samples,GLint internalFormat,
                        GLsizei width, GLsizei height,GLboolean fixedsamplelocations)
@@ -304,25 +310,30 @@ namespace freeze
     };
 
     template<typename=void>
-    struct texture_cube_impl : texture_base<GL_TEXTURE_CUBE_MAP>{
+    struct texture_cube_impl : texture_base<GL_TEXTURE_CUBE_MAP>
+    {
         //绑定一次
         //调用6次分别设置+-x,+-y,+-z
         void set_image(GLsizei index,GLint internalFormat,
                        GLsizei width, GLsizei height, GLenum format,
-                       GLenum type, const void* pixels ){
+                       GLenum type, const void* pixels )
+        {
             glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + index,0,internalFormat,
             width,height,0,format,type,pixels);
             assert_error();
         }
 
-        void set_image(std::vector<std::vector<char>> const& datas){
+        void set_image(std::vector<std::vector<char>> const& datas)
+        {
             int x,y,channels;
             GLenum format;
             auto index = 0;
-            for(auto data : datas){
+            for(auto data : datas)
+            {
                 auto image_data = stbi_load_from_memory((const stbi_uc*) data.data(),data.size(),&x,&y,&channels,0);
                 if(!image_data)return;
-                switch (channels){
+                switch (channels)
+                {
                     default:
                     case 3:format=GL_RGB;break;
                     case 4:format=GL_RGBA;break;
@@ -341,7 +352,8 @@ namespace freeze
     constexpr auto make_texture_cube = make<texture_cube>;
 }
 
-namespace  freeze {
+namespace freeze 
+{
 #if defined(_WIN32) || defined(WIN32) || defined(__WIN32__)
     inline std::vector<char> load_image_from_file(std::string const& file)
     {
@@ -371,9 +383,11 @@ namespace  freeze {
 
 #if defined(ANDROID) || defined(__ANDROID__)
     template<typename TextureType,typename AssetManager>
-    inline TextureType load_texture_from_assets(AssetManager const& assetmgr,std::string const& file){
+    inline TextureType load_texture_from_assets(AssetManager const& assetmgr,std::string const& file)
+    {
         TextureType texture;
-        if(!texture){
+        if(!texture)
+        {
             LOGE("load_texture_from_assets(...) create texture 2d failed");
         }
 
@@ -387,12 +401,14 @@ namespace  freeze {
         int x,y,channels;
         GLenum format;
         auto data = stbi_load_from_memory((stbi_uc*)buffer,read_size,&x,&y,&channels,0);
-        if(!data){
+        if(!data)
+        {
             free(buffer);
             return texture;
         }
 
-        switch (channels){
+        switch (channels)
+        {
             default:
             case 3:format=GL_RGB;break;
             case 4:format=GL_RGBA;break;
@@ -412,9 +428,11 @@ namespace  freeze {
     }
 
     template<typename TextureType,typename AssetManager>
-    inline TextureType load_cubetexture_from_assets(AssetManager const& assetmgr,std::vector<std::string> const& files){
+    inline TextureType load_cubetexture_from_assets(AssetManager const& assetmgr,std::vector<std::string> const& files)
+    {
         TextureType texture;
-        if(!texture){
+        if(!texture)
+        {
             LOGE("load_cubetexture_from_assets(...) create cube texture failed");
         }
 
@@ -423,7 +441,8 @@ namespace  freeze {
         int x,y,channels;
         GLenum format;
         int index = 0;
-        for(auto file : files){
+        for(auto file : files)
+        {
             auto file_size = assetmgr.get_file_size(file);
             if(file_size == -1)return texture;
 
@@ -432,12 +451,14 @@ namespace  freeze {
             if(read_size == -1)return texture;
 
             auto data = stbi_load_from_memory((stbi_uc*)buffer,read_size,&x,&y,&channels,0);
-            if(!data){
+            if(!data)
+            {
                 free(buffer);
                 return texture;
             }
 
-            switch (channels){
+            switch (channels)
+            {
                 default:
                 case 3:format=GL_RGB;break;
                 case 4:format=GL_RGBA;break;
@@ -458,17 +479,21 @@ namespace  freeze {
     }
 
     template<typename TextureType>
-    inline TextureType load_texture_from_sdcard(std::string const& file){
+    inline TextureType load_texture_from_sdcard(std::string const& file)
+    {
         TextureType texture;
-        if(!texture){
+        if(!texture)
+        {
             LOGE("load_texture_from_sdcard(...) create texture failed");
         }
 
         int x,y,channels;
         GLenum format;
         auto data = stbi_load(file.c_str(),&x,&y,&channels,0);
-        if(data){
-            switch (channels){
+        if(data)
+        {
+            switch (channels)
+            {
                 default:
                 case 3:format=GL_RGB;break;
                 case 4:format=GL_RGBA;break;

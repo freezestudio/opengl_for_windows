@@ -23,7 +23,7 @@ public:
     virtual ~dir_shadow_renderer();
 public:
     void draw();
-    void process_event(glfw::window::pointer window);
+    void process_event(window_pointer window);
 public:
     void do_init();
     void do_mouse_callback(double xpos, double ypos);

@@ -8,17 +8,16 @@
 
 #define RENDERER
 
+using window_pointer = glfw::window::pointer;
+
 struct renderer_core
 {
     virtual void draw() = 0;
-    //virtual void do_init() = 0;
 };
 
 struct renderer_event
 {
-    virtual void process_event(glfw::window::pointer window) = 0;
-    //virtual void do_mouse_callback(double xpos, double ypos) = 0;
-    //virtual void do_scroll_callback(double xoffset, double yoffset) = 0;
+    virtual void process_event(window_pointer window) = 0;
 };
 
 struct renderer
@@ -91,6 +90,7 @@ protected:
     void do_init()
     {
         //สตภýปฏ ms_instance
+        //ms_instance = shared_from_this();
     }
 
     void do_mouse_callback(double xpos, double ypos)

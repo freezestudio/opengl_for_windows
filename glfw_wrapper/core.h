@@ -18,9 +18,12 @@ namespace freeze{
 
     template<typename Object>
     auto make = [](auto&&... xs){
-        if constexpr (is_valid<decltype(xs)...>){
+        if constexpr (is_valid<decltype(xs)...>)
+        {
             return Object{ static_cast<decltype(xs)&&>(xs)...};
-        }else{
+        }
+        else
+        {
             static_assert((sizeof...(xs),false));
         }
     };
@@ -31,57 +34,79 @@ namespace freeze{
 namespace freeze{
 
     template<typename T,bool NeedArgs = true>
-    struct make_object{
+    struct make_object
+    {
         using targer_type = T;
         using target_pointer = T*;
 
-        make_object(){
+        make_object()
+        {
             auto pT = static_cast<target_pointer>(this);
-            if constexpr(NeedArgs){
+            if constexpr(NeedArgs)
+            {
                 object_name = std::make_shared<GLuint>(0);
                 pT->create(object_name.get());
-            }else{
+            }
+            else
+            {
                 object_name = std::make_shared<GLuint>(pT->create());
             }
             assert(object_name);
         }
 
-        make_object(make_object const& rhs) : object_name{rhs.object_name}{
+        make_object(make_object const& rhs)
+            : object_name{rhs.object_name}
+        {
 
         }
 
-        make_object(make_object&& rhs){
+        make_object(make_object&& rhs)
+        {
             object_name = std::move(rhs.object_name);
             //rhs.object_name.reset();
         }
 
-        make_object& operator=(make_object const& rhs) {
+        make_object& operator=(make_object const& rhs) 
+        {
             object_name = rhs.object_name;
             return *this;
         }
 
-        make_object& operator=(make_object&& rhs) {
+        make_object& operator=(make_object&& rhs) 
+        {
             object_name = std::move(rhs.object_name);
             //rhs.object_name.reset();
             return *this;
         }
 
-        ~make_object(){
-            if(object_name && object_name.use_count()==1){
+        ~make_object()
+        {
+            if(object_name && object_name.use_count()==1)
+            {
                 auto pT = static_cast<target_pointer>(this);
-                if constexpr(NeedArgs){
+                if constexpr(NeedArgs)
+                {
                     pT->destroy(object_name.get());
-                }else{
+                }
+                else
+                {
                     pT->destroy(ref());
                 }
             }
         }
 
-        auto ref() const{
+        auto ref() const
+        {
             return *object_name;
         }
 
-        explicit operator bool() const{
+        operator GLuint() const
+        {
+            return ref();
+        }
+
+        explicit operator bool() const
+        {
             return *object_name > 0;
         }
 
@@ -90,7 +115,8 @@ namespace freeze{
     };
 }
 
-namespace freeze {
+namespace freeze 
+{
     template<std::size_t N,typename... Vec>
     struct data_length;
 

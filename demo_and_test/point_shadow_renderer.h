@@ -18,7 +18,7 @@ public:
     virtual ~point_shadow_renderer();
 public:
     virtual void draw() override;
-    virtual void process_event(glfw::window::pointer window) override;
+    virtual void process_event(window_pointer window) override;
 public:
     void do_init();
     void do_mouse_callback(double xpos, double ypos);

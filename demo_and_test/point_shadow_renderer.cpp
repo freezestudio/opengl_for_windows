@@ -18,7 +18,7 @@ void point_shadow_renderer::draw() /*override*/
 }
 
 /*virtual*/ 
-void point_shadow_renderer::process_event(glfw::window::pointer window) /*override*/
+void point_shadow_renderer::process_event(window_pointer window) /*override*/
 {
 
 }

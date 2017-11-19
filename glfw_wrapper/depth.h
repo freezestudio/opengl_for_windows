@@ -5,7 +5,8 @@
 #ifndef FREEGL_DEPTH_H
 #define FREEGL_DEPTH_H
 
-namespace freeze {
+namespace freeze
+{
     //
     // 深度缓冲，在每个片段中储存了信息，
     // 并且（通常）和颜色缓冲有着一样的宽度和高度。
@@ -26,77 +27,96 @@ namespace freeze {
     // gl_FragCoord中也包含了一个z分量，它包含了片段真正的深度值。
     // z值就是需要与深度缓冲内容所对比的那个值。
     //
-    struct depth {
-        static inline void enable(){
+    struct depth 
+    {
+        static inline void enable()
+        {
             glEnable(GL_DEPTH_TEST);
         }
 
-        static inline void disable(){
+        static inline void disable()
+        {
             glDisable(GL_DEPTH_TEST);
         }
 
-        static inline void clear(){
+        static inline void clear()
+        {
             glClear(GL_DEPTH_BUFFER_BIT);
         }
 
-        static inline void test(GLenum func = GL_LESS){
+        static inline void test(GLenum func = GL_LESS)
+        {
             glDepthFunc(func);
         }
 
-        static inline void test_default(){
+        static inline void test_default()
+        {
             test();
         }
 
-        static inline void test_always(){
+        static inline void test_always()
+        {
             test(GL_ALWAYS);
         }
 
-        static inline void test_never(){
+        static inline void test_never()
+        {
             test(GL_NEVER);
         }
 
-        static inline void test_less(){
+        static inline void test_less()
+        {
             test(GL_LESS);
         }
 
-        static inline void test_equal(){
+        static inline void test_equal()
+        {
             test(GL_EQUAL);
         }
 
-        static inline void test_less_equal(){
+        static inline void test_less_equal()
+        {
             test(GL_LEQUAL);
         }
 
-        static inline void test_greater(){
+        static inline void test_greater()
+        {
             test(GL_GREATER);
         }
 
-        static inline void test_not_equal(){
+        static inline void test_not_equal()
+        {
             test(GL_NOTEQUAL);
         }
 
-        static inline void test_greater_equal(){
+        static inline void test_greater_equal()
+        {
             test(GL_GEQUAL);
         }
 
 #if defined(ANDROID) || defined(__ANDROID__)
-        static inline void ranger(GLfloat near = 0.0f,GLfloat far = 1.0f){
+        static inline void ranger(GLfloat near = 0.0f,GLfloat far = 1.0f)
+        {
             glDepthRangef(near,far);
         }
 #endif
-        //static inline void range_array(GLuint first,GLsizei count,GLfloat const* v){
+        //static inline void range_array(GLuint first,GLsizei count,GLfloat const* v)
+        //{
         //    glDepthRangeArrayv(first,count,v);
         //}
 
-        static inline float linear_buffer(float z,float fnear,float ffar){
+        static inline float linear_buffer(float z,float fnear,float ffar)
+        {
             return (z-fnear)/(ffar-fnear);
         }
 
-        static inline float nonlinear_buffer(float z,float fnear,float ffar){
+        static inline float nonlinear_buffer(float z,float fnear,float ffar)
+        {
             return (1/z - 1/fnear)/(1/ffar-1/fnear);
         }
 
-        static inline float nonlinear_to_linear(float linear,float fnear,float ffar){
+        static inline float nonlinear_to_linear(float linear,float fnear,float ffar)
+        {
             float z = linear *2.0f -1.0f; //back to NDC
             return (2.0f * fnear * ffar)/(ffar + fnear - z *(ffar - fnear));
         }

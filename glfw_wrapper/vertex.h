@@ -5,9 +5,11 @@
 #ifndef FREEGL_VERTEX_H
 #define FREEGL_VERTEX_H
 
-namespace freeze {
+namespace freeze 
+{
     template<typename = void>
-    struct void_vertex{
+    struct void_vertex
+    {
         // index   顶点属性（位置值）
         // size    顶点大小 (表示n维的向量)
         // type    数据类型(enum)
@@ -39,7 +41,8 @@ namespace freeze {
     };
 }
 
-namespace freeze {
+namespace freeze 
+{
     using vertex = void_vertex<>;
     constexpr auto make_vertex = make<vertex>;
 }

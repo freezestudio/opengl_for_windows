@@ -82,7 +82,7 @@ void dir_shadow_renderer::draw()
 
 }
 
-void dir_shadow_renderer::process_event(glfw::window::pointer window)
+void dir_shadow_renderer::process_event(window_pointer window)
 {
     auto key = glfw::get_key(window, GLFW_KEY_ESCAPE);
     if (key == GLFW_PRESS)
