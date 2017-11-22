@@ -67,7 +67,7 @@ namespace fs = std::experimental::filesystem;
 #define LOGE(...)
 #endif
 
-namespace freeze 
+namespace freeze
 {
     template<typename T, typename = void>
     struct make_impl;
@@ -408,7 +408,7 @@ namespace glfw
 }
 
 //glfw::class
-namespace glfw 
+namespace glfw
 {
 
     class glfw
@@ -536,7 +536,7 @@ namespace glfw
             disabled = GLFW_CURSOR_DISABLED,
         };
 
-        window() 
+        window()
             : windowp_(nullptr)
         {
 
@@ -681,7 +681,7 @@ namespace glfw
 }
 
 //glfw::function
-namespace glfw 
+namespace glfw
 {
 
     inline void set_window_should_close(window::pointer win, bool _close = true)
@@ -775,7 +775,7 @@ extern AAssetManager* g_asset_managerp;                                         
 inline void __assert_error__(char const* func)
 {
     auto err = glGetError();
-    if(GL_NO_ERROR != err)
+    if (GL_NO_ERROR != err)
     {
         std::string errmsg;
         switch (err)
@@ -788,11 +788,11 @@ inline void __assert_error__(char const* func)
         case GL_OUT_OF_MEMORY:errmsg = "内存调用操作无法调用（足够的）内存"s; break;
         case GL_INVALID_FRAMEBUFFER_OPERATION:errmsg = "读取或写入一个不完整的帧缓冲"s; break;
         }
-        LOGE("%s error : %d, msg: %s\n",func,err,errmsg.c_str());
+        LOGE("%s error : %d, msg: %s\n", func, err, errmsg.c_str());
     }
 }
 
-inline void __assert_error__(char const* func,char const* name)
+inline void __assert_error__(char const* func, char const* name)
 {
     auto err = glGetError();
     if (GL_NO_ERROR != err)

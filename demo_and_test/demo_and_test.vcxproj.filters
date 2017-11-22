@@ -36,6 +36,9 @@
     <ClCompile Include="point_shadow_renderer.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="pbr_renderer.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="renderer_base.h">
@@ -45,6 +48,9 @@
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="point_shadow_renderer.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="pbr_renderer.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>
@@ -59,6 +65,12 @@
       <Filter>资源文件\resource\shaders</Filter>
     </None>
     <None Include="resource\shaders\depth.frag">
+      <Filter>资源文件\resource\shaders</Filter>
+    </None>
+    <None Include="resource\shaders\pbr.vert">
+      <Filter>资源文件\resource\shaders</Filter>
+    </None>
+    <None Include="resource\shaders\pbr.frag">
       <Filter>资源文件\resource\shaders</Filter>
     </None>
   </ItemGroup>

@@ -3,6 +3,7 @@
 
 #include "point_shadow_renderer.h"
 #include "dir_shadow_renderer.h"
+#include "pbr_renderer.h"
 
 int main()
 {
@@ -22,9 +23,6 @@ int main()
 
     while (!window.should_close())
     {
-        auto current_frame = freegl.get_time();
-        RENDERER::instance()->delta_time = current_frame - RENDERER::instance()->last_frame;
-        RENDERER::instance()->last_frame = current_frame;
         render->process_event(window.get());
 
         auto color = freeze::make_color(0.1f, 0.1f, 0.1f, 1.0f);

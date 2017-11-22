@@ -89,8 +89,9 @@ public:
 protected:
     void do_init()
     {
-        //实例化 ms_instance
+        //继承类实例化 ms_instance
         //ms_instance = shared_from_this();
+        
     }
 
     void do_mouse_callback(double xpos, double ypos)

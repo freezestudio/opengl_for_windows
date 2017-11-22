@@ -5,10 +5,10 @@
 #ifndef FREEGL_QUICKLY_H
 #define FREEGL_QUICKLY_H
 
-namespace freeze 
+namespace freeze
 {
     static inline texture2d quickly_texture2d(
-    std::vector<char> const& data)
+        std::vector<char> const& data)
     {
         auto tex = make_texture2d();
 

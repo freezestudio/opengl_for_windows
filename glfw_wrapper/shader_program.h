@@ -5,11 +5,11 @@
 #ifndef FREEGL_SHADER_PROGRAM_H
 #define FREEGL_SHADER_PROGRAM_H
 
-namespace freeze 
+namespace freeze
 {
     template<typename = void>
     struct void_program
-        : make_object<void_program<void>, false> 
+        : make_object<void_program<void>, false>
     {
         GLuint create()
         {
@@ -17,7 +17,7 @@ namespace freeze
             assert_error();
         }
 
-        void destroy(GLuint program) 
+        void destroy(GLuint program)
         {
             glDeleteProgram(program);
             assert_error();
@@ -27,7 +27,7 @@ namespace freeze
         struct void_shader
             : make_object<void_shader<Target, void>, false>
         {
-            GLuint create() 
+            GLuint create()
             {
                 auto id = glCreateShader(Target);
                 assert_error();
@@ -46,7 +46,7 @@ namespace freeze
                 return id;
             }
 
-            void destroy(GLuint shader) 
+            void destroy(GLuint shader)
             {
                 glDeleteShader(shader);
                 assert_error();
@@ -131,13 +131,13 @@ namespace freeze
             auto fs_shader = make_fragment_shader();
             fs_shader.source(fs);
 
-            if (!gs.empty()) 
+            if (!gs.empty())
             {
                 glAttachShader(this->ref(), vs_shader.ref());
                 glAttachShader(this->ref(), gs_shader.ref());
                 glAttachShader(this->ref(), fs_shader.ref());
             }
-            else 
+            else
             {
                 glAttachShader(this->ref(), vs_shader.ref());
                 glAttachShader(this->ref(), fs_shader.ref());
@@ -285,7 +285,7 @@ namespace freeze
                 ifs.open(file); if (ifs.bad() || !ifs.is_open())
                     return ""s;
             }
-            
+
             std::stringstream ss;
             ss << ifs.rdbuf();
             auto source = ss.str();
@@ -295,7 +295,7 @@ namespace freeze
     };
 }
 
-namespace freeze 
+namespace freeze
 {
     using program = void_program<>;
     constexpr auto make_program = make<program>;

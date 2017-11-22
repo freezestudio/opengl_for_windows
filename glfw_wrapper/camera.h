@@ -5,10 +5,10 @@
 #ifndef FREEGL_CAMERA_H
 #define FREEGL_CAMERA_H
 
-namespace freeze 
+namespace freeze
 {
     // 定义摄像机移动的几种可能选项。用作抽象以避开特定于窗口系统的输入方法
-    enum camera_movement 
+    enum camera_movement
     {
         FORWARD,
         BACKWARD,
@@ -16,7 +16,7 @@ namespace freeze
         RIGHT,
     };
 
-   // 摄像机缺省值
+    // 摄像机缺省值
     constexpr float YAW = -90.0f;      //偏航y -- 指向左侧
     constexpr float PITCH = 0.0f;      //俯仰x -- 指向前方
     constexpr float SPEED = 2.5f;      //速度
@@ -26,7 +26,7 @@ namespace freeze
 
     // 一个抽象相机类，用于处理输入并计算用于OpenGL的相应的欧拉角，向量和矩阵
     template<typename = void>
-    class void_camera 
+    class void_camera
     {
     public:
         // 摄像机属性
@@ -58,14 +58,14 @@ namespace freeze
         float Zoom;
 
         // 使用向量构造
-        void_camera(glm::vec3 position = glm::vec3{0.0f, 0.0f, 0.0f}, // 位置
-                    glm::vec3 up = glm::vec3{0.0f, 1.0f, 0.0f},       // 世界坐标系中的向上方向
-                    float yaw = YAW,                                  // y偏航
-                    float pitch = PITCH )                             // x俯仰
-                : Front{0.0f, 0.0f, -1.0f}
-                , MovementSpeed(SPEED)
-                , MouseSensitivity(SENSITIVTY)
-                , Zoom(ZOOM)
+        void_camera(glm::vec3 position = glm::vec3{ 0.0f, 0.0f, 0.0f }, // 位置
+            glm::vec3 up = glm::vec3{ 0.0f, 1.0f, 0.0f },       // 世界坐标系中的向上方向
+            float yaw = YAW,                                  // y偏航
+            float pitch = PITCH)                             // x俯仰
+            : Front{ 0.0f, 0.0f, -1.0f }
+            , MovementSpeed(SPEED)
+            , MouseSensitivity(SENSITIVTY)
+            , Zoom(ZOOM)
         {
 
             Position = position;
@@ -78,13 +78,13 @@ namespace freeze
 
         // 使用标量值构造
         void_camera(float posX, float posY, float posZ,                      //位置
-                    float upX = 0.0f, float upY = 1.0f, float upZ = 0.0f,    //世界坐标系中的向上方向
-                    float yaw = YAW,                                         //y偏航
-                    float pitch = PITCH)                                     //x俯仰
-                : Front{0.0f, 0.0f, -1.0f}
-                , MovementSpeed(SPEED)
-                , MouseSensitivity(SENSITIVTY)
-                , Zoom(ZOOM) 
+            float upX = 0.0f, float upY = 1.0f, float upZ = 0.0f,    //世界坐标系中的向上方向
+            float yaw = YAW,                                         //y偏航
+            float pitch = PITCH)                                     //x俯仰
+            : Front{ 0.0f, 0.0f, -1.0f }
+            , MovementSpeed(SPEED)
+            , MouseSensitivity(SENSITIVTY)
+            , Zoom(ZOOM)
         {
 
             Position = glm::vec3(posX, posY, posZ);
@@ -108,25 +108,25 @@ namespace freeze
             //速度
             float velocity = MovementSpeed * deltaTime;
             //W,S,A,D
-            switch (direction){
-                case FORWARD : Position += Front * velocity; break;
-                case BACKWARD: Position -= Front * velocity; break;
-                case LEFT    : Position -= Right * velocity; break;
-                case RIGHT   : Position += Right * velocity; break;
+            switch (direction) {
+            case FORWARD: Position += Front * velocity; break;
+            case BACKWARD: Position -= Front * velocity; break;
+            case LEFT: Position -= Right * velocity; break;
+            case RIGHT: Position += Right * velocity; break;
             }
         }
 
         // 处理从鼠标输入系统接收的输入。 期望x和y方向上的偏移值。
-        void process_mouse_movement(float xoffset, float yoffset, bool constrainPitch = true) 
+        void process_mouse_movement(float xoffset, float yoffset, bool constrainPitch = true)
         {
             xoffset *= MouseSensitivity;
             yoffset *= MouseSensitivity;
 
-            Yaw   += xoffset;
+            Yaw += xoffset;
             Pitch += yoffset;
 
             // Make sure that when pitch is out of bounds, screen doesn't get flipped
-            if (constrainPitch) 
+            if (constrainPitch)
             {
                 if (Pitch > 89.0f)
                     Pitch = 89.0f;
@@ -140,7 +140,7 @@ namespace freeze
 
         // Processes input received from a mouse scroll-wheel event.
         // Only requires input on the vertical wheel-axis
-        void process_mouse_scroll(float yoffset) 
+        void process_mouse_scroll(float yoffset)
         {
             if (Zoom >= 1.0f && Zoom <= 45.0f)
                 Zoom -= yoffset;
@@ -152,7 +152,7 @@ namespace freeze
 
     private:
         // 从相机的（更新的）欧拉角计算前向量
-        void update_camera_vectors() 
+        void update_camera_vectors()
         {
             // Calculate the new Front vector
             glm::vec3 front;
@@ -162,13 +162,13 @@ namespace freeze
             Front = glm::normalize(front);
             // Also re-calculate the Right and Up vector
             //归一化矢量，因为它们的长度越来越接近于0，因此您的仰视越多，移动越慢。
-            Right = glm::normalize(glm::cross(Front,WorldUp));
+            Right = glm::normalize(glm::cross(Front, WorldUp));
             Up = glm::normalize(glm::cross(Right, Front));
         }
     };
 }
 
-namespace freeze 
+namespace freeze
 {
     using camera = void_camera<>;
 }

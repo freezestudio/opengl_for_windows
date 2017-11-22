@@ -27,7 +27,7 @@ namespace freeze
     // gl_FragCoord中也包含了一个z分量，它包含了片段真正的深度值。
     // z值就是需要与深度缓冲内容所对比的那个值。
     //
-    struct depth 
+    struct depth
     {
         static inline void enable()
         {
@@ -95,9 +95,9 @@ namespace freeze
         }
 
 #if defined(ANDROID) || defined(__ANDROID__)
-        static inline void ranger(GLfloat near = 0.0f,GLfloat far = 1.0f)
+        static inline void ranger(GLfloat near = 0.0f, GLfloat far = 1.0f)
         {
-            glDepthRangef(near,far);
+            glDepthRangef(near, far);
         }
 #endif
         //static inline void range_array(GLuint first,GLsizei count,GLfloat const* v)
@@ -105,20 +105,20 @@ namespace freeze
         //    glDepthRangeArrayv(first,count,v);
         //}
 
-        static inline float linear_buffer(float z,float fnear,float ffar)
+        static inline float linear_buffer(float z, float fnear, float ffar)
         {
-            return (z-fnear)/(ffar-fnear);
+            return (z - fnear) / (ffar - fnear);
         }
 
-        static inline float nonlinear_buffer(float z,float fnear,float ffar)
+        static inline float nonlinear_buffer(float z, float fnear, float ffar)
         {
-            return (1/z - 1/fnear)/(1/ffar-1/fnear);
+            return (1 / z - 1 / fnear) / (1 / ffar - 1 / fnear);
         }
 
-        static inline float nonlinear_to_linear(float linear,float fnear,float ffar)
+        static inline float nonlinear_to_linear(float linear, float fnear, float ffar)
         {
-            float z = linear *2.0f -1.0f; //back to NDC
-            return (2.0f * fnear * ffar)/(ffar + fnear - z *(ffar - fnear));
+            float z = linear * 2.0f - 1.0f; //back to NDC
+            return (2.0f * fnear * ffar) / (ffar + fnear - z * (ffar - fnear));
         }
     };
 }

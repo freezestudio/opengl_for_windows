@@ -8,36 +8,37 @@
 #if defined(ANDROID) || defined(__ANDROID__)
 #include <bits/shared_ptr.h>
 
-namespace freeze{
+namespace freeze 
+{
 
     template<typename...>
-    struct always_true{constexpr static bool value = true;};
+    struct always_true { constexpr static bool value = true; };
 
     template<typename... Xs>
     constexpr bool is_valid = always_true<Xs...>::value;
 
     template<typename Object>
-    auto make = [](auto&&... xs){
+    auto make = [](auto&&... xs) {
         if constexpr (is_valid<decltype(xs)...>)
         {
-            return Object{ static_cast<decltype(xs)&&>(xs)...};
+            return Object{ static_cast<decltype(xs) && >(xs)... };
         }
         else
         {
-            static_assert((sizeof...(xs),false));
+            static_assert((sizeof...(xs), false));
         }
     };
 }
 
 #endif //defined(ANDROID) || defined(__ANDROID__)
 
-namespace freeze{
+namespace freeze {
 
-    template<typename T,bool NeedArgs = true>
+    template<typename T, bool NeedArgs = true>
     struct make_object
     {
         using targer_type = T;
-        using target_pointer = T*;
+        using target_pointer = T * ;
 
         make_object()
         {
@@ -55,7 +56,7 @@ namespace freeze{
         }
 
         make_object(make_object const& rhs)
-            : object_name{rhs.object_name}
+            : object_name{ rhs.object_name }
         {
 
         }
@@ -66,13 +67,13 @@ namespace freeze{
             //rhs.object_name.reset();
         }
 
-        make_object& operator=(make_object const& rhs) 
+        make_object& operator=(make_object const& rhs)
         {
             object_name = rhs.object_name;
             return *this;
         }
 
-        make_object& operator=(make_object&& rhs) 
+        make_object& operator=(make_object&& rhs)
         {
             object_name = std::move(rhs.object_name);
             //rhs.object_name.reset();
@@ -81,7 +82,7 @@ namespace freeze{
 
         ~make_object()
         {
-            if(object_name && object_name.use_count()==1)
+            if (object_name && object_name.use_count() == 1)
             {
                 auto pT = static_cast<target_pointer>(this);
                 if constexpr(NeedArgs)
@@ -115,22 +116,22 @@ namespace freeze{
     };
 }
 
-namespace freeze 
+namespace freeze
 {
-    template<std::size_t N,typename... Vec>
+    template<std::size_t N, typename... Vec>
     struct data_length;
 
-    template<std::size_t N,typename V, typename... Vec>
+    template<std::size_t N, typename V, typename... Vec>
     struct data_length<N, V, Vec...>
-            : std::integral_constant<std::size_t,
-                    data_length<N, V>::value + data_length<N, Vec...>::value>
+        : std::integral_constant<std::size_t,
+        data_length<N, V>::value + data_length<N, Vec...>::value>
     {
 
     };
 
-    template<std::size_t N,typename V>
+    template<std::size_t N, typename V>
     struct data_length<N, V>
-            : std::integral_constant<std::size_t,sizeof(V)*N>
+        : std::integral_constant<std::size_t, sizeof(V)*N>
     {
 
     };

@@ -68,8 +68,8 @@ namespace freeze
             assert_error();
         }
 
-        void unbind(){
-            glBindTexture(Target,0);
+        void unbind() {
+            glBindTexture(Target, 0);
             assert_error();
         }
 
@@ -93,9 +93,10 @@ namespace freeze
             //ver>=4.5
             //glTextureParameteri(this->ref(), pname, param);
             //need c++17
-            if constexpr(std::is_same<T, GLfloat>::value){
-                    glTexParameterf(Target, pname, param);
-            }else{
+            if constexpr(std::is_same<T, GLfloat>::value) {
+                glTexParameterf(Target, pname, param);
+            }
+            else {
                 glTexParameteri(Target, pname, param);
             }
 
@@ -116,14 +117,14 @@ namespace freeze
             set_parameter(GL_TEXTURE_BASE_LEVEL, level);
         }
 
-//        void set_border_color(const GLfloat* rgba)
-//        {
-//            set_parameter(GL_TEXTURE_BORDER_COLOR, rgba);
-//        }
+        //        void set_border_color(const GLfloat* rgba)
+        //        {
+        //            set_parameter(GL_TEXTURE_BORDER_COLOR, rgba);
+        //        }
 
-        //glTexImage2D调用中的internal format 为 GL_DEPTH_COMPONENT_*时
-        //    GL_COMPARE_REF_TO_TEXTURE (设为此值时，需随后调用set_compare_func)
-        //    GL_NONE
+                //glTexImage2D调用中的internal format 为 GL_DEPTH_COMPONENT_*时
+                //    GL_COMPARE_REF_TO_TEXTURE (设为此值时，需随后调用set_compare_func)
+                //    GL_NONE
         void set_compare_mode(GLint param)
         {
             set_parameter(GL_TEXTURE_COMPARE_MODE, param);
@@ -135,20 +136,20 @@ namespace freeze
             set_parameter(GL_TEXTURE_COMPARE_FUNC, param);
         }
 
-//        void set_lod_bias(GLfloat param = 0.0f)
-//        {
-//            if (param > -GL_MAX_TEXTURE_LOD_BIAS && param < GL_MAX_TEXTURE_LOD_BIAS)
-//            {
-//                set_parameter(GL_TEXTURE_LOD_BIAS, param);
-//            }
-//        }
+        //        void set_lod_bias(GLfloat param = 0.0f)
+        //        {
+        //            if (param > -GL_MAX_TEXTURE_LOD_BIAS && param < GL_MAX_TEXTURE_LOD_BIAS)
+        //            {
+        //                set_parameter(GL_TEXTURE_LOD_BIAS, param);
+        //            }
+        //        }
 
-        //纹理环绕方式S,T,R (S,T,P,Q)(X,Y,Z,W)
-        //GL_REPEAT	              对纹理的默认行为。重复纹理图像。
-        //GL_MIRRORED_REPEAT	  和GL_REPEAT一样，但每次重复图片是镜像放置的。
-        //GL_MIRROR_CLAMP_TO_EDGE (ver >= 4.4)
-        //GL_CLAMP_TO_EDGE	      纹理坐标会被约束在0到1之间，超出的部分会重复纹理坐标的边缘，产生一种边缘被拉伸的效果。
-        //GL_CLAMP_TO_BORDER	  超出的坐标为用户指定的边缘颜色。(需随后调用set_border_color，以设置一种边框色)
+                //纹理环绕方式S,T,R (S,T,P,Q)(X,Y,Z,W)
+                //GL_REPEAT	              对纹理的默认行为。重复纹理图像。
+                //GL_MIRRORED_REPEAT	  和GL_REPEAT一样，但每次重复图片是镜像放置的。
+                //GL_MIRROR_CLAMP_TO_EDGE (ver >= 4.4)
+                //GL_CLAMP_TO_EDGE	      纹理坐标会被约束在0到1之间，超出的部分会重复纹理坐标的边缘，产生一种边缘被拉伸的效果。
+                //GL_CLAMP_TO_BORDER	  超出的坐标为用户指定的边缘颜色。(需随后调用set_border_color，以设置一种边框色)
         void set_wrap_s(GLint param)
         {
             set_parameter(GL_TEXTURE_WRAP_S, param);
@@ -226,17 +227,17 @@ namespace freeze
             glTexParameterfv(Target, GL_TEXTURE_BORDER_COLOR, colors);
         }
 
-//        void set_swizzle_rgba(GLfloat const* param)
-//        {
-//            set_parameter(GL_TEXTURE_SWIZZLE_RGBA, param);
-//        }
+        //        void set_swizzle_rgba(GLfloat const* param)
+        //        {
+        //            set_parameter(GL_TEXTURE_SWIZZLE_RGBA, param);
+        //        }
 
     };
 }
 
 namespace freeze
 {
-    template<typename=void>
+    template<typename = void>
     struct texture2d_impl
         : texture_base<GL_TEXTURE_2D>
     {
@@ -255,38 +256,39 @@ namespace freeze
         //                   GL_UNSIGNED_INT_8_8_8_8, GL_UNSIGNED_INT_8_8_8_8_REV, GL_UNSIGNED_INT_10_10_10_2, 
         //                   GL_UNSIGNED_INT_2_10_10_10_REV.
         void set_image(GLint internalFormat,
-                       GLsizei width, GLsizei height, GLenum format,
-                       GLenum type, const void* pixels)
+            GLsizei width, GLsizei height, GLenum format,
+            GLenum type, const void* pixels)
         {
             this->format = format;
             glTexImage2D(GL_TEXTURE_2D, 0, internalFormat,
-                         width, height, 0, format, type, pixels);
+                width, height, 0, format, type, pixels);
             assert_error();
         }
 
         //别忘了先绑定
         void set_image(std::vector<char> const& data)
         {
-            int x,y,channels;
-            
-            auto image_data = stbi_load_from_memory((stbi_uc*)data.data(),data.size(),&x,&y,&channels,0);
-            if(!image_data)return;
+            int x, y, channels;
+
+            auto image_data = stbi_load_from_memory((stbi_uc*)data.data(), data.size(), &x, &y, &channels, 0);
+            if (!image_data)return;
 
             switch (channels)
             {
-                default:
-                case 3:this->format=GL_RGB;break;
-                case 4:this->format=GL_RGBA;break;
+            default:
+            case 1:this->format = GL_RED; break;
+            case 3:this->format = GL_RGB; break;
+            case 4:this->format = GL_RGBA; break;
             }
-            glTexImage2D(GL_TEXTURE_2D, 0, this->format, 
+            glTexImage2D(GL_TEXTURE_2D, 0, this->format,
                 x, y, 0, this->format, GL_UNSIGNED_BYTE, (void const*)image_data);
             stbi_image_free(image_data);
         }
 
-//        template<typename DataType>
-//        void set_image(DataType&& data){
-//            set_image(data.format,data.x,data.y,data.format,GL_UNSIGNED_BYTE,data.data.data());
-//        }
+        //        template<typename DataType>
+        //        void set_image(DataType&& data){
+        //            set_image(data.format,data.x,data.y,data.format,GL_UNSIGNED_BYTE,data.data.data());
+        //        }
 
         GLenum get_format() const
         {
@@ -301,44 +303,44 @@ namespace freeze
         : texture_base<GL_TEXTURE_2D_MULTISAMPLE>
     {
         //别忘了先绑定
-        void set_image(GLsizei samples,GLint internalFormat,
-                       GLsizei width, GLsizei height,GLboolean fixedsamplelocations)
+        void set_image(GLsizei samples, GLint internalFormat,
+            GLsizei width, GLsizei height, GLboolean fixedsamplelocations)
         {
-            glTexStorage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE,samples,internalFormat,
-            width,height,fixedsamplelocations);
+            glTexStorage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, samples, internalFormat,
+                width, height, fixedsamplelocations);
         }
     };
 
-    template<typename=void>
+    template<typename = void>
     struct texture_cube_impl : texture_base<GL_TEXTURE_CUBE_MAP>
     {
         //绑定一次
         //调用6次分别设置+-x,+-y,+-z
-        void set_image(GLsizei index,GLint internalFormat,
-                       GLsizei width, GLsizei height, GLenum format,
-                       GLenum type, const void* pixels )
+        void set_image(GLsizei index, GLint internalFormat,
+            GLsizei width, GLsizei height, GLenum format,
+            GLenum type, const void* pixels)
         {
-            glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + index,0,internalFormat,
-            width,height,0,format,type,pixels);
+            glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + index, 0, internalFormat,
+                width, height, 0, format, type, pixels);
             assert_error();
         }
 
         void set_image(std::vector<std::vector<char>> const& datas)
         {
-            int x,y,channels;
+            int x, y, channels;
             GLenum format;
             auto index = 0;
-            for(auto data : datas)
+            for (auto data : datas)
             {
-                auto image_data = stbi_load_from_memory((const stbi_uc*) data.data(),data.size(),&x,&y,&channels,0);
-                if(!image_data)return;
+                auto image_data = stbi_load_from_memory((const stbi_uc*)data.data(), data.size(), &x, &y, &channels, 0);
+                if (!image_data)return;
                 switch (channels)
                 {
-                    default:
-                    case 3:format=GL_RGB;break;
-                    case 4:format=GL_RGBA;break;
+                default:
+                case 3:format = GL_RGB; break;
+                case 4:format = GL_RGBA; break;
                 }
-                set_image(index++,format,x,y,format,GL_UNSIGNED_BYTE,image_data);
+                set_image(index++, format, x, y, format, GL_UNSIGNED_BYTE, image_data);
                 stbi_image_free(image_data);
             }
         }
@@ -352,7 +354,7 @@ namespace freeze
     constexpr auto make_texture_cube = make<texture_cube>;
 }
 
-namespace freeze 
+namespace freeze
 {
 #if defined(_WIN32) || defined(WIN32) || defined(__WIN32__)
     inline std::vector<char> load_image_from_file(std::string const& file)
@@ -371,7 +373,7 @@ namespace freeze
             ifs.open(file, std::ios::in | std::ios::binary);
             if (ifs.bad())return buffer;
         }
-        
+
 
         buffer.resize(static_cast<std::size_t>(file_size));
         ifs.read(buffer.data(), file_size);
@@ -382,26 +384,26 @@ namespace freeze
 #endif
 
 #if defined(ANDROID) || defined(__ANDROID__)
-    template<typename TextureType,typename AssetManager>
-    inline TextureType load_texture_from_assets(AssetManager const& assetmgr,std::string const& file)
+    template<typename TextureType, typename AssetManager>
+    inline TextureType load_texture_from_assets(AssetManager const& assetmgr, std::string const& file)
     {
         TextureType texture;
-        if(!texture)
+        if (!texture)
         {
             LOGE("load_texture_from_assets(...) create texture 2d failed");
         }
 
         auto file_size = assetmgr.get_file_size(file);
-        if(file_size == -1)return texture;
+        if (file_size == -1)return texture;
 
         auto buffer = malloc(file_size);
-        auto read_size = assetmgr.get_file_data(file,buffer,file_size);
-        if(read_size == -1)return texture;
+        auto read_size = assetmgr.get_file_data(file, buffer, file_size);
+        if (read_size == -1)return texture;
 
-        int x,y,channels;
+        int x, y, channels;
         GLenum format;
-        auto data = stbi_load_from_memory((stbi_uc*)buffer,read_size,&x,&y,&channels,0);
-        if(!data)
+        auto data = stbi_load_from_memory((stbi_uc*)buffer, read_size, &x, &y, &channels, 0);
+        if (!data)
         {
             free(buffer);
             return texture;
@@ -409,12 +411,12 @@ namespace freeze
 
         switch (channels)
         {
-            default:
-            case 3:format=GL_RGB;break;
-            case 4:format=GL_RGBA;break;
+        default:
+        case 3:format = GL_RGB; break;
+        case 4:format = GL_RGBA; break;
         }
         texture.bind();
-        texture.set_image(format,x,y,format,GL_UNSIGNED_BYTE,data);
+        texture.set_image(format, x, y, format, GL_UNSIGNED_BYTE, data);
         free(buffer);
         stbi_image_free(data);
 
@@ -427,31 +429,31 @@ namespace freeze
         return std::move(texture);
     }
 
-    template<typename TextureType,typename AssetManager>
-    inline TextureType load_cubetexture_from_assets(AssetManager const& assetmgr,std::vector<std::string> const& files)
+    template<typename TextureType, typename AssetManager>
+    inline TextureType load_cubetexture_from_assets(AssetManager const& assetmgr, std::vector<std::string> const& files)
     {
         TextureType texture;
-        if(!texture)
+        if (!texture)
         {
             LOGE("load_cubetexture_from_assets(...) create cube texture failed");
         }
 
         texture.bind();
 
-        int x,y,channels;
+        int x, y, channels;
         GLenum format;
         int index = 0;
-        for(auto file : files)
+        for (auto file : files)
         {
             auto file_size = assetmgr.get_file_size(file);
-            if(file_size == -1)return texture;
+            if (file_size == -1)return texture;
 
             auto buffer = malloc(file_size);
-            auto read_size = assetmgr.get_file_data(file,buffer,file_size);
-            if(read_size == -1)return texture;
+            auto read_size = assetmgr.get_file_data(file, buffer, file_size);
+            if (read_size == -1)return texture;
 
-            auto data = stbi_load_from_memory((stbi_uc*)buffer,read_size,&x,&y,&channels,0);
-            if(!data)
+            auto data = stbi_load_from_memory((stbi_uc*)buffer, read_size, &x, &y, &channels, 0);
+            if (!data)
             {
                 free(buffer);
                 return texture;
@@ -459,11 +461,11 @@ namespace freeze
 
             switch (channels)
             {
-                default:
-                case 3:format=GL_RGB;break;
-                case 4:format=GL_RGBA;break;
+            default:
+            case 3:format = GL_RGB; break;
+            case 4:format = GL_RGBA; break;
             }
-            texture.set_image(index++,format,x,y,format,GL_UNSIGNED_BYTE,data);
+            texture.set_image(index++, format, x, y, format, GL_UNSIGNED_BYTE, data);
             free(buffer);
             stbi_image_free(data);
         }
@@ -482,24 +484,24 @@ namespace freeze
     inline TextureType load_texture_from_sdcard(std::string const& file)
     {
         TextureType texture;
-        if(!texture)
+        if (!texture)
         {
             LOGE("load_texture_from_sdcard(...) create texture failed");
         }
 
-        int x,y,channels;
+        int x, y, channels;
         GLenum format;
-        auto data = stbi_load(file.c_str(),&x,&y,&channels,0);
-        if(data)
+        auto data = stbi_load(file.c_str(), &x, &y, &channels, 0);
+        if (data)
         {
             switch (channels)
             {
-                default:
-                case 3:format=GL_RGB;break;
-                case 4:format=GL_RGBA;break;
+            default:
+            case 3:format = GL_RGB; break;
+            case 4:format = GL_RGBA; break;
             }
             texture.bind();
-            texture.set_image(format,x,y,format,GL_UNSIGNED_BYTE,data);
+            texture.set_image(format, x, y, format, GL_UNSIGNED_BYTE, data);
             stbi_image_free(data);
 
             texture.mipmap();

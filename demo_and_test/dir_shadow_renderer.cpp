@@ -37,6 +37,12 @@ void dir_shadow_renderer::do_init()
 
 void dir_shadow_renderer::draw()
 {
+
+    auto current_frame = glfw::detail::get_time();
+
+    delta_time = current_frame - last_frame;
+    last_frame = current_frame;
+
     auto light_position = glm::vec3{ -2.0f,4.0f,-1.0f };
     float near_plane = 1.0f;
     float far_plane = 7.5f;
