@@ -17,5 +17,6 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)texture.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)vertex.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)quickly.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)pbr_model.h" />
   </ItemGroup>
 </Project>

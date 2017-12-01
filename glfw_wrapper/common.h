@@ -826,6 +826,7 @@ using namespace std::literals;
 #include "texture.h"
 #include "vertex.h"
 #include "mesh.h"
+#include "pbr_model.h"
 #include "camera.h"
 #include "color.h"
 #include "depth.h"

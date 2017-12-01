@@ -155,9 +155,13 @@ namespace freeze
             assert_error();
         }
 
-        void storage(GLsizei width, GLsizei height)
+		//color-renderable GL_RED GL_RG GL_RGB GL_RGBA
+		//depth-renderable GL_DEPTH_COMPONENT GL_STENCIL_INDEX GL_DEPTH_STENCIL
+		//                 GL_DEPTH_COMPONENT<16,24,32,32F> GL_DEPTH24_STENCIL8 GL_DEPTH32F_STENCIL8
+		//stencil-renderable GL_STENCIL_INDEX8
+        void storage(GLsizei width, GLsizei height,GLenum internal_format = GL_DEPTH24_STENCIL8)
         {
-            glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, width, height);
+            glRenderbufferStorage(GL_RENDERBUFFER, internal_format, width, height);
             assert_error();
         }
     };
@@ -263,9 +267,13 @@ namespace freeze
             assert_error();
         }
 
-        void attachement_render(GLuint renderbuffer)
+		//attachment -- GL_COLOR_ATTACHMENT<i>
+		//              GL_DEPTH_ATTACHMENT
+		//              GL_STENCIL_ATTACHMENT
+		//              GL_DEPTH_STENCIL_ATTACHMENT
+        void attachement_render_buffer(GLuint renderbuffer,GLenum attachment = GL_DEPTH_STENCIL_ATTACHMENT)
         {
-            glFramebufferRenderbuffer(FrameBuffer, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, renderbuffer);
+            glFramebufferRenderbuffer(FrameBuffer, attachment, GL_RENDERBUFFER, renderbuffer);
             assert_error();
         }
 

@@ -242,12 +242,40 @@ namespace freeze
         : texture_base<GL_TEXTURE_2D>
     {
         //别忘了先绑定
-        // internalFormat -- GL_DEPTH_COMPONENT,GL_DEPTH_STENCIL,GL_RED,GL_RG,GL_RGB,GL_RGBA
+        // internalFormat -- GL_DEPTH_COMPONENT,GL_DEPTH_STENCIL,GL_STENCIL_INDEX,GL_RED,GL_RG,GL_RGB,GL_RGBA
+		// +----------------------+--------------------+
+		// | GL_DEPTH_COMPONENT16 | GL_DEPTH_COMPONENT |
+		// +----------------------+                    +
+		// | GL_DEPTH_COMPONENT24 |                    |
+		// +----------------------+                    +
+		// | GL_DEPTH_COMPONENT32 |                    |
+		// +----------------------+                    +
+		// | GL_DEPTH_COMPONENT32F|                    |
+		// +----------------------+--------------------+
+		// | GL_DEPTH24_STENCIL8  | GL_DEPTH_STENCIL   |
+		// +----------------------+                    +
+		// | GL_DEPTH32F_STENCIL8 |                    |
+		// +----------------------+--------------------+
+		// | GL_STENCIL_INDEX8    | GL_STENCIL_INDEX   |
+		// +----------------------+--------------------+
+		// | GL_R8                |GL_RGB              |
+		// +----------------------+                    +
+		// | GL_R8_SNORM          |                    |
+		// +----------------------+                    +
+		// | GL_R16               |                    |
+		// +----------------------+                    +
+		// | GL_R16_SNORM         |                    |
+		// +----------------------+                    +
+		// | GL_R16F              |                    |
+		// +----------------------+--------------------+
+		// |...                   |                    |
+		// +----------------------+                    +
         // widht
         // height
-        // format         -- GL_RED, GL_RG, GL_RGB, GL_BGR, GL_RGBA, GL_BGRA, GL_RED_INTEGER, 
-        //                   GL_RG_INTEGER, GL_RGB_INTEGER, GL_BGR_INTEGER, GL_RGBA_INTEGER, 
-        //                   GL_BGRA_INTEGER, GL_STENCIL_INDEX, GL_DEPTH_COMPONENT, GL_DEPTH_STENCIL.
+        // format         -- GL_RED, GL_GREEN, GL_BLUE, GL_RG, GL_RGB, GL_BGR, GL_RGBA, GL_BGRA,
+		//                   GL_RED_INTEGER, GL_GREEN_INTEGER, GL_BLUE_INTEGER, 
+		//                   GL_RG_INTEGER, GL_RGB_INTEGER, GL_BGR_INTEGER, GL_RGBA_INTEGER,GL_BGRA_INTEGER, 
+        //                   GL_STENCIL_INDEX, GL_DEPTH_COMPONENT, GL_DEPTH_STENCIL.
         //
         // type           -- GL_UNSIGNED_BYTE, GL_BYTE, GL_UNSIGNED_SHORT, GL_SHORT, GL_UNSIGNED_INT, 
         //                   GL_INT, GL_FLOAT, GL_UNSIGNED_BYTE_3_3_2, GL_UNSIGNED_BYTE_2_3_3_REV, 
@@ -266,29 +294,39 @@ namespace freeze
         }
 
         //别忘了先绑定
-        void set_image(std::vector<char> const& data)
+        void set_image(std::vector<char> const& data,bool is_hdr = false)
         {
             int x, y, channels;
 
-            auto image_data = stbi_load_from_memory((stbi_uc*)data.data(), data.size(), &x, &y, &channels, 0);
-            if (!image_data)return;
+			if (is_hdr)
+			{
+				auto image_data = stbi_loadf_from_memory((const stbi_uc*)data.data(), data.size(), &x, &y, &channels, 0);
+				if (!image_data)return;
+				set_image(GL_RGB16F, x, y, GL_RGB, GL_FLOAT, image_data);
+				stbi_image_free(image_data);
+			}
+			else
+			{
+				auto image_data = stbi_load_from_memory((stbi_uc*)data.data(), data.size(), &x, &y, &channels, 0);
+				if (!image_data)return;
 
-            switch (channels)
-            {
-            default:
-            case 1:this->format = GL_RED; break;
-            case 3:this->format = GL_RGB; break;
-            case 4:this->format = GL_RGBA; break;
-            }
-            glTexImage2D(GL_TEXTURE_2D, 0, this->format,
-                x, y, 0, this->format, GL_UNSIGNED_BYTE, (void const*)image_data);
-            stbi_image_free(image_data);
+				switch (channels)
+				{
+				default:
+				case 1:this->format = GL_RED; break;
+				case 3:this->format = GL_RGB; break;
+				case 4:this->format = GL_RGBA; break;
+				}
+				set_image(this->format,
+					x, y, this->format, GL_UNSIGNED_BYTE, (void const*)image_data);
+				stbi_image_free(image_data);
+			}
         }
 
-        //        template<typename DataType>
-        //        void set_image(DataType&& data){
-        //            set_image(data.format,data.x,data.y,data.format,GL_UNSIGNED_BYTE,data.data.data());
-        //        }
+        //template<typename DataType>
+        //void set_image(DataType&& data){
+        //    set_image(data.format,data.x,data.y,data.format,GL_UNSIGNED_BYTE,data.data.data());
+        //}
 
         GLenum get_format() const
         {

@@ -22,19 +22,15 @@ namespace freeze
             assert_error();
         }
 
-        //template<typename ArrayBuffer>
-        //void set(std::shared_ptr<ArrayBuffer> vao,
-        //         GLuint index, GLint size, GLenum type, GLsizei stride, GLint pointer)
-        //{
-        //    internal_set(index, size, type, stride, pointer);
-        //    glEnableVertexArrayAttrib(vao->ref(), index);
-        //}
+        void set(GLuint index, GLint size, GLsizei stride, GLint pointer)
+        {
+            set(index, size, GL_FLOAT, stride * sizeof(GLfloat), pointer * sizeof(GLfloat));
+        }
     private:
         void internal_set(GLuint index,
             GLint size, GLenum type, GLsizei stride, GLint pointer)
         {
-            glVertexAttribPointer(index,
-                size, type, GL_FALSE, stride,
+            glVertexAttribPointer(index, size, type, GL_FALSE, stride,
                 reinterpret_cast<const void*>(pointer));
             assert_error();
         }
