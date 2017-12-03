@@ -27,7 +27,7 @@ void dir_shadow_renderer::do_init()
 
     freeze::depth::enable();
 
-    test_model.load("resource/objects/cyborg/cyborg.obj");
+    test_model.load("resources/objects/cyborg/cyborg.obj");
     test_model.setup();
 
     set_vertices();

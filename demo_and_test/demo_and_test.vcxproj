@@ -156,6 +156,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\thirdparty\glad\src\glad.c" />
+    <ClCompile Include="ibl_renderer.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="dir_shadow_renderer.cpp" />
     <ClCompile Include="pbr_renderer.cpp" />
@@ -163,6 +164,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="dir_shadow_renderer.h" />
+    <ClInclude Include="ibl_renderer.h" />
     <ClInclude Include="pbr_renderer.h" />
     <ClInclude Include="point_shadow_renderer.h" />
     <ClInclude Include="renderer_base.h" />

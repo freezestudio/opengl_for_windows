@@ -235,9 +235,9 @@ namespace freeze
         }
 
         template<typename Texture>
-        void attachement_color(Texture const& texture, GLint level = 0)
+        void attachement_color(Texture const& texture,GLenum textarget= GL_TEXTURE_2D,GLint level=0)
         {
-            glFramebufferTexture(FrameBuffer, GL_COLOR_ATTACHMENT0, texture.ref(), level);
+            glFramebufferTexture2D(FrameBuffer, GL_COLOR_ATTACHMENT0, textarget, texture.ref(), level);
             assert_error();
         }
 

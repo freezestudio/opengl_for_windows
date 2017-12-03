@@ -17,6 +17,11 @@ struct Material
 
 uniform Material material;
 
+// IBL
+uniform samplerCube irradianceMap;
+uniform samplerCube prefilterMap;
+uniform sampler2D brdfLUT;
+
 
 // lights
 uniform vec3 lightPositions[4];
@@ -90,15 +95,22 @@ vec3 fresnelSchlick(float cosTheta, vec3 F0)
 }
 
 // ----------------------------------------------------------------------------
+vec3 fresnelSchlickRoughness(float cosTheta, vec3 F0, float roughness)
+{
+    return F0 + (max(vec3(1.0f - roughness), F0) - F0) * pow(1.0f - cosTheta, 5.0f);
+}   
+
+// ----------------------------------------------------------------------------
 void main()
 {		
-    vec3 albedo     = pow(texture(material.albedo, fs_in.TexCoords).rgb, vec3(2.2f));
+    vec3  albedo    = pow(texture(material.albedo, fs_in.TexCoords).rgb, vec3(2.2f));
     float metallic  = texture(material.orm, fs_in.TexCoords).b;
     float roughness = texture(material.orm, fs_in.TexCoords).g;
     float ao        = texture(material.orm, fs_in.TexCoords).r;
 
     vec3 N = getNormalFromMap();
     vec3 V = normalize(camPos - fs_in.WorldPos);
+    vec3 R = reflect(-V,N);
 
     // calculate reflectance at normal incidence; if dia-electric (like plastic) use F0 
     // of 0.04 and if it's a metal, use the albedo color as F0 (metallic workflow)    
@@ -119,10 +131,10 @@ void main()
         // Cook-Torrance BRDF
         float NDF = DistributionGGX(N, H, roughness);   
         float G   = GeometrySmith(N, V, L, roughness);      
-        vec3  F   = fresnelSchlick(max(dot(H, V), 0.0), F0);
+        vec3  F   = fresnelSchlick(max(dot(H, V), 0.0f), F0);
            
         vec3 nominator    = NDF * G * F; 
-        float denominator = 4 * max(dot(N, V), 0.0) * max(dot(N, L), 0.0f) + 0.001f; // 0.001 to prevent divide by zero.
+        float denominator = 4 * max(dot(N, V), 0.0f) * max(dot(N, L), 0.0f) + 0.001f; // 0.001 to prevent divide by zero.
         vec3 specular = nominator / denominator;
         
         // kS is equal to Fresnel
@@ -145,7 +157,23 @@ void main()
     
     // ambient lighting (note that the next IBL tutorial will replace 
     // this ambient lighting with environment lighting).
-    vec3 ambient = vec3(0.03f) * albedo * ao;
+    //vec3 ambient = vec3(0.03f) * albedo * ao;
+
+    vec3 F = fresnelSchlickRoughness(max(dot(N,V),0.0f),F0,roughness);
+
+    vec3 kS = F;
+    vec3 kD = 1.0f - kS;
+    kD *= 1.0f - metallic;
+
+    vec3 irradiance = texture(irradianceMap,N).rgb;
+    vec3 diffuse    = irradiance * albedo;
+
+    const float MAX_REFLECTION_LOD = 4.0f;
+    vec3 prefilteredColor = textureLod(prefilterMap,R,roughness * MAX_REFLECTION_LOD).rgb;
+    vec2 brdf = texture(brdfLUT,vec2(max(dot(N,V),0.0f),roughness)).rg;
+    vec3 specular = prefilteredColor * (F*brdf.x+brdf.y);
+
+    vec3 ambient = (kD*diffuse + specular) * ao;
     
     vec3 color = ambient + Lo;
 

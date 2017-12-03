@@ -121,8 +121,8 @@ namespace freeze
 
             auto importer = make<Assimp::Importer>();
             auto scene = importer.ReadFile(file,
-                aiProcessPreset_TargetRealtime_MaxQuality | aiProcess_FlipUVs);
-
+                aiProcessPreset_TargetRealtime_MaxQuality/* | aiProcess_FlipUVs*/);
+            if (!scene)return;
             process_node(scene->mRootNode, scene);
         }
 

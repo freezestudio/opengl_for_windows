@@ -1,6 +1,23 @@
 #include "pbr_renderer.h"
 
 
+// lights
+// ------
+static glm::vec3 lightPositions[] = {
+    glm::vec3(-10.0f,  10.0f, 10.0f),
+    glm::vec3(10.0f,  10.0f, 10.0f),
+    glm::vec3(-10.0f, -10.0f, 10.0f),
+    glm::vec3(10.0f, -10.0f, 10.0f),
+};
+
+static glm::vec3 lightColors[] = {
+    glm::vec3(300.0f, 300.0f, 300.0f),
+    glm::vec3(300.0f, 300.0f, 300.0f),
+    glm::vec3(300.0f, 300.0f, 300.0f),
+    glm::vec3(300.0f, 300.0f, 300.0f)
+};
+
+
 
 pbr_renderer::pbr_renderer()
     : scene_camera{ 0.0f,0.0f,3.0f }
@@ -17,22 +34,6 @@ pbr_renderer::~pbr_renderer()
 {
 }
 
-// lights
-// ------
-glm::vec3 lightPositions[] = {
-    glm::vec3(-10.0f,  10.0f, 10.0f),
-    glm::vec3(10.0f,  10.0f, 10.0f),
-    glm::vec3(-10.0f, -10.0f, 10.0f),
-    glm::vec3(10.0f, -10.0f, 10.0f),
-};
-glm::vec3 lightColors[] = {
-    glm::vec3(300.0f, 300.0f, 300.0f),
-    glm::vec3(300.0f, 300.0f, 300.0f),
-    glm::vec3(300.0f, 300.0f, 300.0f),
-    glm::vec3(300.0f, 300.0f, 300.0f)
-};
-
-
 void pbr_renderer::do_init()
 {
     ms_instance = shared_from_this();
@@ -44,13 +45,13 @@ void pbr_renderer::do_init()
 
     freeze::depth::enable();
 
-    pbr_shader.compile_file("resource/shaders/pbr.vert"s, "resource/shaders/pbr.frag");
+    pbr_shader.compile_file("resources/shaders/pbr.vert"s, "resources/shaders/pbr.frag");
     
     auto projection = glm::perspective(glm::radians(scene_camera.Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
     pbr_shader.use();
     pbr_shader.set_mat4("projection"s, projection);
 
-    ufo_model.load("resource/objects/ufo/ufo.obj"s);
+    ufo_model.load("resources/objects/ufo/ufo.obj"s);
     ufo_model.setup(pbr_shader);
 }
 

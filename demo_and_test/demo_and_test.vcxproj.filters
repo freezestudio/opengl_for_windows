@@ -39,6 +39,9 @@
     <ClCompile Include="pbr_renderer.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="ibl_renderer.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="renderer_base.h">
@@ -51,6 +54,9 @@
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="pbr_renderer.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="ibl_renderer.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>

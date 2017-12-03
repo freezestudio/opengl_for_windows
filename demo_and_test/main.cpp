@@ -3,7 +3,8 @@
 
 //#include "point_shadow_renderer.h"
 //#include "dir_shadow_renderer.h"
-#include "pbr_renderer.h"
+//#include "pbr_renderer.h"
+#include "ibl_renderer.h"
 
 int main()
 {
@@ -21,11 +22,16 @@ int main()
     auto render = std::make_shared<RENDERER>();
     render->init();
 
+    // then before rendering, configure the viewport to the original framebuffer's screen dimensions
+    int scrWidth, scrHeight;
+    glfwGetFramebufferSize(window.get(), &scrWidth, &scrHeight);
+    glViewport(0, 0, scrWidth, scrHeight);
+
     while (!window.should_close())
     {
         render->process_event(window.get());
 
-        auto color = freeze::make_color(0.3f, 0.3f, 0.3f, 1.0f);
+        auto color = freeze::make_color(0.1f, 0.1f, 0.1f, 1.0f);
         color.clear();
         freeze::depth::clear();
 
