@@ -38,7 +38,7 @@ void dir_shadow_renderer::do_init()
 void dir_shadow_renderer::draw()
 {
 
-    auto current_frame = glfw::detail::get_time();
+    auto current_frame = (float)glfw::detail::get_time();
 
     delta_time = current_frame - last_frame;
     last_frame = current_frame;
@@ -282,14 +282,14 @@ void dir_shadow_renderer::set_cube()
     };
 
     cube_vao.bind();
-    auto vao = freeze::make_vertex_buffer();
-    vao.bind();
-    vao.copy_data(cube_vertices, sizeof(cube_vertices));
+    auto vbo = freeze::make_vertex_buffer();
+    vbo.bind();
+    vbo.copy_data(cube_vertices, sizeof(cube_vertices));
     auto cube_vertex = freeze::make_vertex();
     cube_vertex.set(0, 3, GL_FLOAT, 8 * sizeof(float), 0);
     cube_vertex.set(1, 3, GL_FLOAT, 8 * sizeof(float), 3 * sizeof(float));
     cube_vertex.set(2, 2, GL_FLOAT, 8 * sizeof(float), 6 * sizeof(float));
-    vao.unbind();
+    vbo.unbind();
     cube_vao.unbind();
 }
 

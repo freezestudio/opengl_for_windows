@@ -13,13 +13,13 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
-    <Filter Include="资源文件\resource">
+    <Filter Include="资源文件\resources">
       <UniqueIdentifier>{43e4652f-bd7e-4592-86fd-8d988df400a1}</UniqueIdentifier>
     </Filter>
-    <Filter Include="资源文件\resource\shaders">
+    <Filter Include="资源文件\resources\shaders">
       <UniqueIdentifier>{a43ec9d7-200d-4bfe-8986-f521f94eba9d}</UniqueIdentifier>
     </Filter>
-    <Filter Include="资源文件\resource\textures">
+    <Filter Include="资源文件\resources\textures">
       <UniqueIdentifier>{0209e260-f7d1-42b8-bfcf-625dfd6fd8eb}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
@@ -55,23 +55,35 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="resource\shaders\shadow.vert">
-      <Filter>资源文件\resource\shaders</Filter>
+    <None Include="resources\shaders\background.fs">
+      <Filter>资源文件\resources\shaders</Filter>
     </None>
-    <None Include="resource\shaders\shadow.frag">
-      <Filter>资源文件\resource\shaders</Filter>
+    <None Include="resources\shaders\background.vs">
+      <Filter>资源文件\resources\shaders</Filter>
     </None>
-    <None Include="resource\shaders\depth.vert">
-      <Filter>资源文件\resource\shaders</Filter>
+    <None Include="resources\shaders\brdf.fs">
+      <Filter>资源文件\resources\shaders</Filter>
     </None>
-    <None Include="resource\shaders\depth.frag">
-      <Filter>资源文件\resource\shaders</Filter>
+    <None Include="resources\shaders\brdf.vs">
+      <Filter>资源文件\resources\shaders</Filter>
     </None>
-    <None Include="resource\shaders\pbr.vert">
-      <Filter>资源文件\resource\shaders</Filter>
+    <None Include="resources\shaders\cubemap.vs">
+      <Filter>资源文件\resources\shaders</Filter>
     </None>
-    <None Include="resource\shaders\pbr.frag">
-      <Filter>资源文件\resource\shaders</Filter>
+    <None Include="resources\shaders\equirectangular_to_cubemap.fs">
+      <Filter>资源文件\resources\shaders</Filter>
+    </None>
+    <None Include="resources\shaders\irradiance_convolution.fs">
+      <Filter>资源文件\resources\shaders</Filter>
+    </None>
+    <None Include="resources\shaders\pbr.fs">
+      <Filter>资源文件\resources\shaders</Filter>
+    </None>
+    <None Include="resources\shaders\pbr.vs">
+      <Filter>资源文件\resources\shaders</Filter>
+    </None>
+    <None Include="resources\shaders\prefilter.fs">
+      <Filter>资源文件\resources\shaders</Filter>
     </None>
   </ItemGroup>
 </Project>

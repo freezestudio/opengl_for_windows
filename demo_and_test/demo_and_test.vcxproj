@@ -109,13 +109,13 @@
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>..\glfw\include;..\glfw\deps;..\glfw_wrapper;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\glfw\include;..\thirdparty;..\glfw_wrapper;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>$(SolutionDir)$(Platform)\$(Configuration);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>glfw.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(SolutionDir)$(Platform)\$(Configuration);..\thirdparty;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>glfw.lib;assimp.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -168,12 +168,16 @@
     <ClInclude Include="renderer_base.h" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="resource\shaders\depth.frag" />
-    <None Include="resource\shaders\depth.vert" />
-    <None Include="resource\shaders\pbr.frag" />
-    <None Include="resource\shaders\pbr.vert" />
-    <None Include="resource\shaders\shadow.frag" />
-    <None Include="resource\shaders\shadow.vert" />
+    <None Include="resources\shaders\background.fs" />
+    <None Include="resources\shaders\background.vs" />
+    <None Include="resources\shaders\brdf.fs" />
+    <None Include="resources\shaders\brdf.vs" />
+    <None Include="resources\shaders\cubemap.vs" />
+    <None Include="resources\shaders\equirectangular_to_cubemap.fs" />
+    <None Include="resources\shaders\irradiance_convolution.fs" />
+    <None Include="resources\shaders\pbr.fs" />
+    <None Include="resources\shaders\pbr.vs" />
+    <None Include="resources\shaders\prefilter.fs" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
