@@ -126,7 +126,7 @@ void ibl_renderer::set_vertices()
     qvbo.bind();
     qvbo.copy_data(quad_vertices, sizeof(quad_vertices));
     auto qv = freeze::make_vertex();
-    qv.set(0, 3, GL_FLOAT, 5 * sizeof(float),0);
+    qv.set(0, 3, GL_FLOAT, 5 * sizeof(float), 0);
     qv.set(1, 2, GL_FLOAT, 5 * sizeof(float), 3 * sizeof(float));
     qvbo.unbind();
     quad_vao.unbind();
@@ -139,7 +139,7 @@ void ibl_renderer::set_shader()
     irr_shader.compile_file("resources/shaders/cubemap.vs"s, "resources/shaders/irradiance_convolution.fs"s);
     pft_shader.compile_file("resources/shaders/cubemap.vs"s, "resources/shaders/prefilter.fs"s);
     brdf_shader.compile_file("resources/shaders/brdf.vs"s, "resources/shaders/brdf.fs"s);
-    bg_shader.compile_file("resources/shaders/background.vs"s,"resources/shaders/background.fs"s);
+    bg_shader.compile_file("resources/shaders/background.vs"s, "resources/shaders/background.fs"s);
 
     pbr_shader.use();
     pbr_shader.set_int("irradianceMap"s, 3);
@@ -155,25 +155,27 @@ void ibl_renderer::set_texture()
     glm::mat4 projection = glm::perspective(glm::radians(90.0f), 1.0f, 0.1f, 10.0f);
     glm::mat4 views[] =
     {
-        glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3( 1.0f,  0.0f,  0.0f), glm::vec3(0.0f, -1.0f,  0.0f)),
+        glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.0f,  0.0f,  0.0f), glm::vec3(0.0f, -1.0f,  0.0f)),
         glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(-1.0f,  0.0f,  0.0f), glm::vec3(0.0f, -1.0f,  0.0f)),
-        glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3( 0.0f,  1.0f,  0.0f), glm::vec3(0.0f,  0.0f,  1.0f)),
-        glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3( 0.0f, -1.0f,  0.0f), glm::vec3(0.0f,  0.0f, -1.0f)),
-        glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3( 0.0f,  0.0f,  1.0f), glm::vec3(0.0f, -1.0f,  0.0f)),
-        glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3( 0.0f,  0.0f, -1.0f), glm::vec3(0.0f, -1.0f,  0.0f))
+        glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f,  1.0f,  0.0f), glm::vec3(0.0f,  0.0f,  1.0f)),
+        glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, -1.0f,  0.0f), glm::vec3(0.0f,  0.0f, -1.0f)),
+        glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f,  0.0f,  1.0f), glm::vec3(0.0f, -1.0f,  0.0f)),
+        glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f,  0.0f, -1.0f), glm::vec3(0.0f, -1.0f,  0.0f))
     };
 
     pbr_fbo.bind();
     auto rbo = freeze::make_render_buffer();
     rbo.bind();
     rbo.storage(512, 512, GL_DEPTH_COMPONENT24);
+    rbo.unbind();
     pbr_fbo.attachement_render_buffer(rbo.ref(), GL_DEPTH_ATTACHMENT);
+    pbr_fbo.unbind();
 
-    //pbr: load the HDR environment map
+    //hdr纹理
     stbi_set_flip_vertically_on_load(true);
     int width, height, nrComponents;
     float* data = stbi_loadf("resources/textures/hdr/newport_loft.hdr",
-        &width,&height,&nrComponents,0);
+        &width, &height, &nrComponents, 0);
     if (data)
     {
         hdr_tex.bind();
@@ -182,10 +184,11 @@ void ibl_renderer::set_texture()
         hdr_tex.set_wrap_t(GL_CLAMP_TO_EDGE);
         hdr_tex.set_min_filter(GL_LINEAR);
         hdr_tex.set_mag_filter(GL_LINEAR);
+        hdr_tex.unbind();
         stbi_image_free(data);
     }
 
-    //pbr: setup cubemap to render to and attach to framebuffer
+    //cubemap纹理
     cubemap_tex.bind();
     for (unsigned i = 0; i < 6; ++i)
     {
@@ -196,8 +199,9 @@ void ibl_renderer::set_texture()
     cubemap_tex.set_wrap_t(GL_CLAMP_TO_EDGE);
     cubemap_tex.set_min_filter(GL_LINEAR_MIPMAP_LINEAR);
     cubemap_tex.set_mag_filter(GL_LINEAR);
+    cubemap_tex.unbind();
 
-    //pbr: convert HDR equirectangular environment map to cubemap equivalent
+    //渲染到纹理 hdr --> cubemap
     etc_shader.use();
     etc_shader.set_int("equirectangularMap"s, 0);
     etc_shader.set_mat4("projection"s, projection);
@@ -205,22 +209,28 @@ void ibl_renderer::set_texture()
     hdr_tex.bind();
 
     glViewport(0, 0, 512, 512);
+
     pbr_fbo.bind();
-    for (auto i = 0; i < 6; ++i)
     {
-        etc_shader.set_mat4("view"s, views[i]);
-        pbr_fbo.attachement_color(cubemap_tex, GL_TEXTURE_CUBE_MAP_POSITIVE_X + i);
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-        cube_vao.bind();
-        glDrawArrays(GL_TRIANGLES, 0, 36);
-        cube_vao.unbind();
+        for (auto i = 0; i < 6; ++i)
+        {
+            etc_shader.set_mat4("view"s, views[i]);
+            pbr_fbo.attachement_color(cubemap_tex, GL_TEXTURE_CUBE_MAP_POSITIVE_X + i);
+            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+            cube_vao.bind();
+            glDrawArrays(GL_TRIANGLES, 0, 36);
+            cube_vao.unbind();
+        }
     }
     pbr_fbo.unbind();
 
     cubemap_tex.bind();
     cubemap_tex.mipmap();
+    cubemap_tex.unbind();
 
-    //pbr: create an irradiance cubemap,and re-scale capture FBO to irradiance scal
+    //diffuse
+
+    //辐照纹理
     irr_tex.bind();
     for (auto i = 0; i < 6; ++i)
     {
@@ -231,30 +241,39 @@ void ibl_renderer::set_texture()
     irr_tex.set_wrap_t(GL_CLAMP_TO_EDGE);
     irr_tex.set_min_filter(GL_LINEAR);
     irr_tex.set_mag_filter(GL_LINEAR);
+    irr_tex.unbind();
 
     pbr_fbo.bind();
     rbo.bind();
     rbo.storage(32, 32, GL_DEPTH_COMPONENT24);
+    rbo.unbind();
+    pbr_fbo.unbind();
 
+    //渲染到纹理 cubemap --> irradiance
     irr_shader.use();
     irr_shader.set_int("environmentMap"s, 0);
     irr_shader.set_mat4("projection"s, projection);
     cubemap_tex.active();
     cubemap_tex.bind();
     glViewport(0, 0, 32, 32);
+
     pbr_fbo.bind();
-    for (auto i = 0; i < 6; ++i)
     {
-        irr_shader.set_mat4("view"s, views[i]);
-        pbr_fbo.attachement_color(irr_tex, GL_TEXTURE_CUBE_MAP_POSITIVE_X + i);
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-        cube_vao.bind();
-        glDrawArrays(GL_TRIANGLES, 0, 36);
-        cube_vao.unbind();
+        for (auto i = 0; i < 6; ++i)
+        {
+            irr_shader.set_mat4("view"s, views[i]);
+            pbr_fbo.attachement_color(irr_tex, GL_TEXTURE_CUBE_MAP_POSITIVE_X + i);
+            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+            cube_vao.bind();
+            glDrawArrays(GL_TRIANGLES, 0, 36);
+            cube_vao.unbind();
+        }
     }
     pbr_fbo.unbind();
 
-    //pbr: create a pre-filter cubemap,and re-scale capture FBO to pre-filter scale
+    //specular
+
+    //多级渐远预过滤纹理
     pft_tex.bind();
     for (auto i = 0; i < 6; ++i)
     {
@@ -266,40 +285,45 @@ void ibl_renderer::set_texture()
     pft_tex.set_min_filter(GL_LINEAR_MIPMAP_LINEAR);
     pft_tex.set_mag_filter(GL_LINEAR);
     pft_tex.mipmap();
+    pft_tex.unbind();
 
     pft_shader.use();
     pft_shader.set_int("environmentMap"s, 0);
     pft_shader.set_mat4("projection"s, projection);
     cubemap_tex.active();
     cubemap_tex.bind();
+
+    //渲染到纹理 cubemap --> pre-filter
     pbr_fbo.bind();
-    unsigned maxMipLevels = 5;
-    for (auto mip = 0; mip < maxMipLevels; ++mip)
     {
-        // reisze framebuffer according to mip-level size.
-        unsigned int mipWidth = 128 * std::pow(0.5, mip);
-        unsigned int mipHeight = 128 * std::pow(0.5, mip);
-        rbo.bind();
-        rbo.storage(mipWidth, mipHeight,GL_DEPTH_COMPONENT24);
-        glViewport(0, 0, mipWidth, mipHeight);
-
-        float roughness = (float)mip / (float)(maxMipLevels - 1);
-        pft_shader.set_float("roughness"s, roughness);
-        for (unsigned int i = 0; i < 6; ++i)
+        unsigned maxMipLevels = 5;
+        for (auto mip = 0; mip < maxMipLevels; ++mip)
         {
-            pft_shader.set_mat4("view", views[i]);
-            pbr_fbo.attachement_color(pft_tex, GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, mip);
+            // reisze framebuffer according to mip-level size.
+            unsigned int mipWidth = 128 * std::pow(0.5, mip);
+            unsigned int mipHeight = 128 * std::pow(0.5, mip);
+            rbo.bind();
+            rbo.storage(mipWidth, mipHeight, GL_DEPTH_COMPONENT24);
+            glViewport(0, 0, mipWidth, mipHeight);
 
-            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-            cube_vao.bind();
-            glDrawArrays(GL_TRIANGLES, 0, 36);
-            cube_vao.unbind();
+            float roughness = (float)mip / (float)(maxMipLevels - 1);
+            pft_shader.set_float("roughness"s, roughness);
+            for (unsigned int i = 0; i < 6; ++i)
+            {
+                pft_shader.set_mat4("view", views[i]);
+                pbr_fbo.attachement_color(pft_tex, GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, mip);
+
+                glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+                cube_vao.bind();
+                glDrawArrays(GL_TRIANGLES, 0, 36);
+                cube_vao.unbind();
+            }
         }
     }
     pbr_fbo.unbind();
 
     // pbr: generate a 2D LUT from the BRDF equations used.
-    // ----------------------------------------------------
+    // brdf纹理，根据brdf参数方程生成
     brdf_tex.bind();
     brdf_tex.set_image(GL_RG16F, 512, 512, GL_RG, GL_FLOAT, nullptr);
     // be sure to set wrapping mode to GL_CLAMP_TO_EDGE
@@ -307,23 +331,27 @@ void ibl_renderer::set_texture()
     brdf_tex.set_wrap_t(GL_CLAMP_TO_EDGE);
     brdf_tex.set_min_filter(GL_LINEAR);
     brdf_tex.set_mag_filter(GL_LINEAR);
-    
+    brdf_tex.unbind();
 
-    // then re-configure capture framebuffer object and render screen-space quad with BRDF shader.
+
+    // then re-configure capture framebuffer object
+    // and render screen-space quad with BRDF shader.
     pbr_fbo.bind();
-    rbo.bind();
-    rbo.storage(512, 512, GL_DEPTH_COMPONENT24);
-    pbr_fbo.attachement_color(brdf_tex);
+    {
+        rbo.bind();
+        rbo.storage(512, 512, GL_DEPTH_COMPONENT24);
+        pbr_fbo.attachement_color(brdf_tex);
 
-    glViewport(0, 0, 512, 512);
-    brdf_shader.use();
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    quad_vao.bind();
-    glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
-    quad_vao.unbind();
-
+        glViewport(0, 0, 512, 512);
+        brdf_shader.use();
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        quad_vao.bind();
+        glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+        quad_vao.unbind();
+    }
     pbr_fbo.unbind();
 
+    //------------------------------------------------------------------------------
     auto proj = glm::perspective(glm::radians(scene_camera.Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
     pbr_shader.use();
     pbr_shader.set_mat4("projection"s, proj);

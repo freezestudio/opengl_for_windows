@@ -22,7 +22,8 @@ int main()
     auto render = std::make_shared<RENDERER>();
     render->init();
 
-    // then before rendering, configure the viewport to the original framebuffer's screen dimensions
+    // then before rendering, 
+    // configure the viewport to the original framebuffer's screen dimensions
     int scrWidth, scrHeight;
     glfwGetFramebufferSize(window.get(), &scrWidth, &scrHeight);
     glViewport(0, 0, scrWidth, scrHeight);
