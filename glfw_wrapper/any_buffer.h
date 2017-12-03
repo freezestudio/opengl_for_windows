@@ -65,9 +65,9 @@ namespace freeze
 
 namespace freeze
 {
-    template<typename = void>
-    struct void_vertex_array_buffer
-        : make_object<void_vertex_array_buffer<void>>
+    template<bool Delay>
+    struct vertex_array_buffer_t
+        : make_object<vertex_array_buffer_t<Delay>,true,Delay>
     {
         void create(GLuint* buffers)
         {
@@ -294,7 +294,7 @@ namespace freeze
 
     using vertex_buffer = any_buffer<GL_ARRAY_BUFFER>;
     using element_buffer = any_buffer<GL_ELEMENT_ARRAY_BUFFER>;
-    using vertex_array_buffer = void_vertex_array_buffer<>;
+    using vertex_array_buffer = vertex_array_buffer_t<false>;
     using uniform_buffer = void_uniform_buffer<>;
     using render_buffer = void_render_buffer<>;
     using frame_buffer = void_frame_buffer<GL_FRAMEBUFFER>;

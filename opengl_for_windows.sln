@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.26823.1
+VisualStudioVersion = 15.0.27128.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "glfw", "glfw\glfw.vcxproj", "{EE9C4BCD-AC75-4C22-ABB6-2F14B30D8DC6}"
 EndProject
@@ -14,6 +14,7 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "demo_and_test", "demo_and_t
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "readme", "readme", "{DD08EAF0-261A-4C1A-B8E5-C637093355CA}"
 	ProjectSection(SolutionItems) = preProject
+		docs.md = docs.md
 		readme.md = readme.md
 	EndProjectSection
 EndProject

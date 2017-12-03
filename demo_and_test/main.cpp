@@ -1,8 +1,8 @@
 //
 //main.cpp
 
-#include "point_shadow_renderer.h"
-#include "dir_shadow_renderer.h"
+//#include "point_shadow_renderer.h"
+//#include "dir_shadow_renderer.h"
 #include "pbr_renderer.h"
 
 int main()
@@ -25,7 +25,7 @@ int main()
     {
         render->process_event(window.get());
 
-        auto color = freeze::make_color(0.1f, 0.1f, 0.1f, 1.0f);
+        auto color = freeze::make_color(0.3f, 0.3f, 0.3f, 1.0f);
         color.clear();
         freeze::depth::clear();
 

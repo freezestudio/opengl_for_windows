@@ -34,31 +34,24 @@ namespace freeze
 
 namespace freeze {
 
-    template<typename T, bool NeedArgs = true>
+    template<typename T, bool NeedArgs = true,bool Delay = false>
     struct make_object
     {
+    public:
         using targer_type = T;
         using target_pointer = T * ;
-
+    public:
         make_object()
         {
-            auto pT = static_cast<target_pointer>(this);
-            if constexpr(NeedArgs)
+            if constexpr(!Delay)
             {
-                object_name = std::make_shared<GLuint>(0);
-                pT->create(object_name.get());
+                set();
             }
-            else
-            {
-                object_name = std::make_shared<GLuint>(pT->create());
-            }
-            assert(object_name);
         }
 
         make_object(make_object const& rhs)
             : object_name{ rhs.object_name }
         {
-
         }
 
         make_object(make_object&& rhs)
@@ -82,6 +75,42 @@ namespace freeze {
 
         ~make_object()
         {
+            reset();
+        }
+
+    public:
+        auto ref() const
+        {
+            return object_name ? *object_name : 0;
+        }
+
+        operator GLuint() const
+        {
+            return ref();
+        }
+
+        explicit operator bool() const
+        {
+            return  object_name && *object_name > 0;
+        }
+
+        void set()
+        {
+            auto pT = static_cast<target_pointer>(this);
+            if constexpr(NeedArgs)
+            {
+                object_name = std::make_shared<GLuint>(0);
+                pT->create(object_name.get());
+            }
+            else
+            {
+                object_name = std::make_shared<GLuint>(pT->create());
+            }
+            assert(object_name);
+        }
+
+        void reset()
+        {
             if (object_name && object_name.use_count() == 1)
             {
                 auto pT = static_cast<target_pointer>(this);
@@ -96,21 +125,10 @@ namespace freeze {
             }
         }
 
-        auto ref() const
+        constexpr bool is_delayed() const
         {
-            return *object_name;
+            return Delay;
         }
-
-        operator GLuint() const
-        {
-            return ref();
-        }
-
-        explicit operator bool() const
-        {
-            return *object_name > 0;
-        }
-
     protected:
         std::shared_ptr<GLuint> object_name;
     };

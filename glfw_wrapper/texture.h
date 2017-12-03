@@ -266,12 +266,12 @@ namespace freeze
         }
 
         //别忘了先绑定
-        void set_image(std::vector<char> const& data)
+        bool set_image(std::vector<char> const& data)
         {
             int x, y, channels;
 
             auto image_data = stbi_load_from_memory((stbi_uc*)data.data(), data.size(), &x, &y, &channels, 0);
-            if (!image_data)return;
+            if (!image_data)return false;
 
             switch (channels)
             {
@@ -283,6 +283,7 @@ namespace freeze
             glTexImage2D(GL_TEXTURE_2D, 0, this->format,
                 x, y, 0, this->format, GL_UNSIGNED_BYTE, (void const*)image_data);
             stbi_image_free(image_data);
+            return true;
         }
 
         //        template<typename DataType>
