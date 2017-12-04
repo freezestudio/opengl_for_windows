@@ -78,6 +78,16 @@ public:
         }
     }
 
+    static void button_callback(glfw::window::pointer window, int button, int action, int mods)
+    {
+        if (ms_instance)
+        {
+            double x, y;
+            glfwGetCursorPos(window, &x, &y);
+            ms_instance->do_button_callback(button, action, mods, x, y);
+        }
+    }
+
 public:
     //必须极早调用，以避免ms_instance为空。
     void init()
@@ -100,6 +110,11 @@ protected:
     }
 
     void do_scroll_callback(double xoffset, double yoffset)
+    {
+
+    }
+
+    void do_button_callback(int button, int action, int mods, double xpos,double ypos)
     {
 
     }

@@ -10,11 +10,14 @@ int main()
 {
     auto freegl = freeze::make<glfw::glfw>(4, 3);
 
-    auto window = freeze::make<glfw::window>(SCR_WIDTH, SCR_HEIGHT);
+    glfwWindowHint(GLFW_SAMPLES, 4);
+
+    auto window = freeze::make<glfw::window>(SCR_WIDTH, SCR_HEIGHT);    
     window.make_context_current();
     window.set_frame_buffer_size_callback(RENDERER::framebuffer_size_callback);
     window.set_cursor_pos_callback(RENDERER::mouse_callback);
     window.set_scroll_callback(RENDERER::scroll_callback);
+    window.set_mouse_button_callback(RENDERER::button_callback);
 
     freegl.load_loader();
     freegl.swap_interval(1);

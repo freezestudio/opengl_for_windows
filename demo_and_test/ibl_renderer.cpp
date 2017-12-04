@@ -21,16 +21,16 @@ static glm::vec3 lightColors[] = {
 static float cube_vertices[] = {
     // back face
     -1.0f, -1.0f, -1.0f,  0.0f,  0.0f, -1.0f, 0.0f, 0.0f, // bottom-left
-    1.0f,  1.0f, -1.0f,  0.0f,  0.0f, -1.0f, 1.0f, 1.0f, // top-right
-    1.0f, -1.0f, -1.0f,  0.0f,  0.0f, -1.0f, 1.0f, 0.0f, // bottom-right         
-    1.0f,  1.0f, -1.0f,  0.0f,  0.0f, -1.0f, 1.0f, 1.0f, // top-right
+     1.0f,  1.0f, -1.0f,  0.0f,  0.0f, -1.0f, 1.0f, 1.0f, // top-right
+     1.0f, -1.0f, -1.0f,  0.0f,  0.0f, -1.0f, 1.0f, 0.0f, // bottom-right         
+     1.0f,  1.0f, -1.0f,  0.0f,  0.0f, -1.0f, 1.0f, 1.0f, // top-right
     -1.0f, -1.0f, -1.0f,  0.0f,  0.0f, -1.0f, 0.0f, 0.0f, // bottom-left
     -1.0f,  1.0f, -1.0f,  0.0f,  0.0f, -1.0f, 0.0f, 1.0f, // top-left
     // front face
     -1.0f, -1.0f,  1.0f,  0.0f,  0.0f,  1.0f, 0.0f, 0.0f, // bottom-left
-    1.0f, -1.0f,  1.0f,  0.0f,  0.0f,  1.0f, 1.0f, 0.0f, // bottom-right
-    1.0f,  1.0f,  1.0f,  0.0f,  0.0f,  1.0f, 1.0f, 1.0f, // top-right
-    1.0f,  1.0f,  1.0f,  0.0f,  0.0f,  1.0f, 1.0f, 1.0f, // top-right
+     1.0f, -1.0f,  1.0f,  0.0f,  0.0f,  1.0f, 1.0f, 0.0f, // bottom-right
+     1.0f,  1.0f,  1.0f,  0.0f,  0.0f,  1.0f, 1.0f, 1.0f, // top-right
+     1.0f,  1.0f,  1.0f,  0.0f,  0.0f,  1.0f, 1.0f, 1.0f, // top-right
     -1.0f,  1.0f,  1.0f,  0.0f,  0.0f,  1.0f, 0.0f, 1.0f, // top-left
     -1.0f, -1.0f,  1.0f,  0.0f,  0.0f,  1.0f, 0.0f, 0.0f, // bottom-left
     // left face
@@ -41,24 +41,24 @@ static float cube_vertices[] = {
     -1.0f, -1.0f,  1.0f, -1.0f,  0.0f,  0.0f, 0.0f, 0.0f, // bottom-right
     -1.0f,  1.0f,  1.0f, -1.0f,  0.0f,  0.0f, 1.0f, 0.0f, // top-right
     // right face
-    1.0f,  1.0f,  1.0f,  1.0f,  0.0f,  0.0f, 1.0f, 0.0f, // top-left
-    1.0f, -1.0f, -1.0f,  1.0f,  0.0f,  0.0f, 0.0f, 1.0f, // bottom-right
-    1.0f,  1.0f, -1.0f,  1.0f,  0.0f,  0.0f, 1.0f, 1.0f, // top-right         
-    1.0f, -1.0f, -1.0f,  1.0f,  0.0f,  0.0f, 0.0f, 1.0f, // bottom-right
-    1.0f,  1.0f,  1.0f,  1.0f,  0.0f,  0.0f, 1.0f, 0.0f, // top-left
-    1.0f, -1.0f,  1.0f,  1.0f,  0.0f,  0.0f, 0.0f, 0.0f, // bottom-left     
+     1.0f,  1.0f,  1.0f,  1.0f,  0.0f,  0.0f, 1.0f, 0.0f, // top-left
+     1.0f, -1.0f, -1.0f,  1.0f,  0.0f,  0.0f, 0.0f, 1.0f, // bottom-right
+     1.0f,  1.0f, -1.0f,  1.0f,  0.0f,  0.0f, 1.0f, 1.0f, // top-right         
+     1.0f, -1.0f, -1.0f,  1.0f,  0.0f,  0.0f, 0.0f, 1.0f, // bottom-right
+     1.0f,  1.0f,  1.0f,  1.0f,  0.0f,  0.0f, 1.0f, 0.0f, // top-left
+     1.0f, -1.0f,  1.0f,  1.0f,  0.0f,  0.0f, 0.0f, 0.0f, // bottom-left     
     // bottom face
     -1.0f, -1.0f, -1.0f,  0.0f, -1.0f,  0.0f, 0.0f, 1.0f, // top-right
-    1.0f, -1.0f, -1.0f,  0.0f, -1.0f,  0.0f, 1.0f, 1.0f, // top-left
-    1.0f, -1.0f,  1.0f,  0.0f, -1.0f,  0.0f, 1.0f, 0.0f, // bottom-left
-    1.0f, -1.0f,  1.0f,  0.0f, -1.0f,  0.0f, 1.0f, 0.0f, // bottom-left
+     1.0f, -1.0f, -1.0f,  0.0f, -1.0f,  0.0f, 1.0f, 1.0f, // top-left
+     1.0f, -1.0f,  1.0f,  0.0f, -1.0f,  0.0f, 1.0f, 0.0f, // bottom-left
+     1.0f, -1.0f,  1.0f,  0.0f, -1.0f,  0.0f, 1.0f, 0.0f, // bottom-left
     -1.0f, -1.0f,  1.0f,  0.0f, -1.0f,  0.0f, 0.0f, 0.0f, // bottom-right
     -1.0f, -1.0f, -1.0f,  0.0f, -1.0f,  0.0f, 0.0f, 1.0f, // top-right
     // top face
     -1.0f,  1.0f, -1.0f,  0.0f,  1.0f,  0.0f, 0.0f, 1.0f, // top-left
-    1.0f,  1.0f , 1.0f,  0.0f,  1.0f,  0.0f, 1.0f, 0.0f, // bottom-right
-    1.0f,  1.0f, -1.0f,  0.0f,  1.0f,  0.0f, 1.0f, 1.0f, // top-right     
-    1.0f,  1.0f,  1.0f,  0.0f,  1.0f,  0.0f, 1.0f, 0.0f, // bottom-right
+     1.0f,  1.0f , 1.0f,  0.0f,  1.0f,  0.0f, 1.0f, 0.0f, // bottom-right
+     1.0f,  1.0f, -1.0f,  0.0f,  1.0f,  0.0f, 1.0f, 1.0f, // top-right     
+     1.0f,  1.0f,  1.0f,  0.0f,  1.0f,  0.0f, 1.0f, 0.0f, // bottom-right
     -1.0f,  1.0f, -1.0f,  0.0f,  1.0f,  0.0f, 0.0f, 1.0f, // top-left
     -1.0f,  1.0f,  1.0f,  0.0f,  1.0f,  0.0f, 0.0f, 0.0f  // bottom-left        
 };
@@ -67,8 +67,8 @@ static float quad_vertices[] = {
     // positions        // texture Coords
     -1.0f,  1.0f, 0.0f, 0.0f, 1.0f,
     -1.0f, -1.0f, 0.0f, 0.0f, 0.0f,
-    1.0f,  1.0f, 0.0f, 1.0f, 1.0f,
-    1.0f, -1.0f, 0.0f, 1.0f, 0.0f,
+     1.0f,  1.0f, 0.0f, 1.0f, 1.0f,
+     1.0f, -1.0f, 0.0f, 1.0f, 0.0f,
 };
 
 /////////////////////////////////////////////////////////////
@@ -100,6 +100,8 @@ void ibl_renderer::do_init()
     freeze::depth::enable();
     freeze::depth::test_less_equal();
     glEnable(GL_TEXTURE_CUBE_MAP_SEAMLESS);
+
+    glEnable(GL_MULTISAMPLE);
 
     set_vertices();
     set_shader();
@@ -140,6 +142,7 @@ void ibl_renderer::set_shader()
     pft_shader.compile_file("resources/shaders/cubemap.vs"s, "resources/shaders/prefilter.fs"s);
     brdf_shader.compile_file("resources/shaders/brdf.vs"s, "resources/shaders/brdf.fs"s);
     bg_shader.compile_file("resources/shaders/background.vs"s, "resources/shaders/background.fs"s);
+    pick_shader.compile_file("resources/shaders/pick.vs"s, "resources/shaders/pick.fs"s);
 
     pbr_shader.use();
     pbr_shader.set_int("irradianceMap"s, 3);
@@ -357,12 +360,27 @@ void ibl_renderer::set_texture()
     pbr_shader.set_mat4("projection"s, proj);
     bg_shader.use();
     bg_shader.set_mat4("projection"s, proj);
+    pick_shader.use();
+    pick_shader.set_mat4("projection"s, proj);
 }
 
 void ibl_renderer::set_model()
 {
     ufo_model.load("resources/objects/ufo/ufo.obj"s);
     ufo_model.setup(pbr_shader);
+
+    pick_fbo.bind();
+    auto rbo = freeze::make_render_buffer();
+    rbo.bind();
+    rbo.storage(SCR_WIDTH, SCR_HEIGHT, GL_DEPTH_COMPONENT24);
+    rbo.unbind();
+    auto tex = freeze::make_texture2d();
+    tex.bind();
+    tex.set_image(GL_R16F, SCR_WIDTH, SCR_HEIGHT, GL_RED, GL_FLOAT, nullptr);
+    tex.unbind();
+    pick_fbo.attachement_color(tex);
+    pick_fbo.attachement_render_buffer(rbo, GL_DEPTH_ATTACHMENT);
+    pick_fbo.unbind();
 }
 
 void ibl_renderer::draw()
@@ -393,6 +411,7 @@ void ibl_renderer::draw()
         pbr_shader.set_vec3("lightColors[" + std::to_string(i) + "]", lightColors[i]);
     }
 
+    picking();
     ufo_model.draw(pbr_shader);
 
     bg_shader.use();
@@ -404,20 +423,54 @@ void ibl_renderer::draw()
     cube_vao.unbind();
 }
 
+void ibl_renderer::picking()
+{
+    auto view = scene_camera.get_view_matrix();
+    auto model = glm::mat4{ 1.0f };
+    model = glm::scale(glm::mat4{ 1.0f }, glm::vec3{ 0.03f });
+    model = glm::rotate(model, glm::radians(-20.0f), glm::vec3{ 0.0f,1.0f,0.0f });
+    model = glm::translate(model, glm::vec3{ 0.0f,-25.0f,0.0f });
+
+    pick_shader.use();
+    pick_shader.set_mat4("view"s, view);
+    pick_shader.set_mat4("model"s, model);
+    pick_shader.set_float("id"s, 123.0f);
+
+    pick_fbo.bind();
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    ufo_model.draw(pick_shader);
+    pick_fbo.unbind();
+}
+
+int ibl_renderer::hit_test(int x, int y)
+{
+    pick_fbo.bind();
+    pick_fbo.read_buffer(GL_COLOR_ATTACHMENT0);
+    float v;
+    pick_fbo.read_pixels(x, y, 1, 1, GL_RED,GL_FLOAT,(GLvoid*)&v);
+    pick_fbo.read_buffer(GL_NONE);
+    pick_fbo.unbind();
+    return (int)v;
+}
+
+void ibl_renderer::on_hit(int hit)
+{
+}
+
 void ibl_renderer::process_event(window_pointer window)
 {
     if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
         glfwSetWindowShouldClose(window, true);
 
-    float cameraSpeed = 2.5f * delta_time;
+    float cameraSpeed = 0.25f * delta_time;
     if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
-        scene_camera.process_keyboard(freeze::camera_movement::FORWARD, delta_time);
+        scene_camera.process_keyboard(freeze::camera_movement::FORWARD, cameraSpeed);
     if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
-        scene_camera.process_keyboard(freeze::camera_movement::BACKWARD, delta_time);
+        scene_camera.process_keyboard(freeze::camera_movement::BACKWARD, cameraSpeed);
     if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
-        scene_camera.process_keyboard(freeze::camera_movement::LEFT, delta_time);
+        scene_camera.process_keyboard(freeze::camera_movement::LEFT, cameraSpeed);
     if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
-        scene_camera.process_keyboard(freeze::camera_movement::RIGHT, delta_time);
+        scene_camera.process_keyboard(freeze::camera_movement::RIGHT, cameraSpeed);
 }
 
 void ibl_renderer::do_mouse_callback(double xpos, double ypos)
@@ -441,4 +494,13 @@ void ibl_renderer::do_mouse_callback(double xpos, double ypos)
 void ibl_renderer::do_scroll_callback(double xoffset, double yoffset)
 {
     scene_camera.process_mouse_scroll(yoffset);
+}
+
+void ibl_renderer::do_button_callback(int button, int action, int mods, double xpos, double ypos)
+{
+    if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS)
+    {
+        auto hit = hit_test((int)xpos, SCR_HEIGHT - (int)ypos - 1);
+        on_hit(hit);
+    }
 }

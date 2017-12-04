@@ -91,5 +91,11 @@
     <None Include="resources\shaders\prefilter.fs">
       <Filter>资源文件\resources\shaders</Filter>
     </None>
+    <None Include="resources\shaders\pick.vs">
+      <Filter>资源文件\resources\shaders</Filter>
+    </None>
+    <None Include="resources\shaders\pick.fs">
+      <Filter>资源文件\resources\shaders</Filter>
+    </None>
   </ItemGroup>
 </Project>

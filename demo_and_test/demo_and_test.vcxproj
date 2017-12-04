@@ -179,6 +179,8 @@
     <None Include="resources\shaders\irradiance_convolution.fs" />
     <None Include="resources\shaders\pbr.fs" />
     <None Include="resources\shaders\pbr.vs" />
+    <None Include="resources\shaders\pick.fs" />
+    <None Include="resources\shaders\pick.vs" />
     <None Include="resources\shaders\prefilter.fs" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

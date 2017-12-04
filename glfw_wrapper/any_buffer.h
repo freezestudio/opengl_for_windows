@@ -293,6 +293,12 @@ namespace freeze
             glReadBuffer(mode);
             assert_error();
         }
+
+        void read_pixels(GLint x,GLint y,GLsizei width,GLsizei height,GLenum format,GLenum type,GLvoid* data)
+        {
+            glReadPixels(x,y,width,height,format,type,data);
+            assert_error();
+        }
     };
 }
 
