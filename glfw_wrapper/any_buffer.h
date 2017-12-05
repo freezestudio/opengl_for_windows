@@ -9,7 +9,7 @@ namespace freeze
 {
 
     template<GLenum Target>
-    struct any_buffer : make_object<any_buffer<Target>>
+    struct buffer_t : make_object<buffer_t<Target>>
     {
         void create(GLuint *buffers)
         {
@@ -100,8 +100,8 @@ namespace freeze
 namespace freeze
 {
     template<typename = void>
-    struct void_uniform_buffer
-        : any_buffer<GL_UNIFORM_BUFFER>
+    struct uniform_buffer_t
+        : buffer_t<GL_UNIFORM_BUFFER>
     {
         void block_binding(GLuint program, std::string const& name, GLuint index)
         {
@@ -128,8 +128,8 @@ namespace freeze
 namespace freeze
 {
     template<typename = void>
-    struct void_render_buffer
-        : make_object<void_render_buffer<void>>
+    struct render_buffer_t
+        : make_object<render_buffer_t<void>>
     {
         void create(GLuint* buffers)
         {
@@ -185,8 +185,8 @@ namespace freeze
     // GL_READ_FRAMEBUFFER
     //
     template<GLenum FrameBuffer>
-    struct void_frame_buffer
-        : make_object<void_frame_buffer<FrameBuffer>>
+    struct frame_buffer_t
+        : make_object<frame_buffer_t<FrameBuffer>>
     {
         void create(GLuint* buffers)
         {
@@ -334,13 +334,14 @@ namespace freeze
 namespace freeze
 {
 
-    using vertex_buffer = any_buffer<GL_ARRAY_BUFFER>;
-    using element_buffer = any_buffer<GL_ELEMENT_ARRAY_BUFFER>;
+    using vertex_buffer = buffer_t<GL_ARRAY_BUFFER>;
+    using element_buffer = buffer_t<GL_ELEMENT_ARRAY_BUFFER>;
     using vertex_array_buffer = vertex_array_buffer_t<false>;
-    using uniform_buffer = void_uniform_buffer<>;
-    using render_buffer = void_render_buffer<>;
-    using frame_buffer = void_frame_buffer<GL_FRAMEBUFFER>;
-    using read_frame_buffer = void_frame_buffer<GL_READ_FRAMEBUFFER>;
+    using uniform_buffer = uniform_buffer_t<>;
+    using render_buffer = render_buffer_t<>;
+    using frame_buffer = frame_buffer_t<GL_FRAMEBUFFER>;
+    using read_frame_buffer = frame_buffer_t<GL_READ_FRAMEBUFFER>;
+    using draw_frame_buffer = frame_buffer_t<GL_DRAW_FRAMEBUFFER>;
 
     constexpr auto make_vertex_buffer = make<vertex_buffer>;
     constexpr auto make_element_buffer = make<element_buffer>;
@@ -349,6 +350,7 @@ namespace freeze
     constexpr auto make_render_buffer = make<render_buffer>;
     constexpr auto make_frame_buffer = make<frame_buffer>;
     constexpr auto make_read_frame_buffer = make<read_frame_buffer>;
+    constexpr auto make_draw_frame_buffer = make<draw_frame_buffer>;
 }
 
 

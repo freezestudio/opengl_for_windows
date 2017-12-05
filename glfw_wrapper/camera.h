@@ -26,7 +26,7 @@ namespace freeze
 
     // 一个抽象相机类，用于处理输入并计算用于OpenGL的相应的欧拉角，向量和矩阵
     template<typename = void>
-    class void_camera
+    class camera_t
     {
     public:
         // 摄像机属性
@@ -58,7 +58,7 @@ namespace freeze
         float Zoom;
 
         // 使用向量构造
-        void_camera(glm::vec3 position = glm::vec3{ 0.0f, 0.0f, 0.0f }, // 位置
+        camera_t(glm::vec3 position = glm::vec3{ 0.0f, 0.0f, 0.0f }, // 位置
             glm::vec3 up = glm::vec3{ 0.0f, 1.0f, 0.0f },       // 世界坐标系中的向上方向
             float yaw = YAW,                                  // y偏航
             float pitch = PITCH)                             // x俯仰
@@ -77,7 +77,7 @@ namespace freeze
         }
 
         // 使用标量值构造
-        void_camera(float posX, float posY, float posZ,                      //位置
+        camera_t(float posX, float posY, float posZ,                      //位置
             float upX = 0.0f, float upY = 1.0f, float upZ = 0.0f,    //世界坐标系中的向上方向
             float yaw = YAW,                                         //y偏航
             float pitch = PITCH)                                     //x俯仰
@@ -170,7 +170,7 @@ namespace freeze
 
 namespace freeze
 {
-    using camera = void_camera<>;
+    using camera = camera_t<>;
 }
 
 

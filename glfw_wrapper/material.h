@@ -52,6 +52,15 @@ namespace freeze
             shader.set_float(shininess, this->shininess);
         }
     };
+
+    struct pbr_material
+    {
+        int albedo;
+        int normal;
+        int metallic;
+        int roughness;
+        int occlusion;
+    };
 }
 
 #endif //FREEGL_MATERIAL_H

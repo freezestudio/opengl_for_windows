@@ -9,11 +9,11 @@ namespace freeze
 {
     struct model_vertex
     {
-        //顶点坐标
+        //Position 顶点坐标
         float x, y, z;
-        //法线
+        //Normal 法线
         float nx, ny, nz;
-        //纹理
+        //TexCoords 纹理
         float u, v;
     };
 
@@ -258,7 +258,7 @@ namespace freeze
 namespace freeze
 {
     using modeless = model_t<model_vertex, true>;
-    using modeled = model_t<model_vertex, false>;
+    using modeled  = model_t<model_vertex, false>;
 }
 
 #endif

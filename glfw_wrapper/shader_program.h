@@ -8,8 +8,8 @@
 namespace freeze
 {
     template<typename = void>
-    struct void_program
-        : make_object<void_program<void>, false>
+    struct program_t
+        : make_object<program_t<void>, false>
     {
         GLuint create()
         {
@@ -24,8 +24,8 @@ namespace freeze
         }
 
         template<GLenum Target, typename = void>
-        struct void_shader
-            : make_object<void_shader<Target, void>, false>
+        struct shader_t
+            : make_object<shader_t<Target, void>, false>
         {
             GLuint create()
             {
@@ -78,7 +78,7 @@ namespace freeze
         };
 
         template<GLenum Target>
-        using shader = void_shader<Target>;
+        using shader = shader_t<Target>;
 
         constexpr static auto make_vertex_shader = make<shader<GL_VERTEX_SHADER>>;
         constexpr static auto make_fragment_shader = make<shader<GL_FRAGMENT_SHADER>>;
@@ -297,7 +297,7 @@ namespace freeze
 
 namespace freeze
 {
-    using program = void_program<>;
+    using program = program_t<>;
     constexpr auto make_program = make<program>;
 }
 

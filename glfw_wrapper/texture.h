@@ -286,10 +286,10 @@ namespace freeze
             return true;
         }
 
-        //        template<typename DataType>
-        //        void set_image(DataType&& data){
-        //            set_image(data.format,data.x,data.y,data.format,GL_UNSIGNED_BYTE,data.data.data());
-        //        }
+        //template<typename DataType>
+        //void set_image(DataType&& data){
+        //    set_image(data.format,data.x,data.y,data.format,GL_UNSIGNED_BYTE,data.data.data());
+        //}
 
         GLenum get_format() const
         {
@@ -348,10 +348,11 @@ namespace freeze
     };
 
     using texture2d = texture2d_impl<>;
-    constexpr auto make_texture2d = make<texture2d>;
     using texture2dmultisample = texture2dmultisample_impl<>;
-    constexpr auto make_texture2dmultisample = make<texture2dmultisample>;
     using texture_cube = texture_cube_impl<>;
+
+    constexpr auto make_texture2d = make<texture2d>;
+    constexpr auto make_texture2dmultisample = make<texture2dmultisample>;
     constexpr auto make_texture_cube = make<texture_cube>;
 }
 
@@ -412,7 +413,8 @@ namespace freeze
 
         switch (channels)
         {
-        default:
+        default:break;
+        case 1:format = GL_RED; break;
         case 3:format = GL_RGB; break;
         case 4:format = GL_RGBA; break;
         }
@@ -477,6 +479,7 @@ namespace freeze
         texture.set_wrap_r(GL_CLAMP_TO_EDGE);
         texture.set_min_filter(GL_LINEAR);
         texture.set_mag_filter(GL_LINEAR);
+        texture.unbind();
 
         return std::move(texture);
     }
@@ -497,7 +500,8 @@ namespace freeze
         {
             switch (channels)
             {
-            default:
+            default:break;
+            case 1:format = GL_RED; break;
             case 3:format = GL_RGB; break;
             case 4:format = GL_RGBA; break;
             }
@@ -510,6 +514,7 @@ namespace freeze
             texture.set_wrap_t(GL_REPEAT);
             texture.set_min_filter(GL_LINEAR_MIPMAP_LINEAR);
             texture.set_mag_filter(GL_LINEAR);
+            texture.unbind();
         }
 
         return std::move(texture);
