@@ -164,6 +164,12 @@ namespace freeze
             glRenderbufferStorage(GL_RENDERBUFFER, internal_format, width, height);
             assert_error();
         }
+
+        void storage_multisample(GLsizei samples,GLenum internalformat,GLsizei width,GLsizei height)
+        {
+            glRenderbufferStorageMultisample(GL_RENDERBUFFER, samples, internalformat, width, height);
+            assert_error();
+        }
     };
 }
 
@@ -200,9 +206,21 @@ namespace freeze
             assert_error();
         }
 
+        void spec_bind(GLenum target)
+        {
+            glBindFramebuffer(tagert, this->ref());
+            assert_error();
+        }
+
         void unbind()
         {
             glBindFramebuffer(FrameBuffer, 0);
+            assert_error();
+        }
+
+        void spec_unbind(GLenum target)
+        {
+            glBindFramebuffer(target, 0);
             assert_error();
         }
 
@@ -241,9 +259,9 @@ namespace freeze
             assert_error();
         }
 
-        void attachement_texture2d(GLenum attachment, GLuint texture, GLuint level = 0)
+        void attachement_texture2d(GLenum attachment, GLuint texture, GLenum textarget = GL_TEXTURE_2D, GLuint level = 0)
         {
-            glFramebufferTexture2D(FrameBuffer, attachment, GL_TEXTURE_2D, texture, level);
+            glFramebufferTexture2D(FrameBuffer, attachment, textarget, texture, level);
             assert_error();
         }
 
@@ -297,6 +315,16 @@ namespace freeze
         void read_pixels(GLint x,GLint y,GLsizei width,GLsizei height,GLenum format,GLenum type,GLvoid* data)
         {
             glReadPixels(x,y,width,height,format,type,data);
+            assert_error();
+        }
+
+        //mask -- GL_COLOR_BUFFER_BIT, GL_DEPTH_BUFFER_BIT, GL_STENCIL_BUFFER_BIT
+        //filter -- GL_NEAREST, GL_LINEAR
+        void blit(GLint srcx0,GLint srcy0,GLint srcx1,GLint srcy1,
+            GLint dstx0,GLint dsty0,GLint dstx1,GLint dsty1,
+            GLbitfield mask,GLenum filter)
+        {
+            glBlitFramebuffer(srcx0,srcy0,srcx1,srcy1,dstx0,dsty0,dstx1,dsty1,mask,filter);
             assert_error();
         }
     };
