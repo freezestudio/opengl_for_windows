@@ -318,6 +318,11 @@ namespace glfw {
         strick_keys = GLFW_STICKY_KEYS,
         stricky_mouse_buttons = GLFW_STICKY_MOUSE_BUTTONS,
     };
+
+	enum class monitor_type
+	{
+		none,primary,
+	};
 }
 
 //glfw::detail
