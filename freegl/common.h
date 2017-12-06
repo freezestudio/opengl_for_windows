@@ -415,6 +415,10 @@ namespace glfw
 //glfw::class
 namespace glfw
 {
+	struct size
+	{
+		int x, y;
+	};
 
     class glfw
     {
@@ -495,194 +499,288 @@ namespace glfw
     };
 
 
-    class monitor
-    {
-    public:
-        using pointer = GLFWmonitor * ;
-        using const_pointer = GLFWmonitor const*;
+	class monitor
+	{
+	public:
+		using pointer = GLFWmonitor *;
+		using const_pointer = GLFWmonitor const*;
+		using mode_pointer = GLFWvidmode*;
+		using const_mode_pointer = GLFWvidmode const*;
+		using gamma_pointer = GLFWgammaramp*;
+		using const_gamma_pointer = GLFWgammaramp const*;
 
-        monitor()
-            : monitorp_(glfwGetPrimaryMonitor())
-        {
+		explicit monitor(monitor_type type = monitor_type::none)
+			: monitorp_{ nullptr }
+		{
+			if (type == monitor_type::primary)
+			{
+				set_primary();
+			}
+		}
 
-        }
+		explicit monitor(pointer p)
+			: monitorp_{ p }
+		{
 
-    public:
-        pointer get()
-        {
-            return monitorp_;
-        }
+		}
 
-        const_pointer get() const
-        {
-            return monitorp_;
-        }
+		explicit operator bool() const
+		{
+			return monitorp_ != nullptr;
+		}
+	public:
+		pointer get()
+		{
+			return monitorp_;
+		}
 
-    private:
-        GLFWmonitor * monitorp_;
-    };
+		const_pointer get() const
+		{
+			return monitorp_;
+		}
 
-    class cursor
-    {
+		std::vector<monitor> get_some() const
+		{
+			int count;
+			auto ms = glfwGetMonitors(&count);
+			std::vector<monitor> monitors;
+			for (auto i = 0; i < count; ++i)
+			{
+				auto m = monitor(ms[i]);
+				monitors.emplace_back(m);
+			}
+			return monitors;
+		}
 
-    };
+		size get_pos() const
+		{
+			if (!monitorp_)return{};
+
+			int x, y;
+			glfwGetMonitorPos(monitorp_, &x, &y);
+			return { x,y };
+		}
+
+		size get_physical_size() const
+		{
+			if (!monitorp_)return{};
+			int w, h;
+			glfwGetMonitorPhysicalSize(monitorp_, &w, &h);
+			return { w,h };
+		}
+
+		const_mode_pointer get_mode() const
+		{
+			return monitorp_ ? glfwGetVideoMode(monitorp_) : nullptr;
+		}
+		std::vector<mode_pointer> get_mode_some() const
+		{
+			std::vector<mode_pointer> modes;
+			if (!monitorp_)return modes;
+
+			int count;
+			auto ms = glfwGetVideoModes(monitorp_, &count);
+			for (auto i = 0; i < count; ++i)
+			{
+				GLFWvidmode vm = ms[i];
+				modes.emplace_back(&vm);
+			}
+
+			return modes;
+		}
+
+		void set_primary()
+		{
+			monitorp_ = glfwGetPrimaryMonitor();
+		}
+
+		void set_gamma(float g)
+		{
+			if (monitorp_)
+				glfwSetGamma(monitorp_, g);
+		}
+
+		const_gamma_pointer get_gamma_ramp() const
+		{
+			return monitorp_ ?
+				glfwGetGammaRamp(monitorp_) : nullptr;
+		}
+
+		void set_gamma_ramp(const_gamma_pointer ramp)
+		{
+			if (monitorp_)
+				glfwSetGammaRamp(monitorp_, ramp);
+		}
+
+	private:
+		GLFWmonitor * monitorp_;
+	};
+
+	class cursor
+	{
+
+	};
 
 
-    class window
-    {
-    public:
-        using pointer = GLFWwindow * ;
-        using const_pointer = GLFWwindow const*;
+	class window
+	{
+	public:
+		using pointer = GLFWwindow *;
+		using const_pointer = GLFWwindow const*;
 
-        enum class cursor_mode
-        {
-            normal = GLFW_CURSOR_NORMAL,
-            hidden = GLFW_CURSOR_HIDDEN,
-            disabled = GLFW_CURSOR_DISABLED,
-        };
+		enum class cursor_mode
+		{
+			normal = GLFW_CURSOR_NORMAL,
+			hidden = GLFW_CURSOR_HIDDEN,
+			disabled = GLFW_CURSOR_DISABLED,
+		};
 
-        window()
-            : windowp_(nullptr)
-        {
+		window()
+			: windowp_(nullptr)
+		{
 
-        }
+		}
 
-        window(int width, int height,
-            std::string const& title = "demo"s,
-            monitor* _monitor = nullptr,
-            window* _window = nullptr)
-        {
-            create(width, height, title, _monitor, _window);
-        }
+		window(int width, int height,
+			std::string const& title = "demo"s,
+			monitor::pointer _monitor = nullptr,
+			window::pointer _window = nullptr)
+		{
+			create(width, height, title, _monitor, _window);
+		}
 
-        ~window()
-        {
-            if (windowp_)
-            {
-                destroy();
-                windowp_ = nullptr;
-            }
-        }
-    public:
+		~window()
+		{
+			if (windowp_)
+			{
+				destroy();
+				windowp_ = nullptr;
+			}
+		}
 
-        bool create(int width, int height,
-            std::string const& title = "demo"s,
-            monitor* _monitor = nullptr,
-            window* _window = nullptr)
-        {
-            windowp_ = glfwCreateWindow(width, height,
-                title.c_str(),
-                _monitor ? _monitor->get() : nullptr,
-                _window ? _window->get() : nullptr);
-            return windowp_ != nullptr;
-        }
+		explicit operator bool() const
+		{
+			return windowp_ != nullptr;
+		}
+	public:
 
-        void destroy()
-        {
-            glfwDestroyWindow(windowp_);
-        }
+		bool create(int width, int height,
+			std::string const& title = "demo"s,
+			monitor::pointer _monitor = nullptr,
+			window::pointer _window = nullptr)
+		{
+			windowp_ = glfwCreateWindow(width, height,
+				title.c_str(),
+				_monitor,
+				_window);
+			return windowp_ != nullptr;
+		}
 
-        void make_context_current()
-        {
-            glfwMakeContextCurrent(windowp_);
-        }
+		void destroy()
+		{
+			glfwDestroyWindow(windowp_);
+		}
 
-        void swap_buffers()
-        {
-            glfwSwapBuffers(windowp_);
-        }
+		void make_context_current()
+		{
+			glfwMakeContextCurrent(windowp_);
+		}
 
-        bool should_close() const
-        {
-            return glfwWindowShouldClose(windowp_) == GLFW_TRUE;
-        }
+		void swap_buffers()
+		{
+			glfwSwapBuffers(windowp_);
+		}
 
-        void set_should_close(bool _close = true)
-        {
-            glfwSetWindowShouldClose(windowp_, true ? GL_TRUE : GL_FALSE);
-        }
+		bool should_close() const
+		{
+			return glfwWindowShouldClose(windowp_) == GLFW_TRUE;
+		}
 
-        void get_frame_buffer_size(int& width, int& height)
-        {
-            glfwGetFramebufferSize(windowp_, &width, &height);
-        }
+		void set_should_close(bool _close = true)
+		{
+			glfwSetWindowShouldClose(windowp_, true ? GL_TRUE : GL_FALSE);
+		}
 
-        template<typename Handler>
-        void process_input_event(key_code key, Handler&& handler)
-        {
-            auto action = get_key(key);
-            handler(action);
-        }
+		void get_frame_buffer_size(int& width, int& height)
+		{
+			glfwGetFramebufferSize(windowp_, &width, &height);
+		}
 
-        key_mouse_action get_key(key_code key) const
-        {
-            int action = glfwGetKey(windowp_, static_cast<int>(key));
-            return static_cast<key_mouse_action>(action);
-        }
+		template<typename Handler>
+		void process_input_event(key_code key, Handler&& handler)
+		{
+			auto action = get_key(key);
+			handler(action);
+		}
 
-        void set_cursor_mode(cursor_mode mode)
-        {
-            glfwSetInputMode(windowp_, static_cast<int>(input_mode::cursor), static_cast<int>(mode));
-        }
+		key_mouse_action get_key(key_code key) const
+		{
+			int action = glfwGetKey(windowp_, static_cast<int>(key));
+			return static_cast<key_mouse_action>(action);
+		}
 
-        pointer get()
-        {
-            return windowp_;
-        }
+		void set_cursor_mode(cursor_mode mode)
+		{
+			glfwSetInputMode(windowp_, static_cast<int>(input_mode::cursor), static_cast<int>(mode));
+		}
 
-        const_pointer get() const
-        {
-            return windowp_;
-        }
+		pointer get()
+		{
+			return windowp_;
+		}
 
-        //callback
-    public:
-        //void handler(GLFWwindow* window,int key,int scancode,int action,int mods)
-        template<typename KeyHandler>
-        void set_key_callback(KeyHandler&& handler)
-        {
-            glfwSetKeyCallback(windowp_, std::forward<KeyHandler>(handler));
-        }
+		const_pointer get() const
+		{
+			return windowp_;
+		}
 
-        //void handler(GLFWwindow* window,int width,int height)
-        template<typename FramebufferSizeHandler>
-        void set_frame_buffer_size_callback(FramebufferSizeHandler&& handler)
-        {
-            glfwSetFramebufferSizeCallback(windowp_, std::forward<FramebufferSizeHandler>(handler));
-        }
+		//callback
+	public:
+		//void handler(GLFWwindow* window,int key,int scancode,int action,int mods)
+		template<typename KeyHandler>
+		void set_key_callback(KeyHandler&& handler)
+		{
+			glfwSetKeyCallback(windowp_, std::forward<KeyHandler>(handler));
+		}
 
-        //void handler(GLFWwindow* window,int entered)
-        template<typename CursorEnterHandler>
-        void set_cursor_enter_callback(CursorEnterHandler&& handler)
-        {
-            glfwSetCursorEnterCallback(windowp_, std::forward<CursorEnterHandler>(handler));
-        }
+		//void handler(GLFWwindow* window,int width,int height)
+		template<typename FramebufferSizeHandler>
+		void set_frame_buffer_size_callback(FramebufferSizeHandler&& handler)
+		{
+			glfwSetFramebufferSizeCallback(windowp_, std::forward<FramebufferSizeHandler>(handler));
+		}
 
-        //void handler(GLFWwindow* window,double xpos,double ypos)
-        template<typename CursorPosHandler>
-        void set_cursor_pos_callback(CursorPosHandler&& handler)
-        {
-            glfwSetCursorPosCallback(windowp_, std::forward<CursorPosHandler>(handler));
-        }
+		//void handler(GLFWwindow* window,int entered)
+		template<typename CursorEnterHandler>
+		void set_cursor_enter_callback(CursorEnterHandler&& handler)
+		{
+			glfwSetCursorEnterCallback(windowp_, std::forward<CursorEnterHandler>(handler));
+		}
 
-        //void handler(GLFWwindow* window,double xoffset,double yoffset)
-        template<typename ScrollHandler>
-        void set_scroll_callback(ScrollHandler&& handler)
-        {
-            glfwSetScrollCallback(windowp_, std::forward<ScrollHandler>(handler));
-        }
+		//void handler(GLFWwindow* window,double xpos,double ypos)
+		template<typename CursorPosHandler>
+		void set_cursor_pos_callback(CursorPosHandler&& handler)
+		{
+			glfwSetCursorPosCallback(windowp_, std::forward<CursorPosHandler>(handler));
+		}
 
-        //void handler(GLFWwindow* window,int button,int action,int mods)
-        template<typename MouseButtonHandler>
-        void set_mouse_button_callback(MouseButtonHandler&& handler)
-        {
-            glfwSetMouseButtonCallback(windowp_, std::forward<MouseButtonHandler>(handler));
-        }
+		//void handler(GLFWwindow* window,double xoffset,double yoffset)
+		template<typename ScrollHandler>
+		void set_scroll_callback(ScrollHandler&& handler)
+		{
+			glfwSetScrollCallback(windowp_, std::forward<ScrollHandler>(handler));
+		}
 
-    private:
-        GLFWwindow * windowp_;
-    };
+		//void handler(GLFWwindow* window,int button,int action,int mods)
+		template<typename MouseButtonHandler>
+		void set_mouse_button_callback(MouseButtonHandler&& handler)
+		{
+			glfwSetMouseButtonCallback(windowp_, std::forward<MouseButtonHandler>(handler));
+		}
 
+	private:
+		GLFWwindow * windowp_;
+	};
 }
 
 //glfw::function
