@@ -124,8 +124,8 @@ namespace freeze
 
 /////////////////////////////////////////////////////////////////////////
 
-//glfw::enum
-namespace glfw {
+//freeze::enum
+namespace freeze {
 
     enum class window_hint_type
     {
@@ -325,8 +325,8 @@ namespace glfw {
 	};
 }
 
-//glfw::detail
-namespace glfw
+//freeze::detail
+namespace freeze
 {
     namespace detail
     {
@@ -412,31 +412,31 @@ namespace glfw
     }
 }
 
-//glfw::class
-namespace glfw
+//freeze::class
+namespace freeze
 {
 	struct size
 	{
 		int x, y;
 	};
 
-    class glfw
+    class freegl
     {
     public:
-        glfw()
+        freegl()
             : inited_(detail::init())
         {
 
         }
 
-        glfw(int major, int minor)
+        freegl(int major, int minor)
             : inited_(detail::init())
         {
             set_opengl_version(major, minor);
             set_opengl_core_profile();
         }
 
-        ~glfw()
+        ~freegl()
         {
             detail::terminate();
         }
@@ -481,9 +481,14 @@ namespace glfw
             detail::poll_events();
         }
 
-        float get_time() const
+        static float get_time()
         {
             return (float)detail::get_time();
+        }
+
+        static void hint(window_hint_type type,int value)
+        {
+            detail::window_hint(type, value);
         }
 
         //callback
@@ -783,8 +788,8 @@ namespace glfw
 	};
 }
 
-//glfw::function
-namespace glfw
+//freeze::function
+namespace freeze
 {
 
     inline void set_window_should_close(window::pointer win, bool _close = true)
@@ -815,6 +820,11 @@ namespace glfw
     inline void set_cursor_hidden(window::pointer win)
     {
         glfwSetInputMode(win, static_cast<int>(input_mode::cursor), static_cast<int>(window::cursor_mode::hidden));
+    }
+
+    inline void get_frame_buffer_size(window::pointer win, int* width, int* height)
+    {
+        glfwGetFramebufferSize(win, width, height);
     }
 }
 

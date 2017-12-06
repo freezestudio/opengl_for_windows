@@ -5,19 +5,19 @@
 
 int main()
 {
-    auto freegl = freeze::make<glfw::glfw>(4, 3);
+    auto gl = freeze::make<freeze::freegl>(4, 3);
 
-    glfwWindowHint(GLFW_SAMPLES, 4);
+    gl.hint(freeze::window_hint_type::samples, 4);
 
-    auto window = freeze::make<glfw::window>(SCR_WIDTH, SCR_HEIGHT);    
+    auto window = freeze::make<freeze::window>(SCR_WIDTH, SCR_HEIGHT);
     window.make_context_current();
     window.set_frame_buffer_size_callback(RENDERER::framebuffer_size_callback);
     window.set_cursor_pos_callback(RENDERER::mouse_callback);
     window.set_scroll_callback(RENDERER::scroll_callback);
     window.set_mouse_button_callback(RENDERER::button_callback);
 
-    freegl.load_loader();
-    freegl.swap_interval(1);
+    gl.load_loader();
+    gl.swap_interval(1);
         
     auto render = std::make_shared<RENDERER>();
     render->init();
@@ -25,7 +25,7 @@ int main()
     // then before rendering, 
     // configure the viewport to the original framebuffer's screen dimensions
     int scrWidth, scrHeight;
-    glfwGetFramebufferSize(window.get(), &scrWidth, &scrHeight);
+    freeze::get_frame_buffer_size(window.get(), &scrWidth, &scrHeight);
     glViewport(0, 0, scrWidth, scrHeight);
 
     while (!window.should_close())
@@ -39,7 +39,7 @@ int main()
         render->draw();
         
         window.swap_buffers();
-        freegl.poll_events();
+        gl.poll_events();
     }
 
 	return 0;

@@ -93,7 +93,7 @@ void ibl_renderer::do_init()
 {
     ms_instance = shared_from_this();
 
-    auto current_frame = glfw::detail::get_time();
+    auto current_frame = freeze::freegl::get_time();
 
     delta_time = current_frame - last_frame;
     last_frame = current_frame;
@@ -301,11 +301,11 @@ void ibl_renderer::set_texture()
     pbr_fbo.bind();
     {
         unsigned maxMipLevels = 5;
-        for (auto mip = 0; mip < maxMipLevels; ++mip)
+        for (auto mip = 0u; mip < maxMipLevels; ++mip)
         {
             // reisze framebuffer according to mip-level size.
-            unsigned int mipWidth = 128 * std::pow(0.5, mip);
-            unsigned int mipHeight = 128 * std::pow(0.5, mip);
+            int mipWidth = 128 * std::pow(0.5, mip);
+            int mipHeight = 128 * std::pow(0.5, mip);
             rbo.bind();
             rbo.storage(mipWidth, mipHeight, GL_DEPTH_COMPONENT24);
             glViewport(0, 0, mipWidth, mipHeight);

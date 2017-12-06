@@ -8,7 +8,7 @@
 
 #define RENDERER
 
-using window_pointer = glfw::window::pointer;
+using window_pointer = freeze::window::pointer;
 
 struct renderer_core
 {
@@ -57,12 +57,12 @@ protected:
     static std::shared_ptr<Singleton> ms_instance;
 public:
     static void framebuffer_size_callback(
-        glfw::window::pointer window, int width, int height)
+        freeze::window::pointer window, int width, int height)
     {
         glViewport(0, 0, width, height);
     }
     static void mouse_callback(
-        glfw::window::pointer window, double xpos, double ypos)
+        freeze::window::pointer window, double xpos, double ypos)
     {
         if (ms_instance)
         {
@@ -70,7 +70,7 @@ public:
         }
     }
     static void scroll_callback(
-        glfw::window::pointer window, double xoffset, double yoffset)
+        freeze::window::pointer window, double xoffset, double yoffset)
     {
         if (ms_instance)
         {
@@ -78,7 +78,7 @@ public:
         }
     }
 
-    static void button_callback(glfw::window::pointer window, int button, int action, int mods)
+    static void button_callback(freeze::window::pointer window, int button, int action, int mods)
     {
         if (ms_instance)
         {

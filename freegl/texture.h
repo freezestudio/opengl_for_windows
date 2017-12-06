@@ -358,6 +358,107 @@ namespace freeze
 
 namespace freeze
 {
+    constexpr GLint gl_internal_format[] = {
+        GL_DEPTH_COMPONENT,GL_DEPTH_STENCIL,
+        GL_RED,GL_RG,GL_RGB,GL_RGBA,
+    };
+    constexpr auto gl_internal_format_size = sizeof(gl_internal_format) / sizeof(gl_internal_format[0]);
+
+    constexpr GLint gl_red[] = {
+        GL_R8,GL_R8_SNORM,GL_R16,GL_R16_SNORM,
+        GL_R16F,GL_R32F,
+        GL_R8I,GL_R8UI,GL_R16I,GL_R32I,GL_R32UI,
+        GL_COMPRESSED_RED,
+        GL_COMPRESSED_RED_RGTC1,GL_COMPRESSED_SIGNED_RED_RGTC1,
+    };
+    constexpr auto gl_red_size = sizeof(gl_red) / sizeof(gl_red[0]);
+
+    constexpr GLint gl_rg[] = {
+        GL_RG8,GL_RG8_SNORM,GL_RG16,GL_RG16_SNORM,
+        GL_RG16F,GL_RG32F,
+        GL_RG8I,GL_RG8UI,GL_RG16I,GL_RG32I,GL_RG32UI,
+        GL_COMPRESSED_RG,
+        GL_COMPRESSED_RG_RGTC2,GL_COMPRESSED_SIGNED_RG_RGTC2,
+    };
+    constexpr auto gl_rg_size = sizeof(gl_rg) / sizeof(gl_rg[0]);
+
+    constexpr GLint gl_rgb[] = {
+        GL_R3_G3_B2,GL_RGB4,GL_RGB5,GL_RGB8,GL_RGB8_SNORM,
+        GL_RGB10,GL_RGB12,GL_RGB16_SNORM,GL_RGBA2,GL_RGBA4,
+        GL_SRGB8,
+        GL_RGB16F,GL_RGB32F,
+        GL_R11F_G11F_B10F,GL_RGB9_E5,
+        GL_RGB8I,GL_RGB8UI,GL_RGB16I,GL_RGB16UI,GL_RGB32I,GL_RGB32UI,
+        GL_COMPRESSED_RGB,
+        GL_COMPRESSED_SRGB,
+        GL_COMPRESSED_RGB_BPTC_SIGNED_FLOAT,
+        GL_COMPRESSED_RGB_BPTC_UNSIGNED_FLOAT,
+
+
+    };
+    constexpr auto gl_rgb_size = sizeof(gl_rgb) / sizeof(gl_rgb[0]);
+
+    constexpr GLint gl_rgba[] = {
+        GL_RGB5_A1,GL_RGBA8,GL_RGBA8_SNORM,GL_RGB10_A2,GL_RGB10_A2UI,
+        GL_RGBA12,GL_RGBA16,
+        GL_SRGB8_ALPHA8,
+        GL_RGBA16F,GL_RGBA32F,
+        GL_RGBA8I,GL_RGBA8UI,GL_RGBA16I,GL_RGBA16UI,GL_RGBA32I,GL_RGBA32UI,
+        GL_COMPRESSED_RGBA,
+        GL_COMPRESSED_SRGB_ALPHA,
+        GL_COMPRESSED_RGBA_BPTC_UNORM,
+        GL_COMPRESSED_SRGB_ALPHA_BPTC_UNORM,
+    };
+    constexpr auto gl_rgba_size = sizeof(gl_rgba) / sizeof(gl_rgba[0]);
+
+    constexpr GLint from_internal_format(GLint internal_format)
+    {
+        for (auto i = 0; i < gl_internal_format_size; ++i)
+        {
+            if (internal_format == gl_internal_format[i])
+            {
+                return gl_internal_format[i];
+            }
+        }
+
+        for (auto i = 0; i < gl_red_size; ++i)
+        {
+            if (internal_format == gl_red[i])
+            {
+                return GL_RED;
+            }
+        }
+
+        for (auto i = 0; i < gl_rg_size; ++i)
+        {
+            if (internal_format == gl_rg[i])
+            {
+                return GL_RG;
+            }
+        }
+
+        for (auto i = 0; i < gl_rgb_size; ++i)
+        {
+            if (internal_format == gl_rgb[i])
+            {
+                return GL_RGB;
+            }
+        }
+
+        for (auto i = 0; i < gl_rgba_size; ++i)
+        {
+            if (internal_format == gl_rgba[i])
+            {
+                return GL_RGBA;
+            }
+        }
+
+        return -1;
+    }
+}
+
+namespace freeze
+{
 #if defined(_WIN32) || defined(WIN32) || defined(__WIN32__)
     inline std::vector<char> load_image_from_file(std::string const& file)
     {
