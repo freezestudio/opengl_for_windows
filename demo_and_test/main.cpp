@@ -1,9 +1,6 @@
 //
 //main.cpp
 
-//#include "point_shadow_renderer.h"
-//#include "dir_shadow_renderer.h"
-//#include "pbr_renderer.h"
 #include "ibl_renderer.h"
 
 int main()

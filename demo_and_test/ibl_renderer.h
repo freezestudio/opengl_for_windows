@@ -7,8 +7,8 @@
 
 #define RENDERER ibl_renderer
 
-#define SCR_WIDTH 800
-#define SCR_HEIGHT 500
+#define SCR_WIDTH 1280
+#define SCR_HEIGHT 700
 
 class ibl_renderer
     : public renderer_base<ibl_renderer>

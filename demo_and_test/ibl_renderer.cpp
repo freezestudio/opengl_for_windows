@@ -327,7 +327,7 @@ void ibl_renderer::set_texture()
     pbr_fbo.unbind();
 
     // pbr: generate a 2D LUT from the BRDF equations used.
-    // brdf纹理，根据brdf参数方程生成
+    // brdf纹理，根据brdf参数方程生成二维查找纹理
     brdf_tex.bind();
     brdf_tex.set_image(GL_RG16F, 512, 512, GL_RG, GL_FLOAT, nullptr);
     // be sure to set wrapping mode to GL_CLAMP_TO_EDGE
