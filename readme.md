@@ -27,22 +27,22 @@ freeGL，是基于OpenGL3.3及以上版本、c++17的Windows及Android原生简明封装。
 int __stdcall wWinMain(HINSTANCE hInstance, HINSTANCE, LPWSTR, int)
 {
     //初始化
-    auto freegl = freeze::make<glfw::glfw>(3, 3);
+    auto gl = freeze::make<freeze::freegl>(3, 3);
     
     //窗口
-    auto window = freeze::make<glfw::window>(600, 400);
+    auto window = freeze::make<freeze::window>(600, 400);
     window.make_context_current();
-    window.set_key_callback([](glfw::window::pointer w, int key, int scancode, int action, int mods) {
-        glfw::set_window_should_close(w);
+    window.set_key_callback([](freeze::window::pointer w, int key, int scancode, int action, int mods) {
+        freeze::set_window_should_close(w);
     });
-    window.set_frame_buffer_size_callback([](glfw::window::pointer w, int width, int height) {
+    window.set_frame_buffer_size_callback([](freeze::window::pointer w, int width, int height) {
         glViewport(0, 0, width, height);
     });
     
     //加载glad
-    freegl.load_loader();
+    gl.load_loader();
     //更佳的双缓冲切换
-    freegl.swap_interval(1);
+    gl.swap_interval(1);
     
     //着色器程序
     auto shader = freeze::make_program();
@@ -86,7 +86,7 @@ int __stdcall wWinMain(HINSTANCE hInstance, HINSTANCE, LPWSTR, int)
         vao.unbind();
 
         window.swap_buffers();
-        freegl.poll_events();
+        gl.poll_events();
     }
 
     return 0;

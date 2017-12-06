@@ -12,6 +12,7 @@ openGL³£ÓÃµÄ¶ÔÏóÓÐ¶¥µãÊý×é¶ÔÏó(VAO)¡¢¶¥µã»º´æ¶ÔÏó(VBO)¡¢Ë÷Òý»º´æ¶ÔÏó(EBO)¡¢È«¾ÖÍ
 ÎÒÃÇÒÔ³£ÓÃµÄVAOºÍVBOÎªÀý£¬À´¹Û²ìËüÃÇµÄ²Ù×÷¡£
 Éú³ÉÒ»¸ö»òÒ»ÏµÁÐVBOµÄ²Ù×÷ÈçÏÂ£º
 
+```c++
 //Ò»¸ö
 GLuint vao;
 glGenBuffers(1,&vao);
@@ -19,12 +20,24 @@ glGenBuffers(1,&vao);
 //¶à¸ö
 GLuint vao[n];
 glGenBuffers(n,vao);
+```
 
 Ê¹ÓÃËüÃÇÊ±£¬ÐèÒªÏÈ½«ËüÃÇ°ó¶¨Îªµ±Ç°¶ÔÏó¡£²Ù×÷Íê³Éºó£¬½â°ó¸Ã¶ÔÏó£¬»òÕß°ó¶¨ÁíÒ»¸ö¡£
 
+```c++
 //Ö¸¶¨°ó¶¨¶ÔÏóµÄÀàÐÍ£¬ºÍ¶ÔÏóÃû¡££¨¶ÔÏóÃû×Ö¾ÍÊÇ´´½¨¶ÔÏóºó·µ»ØµÄÊýÖµ£©
 glBindBuffer(GL_ARRAY_BUFFER,vao);
 //Õë¶Ô´Ë¶ÔÏóµÄÒ»Ð©²Ù×÷
 // ...
 //°ó¶¨µ½Ò»¸öÎÞÃû×ÖµÄ¶ÔÏó£¬Ò²¾ÍÊÇ½â³ýÁËÖ®Ç°¶ÔÏóµÄ°ó¶¨¡£
 glBindBuffer(GL_ARRAY_BUFFER,0);
+```
+
+Òò´Ë£¬ÎÒÃÇÐèÒª½«ÕâÐ©Öµ·â×°ÆðÀ´£¬ÈÃËüÃÇ¿´ÆðÀ´ÏñÊÇÕæÕýµÄ¶ÔÏó£¬¶ø²»ÊÇÎÞÒâÒåµÄÕûÊýÖµ¡£
+
+```c++
+struct opengl_object
+{
+    GLuint object_id;
+};
+```
