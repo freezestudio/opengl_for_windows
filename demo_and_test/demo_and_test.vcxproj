@@ -90,14 +90,14 @@
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>..\glfw\include;..\glfw_wrapper;..\thirdparty;..\thirdparty\glad\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\thirdparty;..\thirdparty\glfw\deps;..\thirdparty\stb;..\freegl;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DisableSpecificWarnings>4819</DisableSpecificWarnings>
       <LanguageStandard>stdcpplatest</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>$(SolutionDir)$(Configuration);..\thirdparty;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>..\thirdparty\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>glfw.lib;assimp.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
@@ -109,12 +109,12 @@
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>..\glfw\include;..\thirdparty;..\glfw_wrapper;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\thirdparty;..\thirdparty\glfw\deps;..\thirdparty\stb;..\freegl;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>$(SolutionDir)$(Platform)\$(Configuration);..\thirdparty;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>..\thirdparty\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>glfw.lib;assimp.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
@@ -155,33 +155,133 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\thirdparty\glad\src\glad.c" />
+    <ClCompile Include="..\thirdparty\glfw\deps\glad.c" />
     <ClCompile Include="ibl_renderer.cpp" />
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="dir_shadow_renderer.cpp" />
-    <ClCompile Include="pbr_renderer.cpp" />
-    <ClCompile Include="point_shadow_renderer.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="dir_shadow_renderer.h" />
     <ClInclude Include="ibl_renderer.h" />
-    <ClInclude Include="pbr_renderer.h" />
-    <ClInclude Include="point_shadow_renderer.h" />
     <ClInclude Include="renderer_base.h" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="resources\objects\cyborg\cyborg.blend" />
+    <None Include="resources\objects\cyborg\cyborg.blend1" />
+    <None Include="resources\objects\cyborg\cyborg.mtl" />
+    <None Include="resources\objects\nanosuit\nanosuit.mtl" />
+    <None Include="resources\objects\planet\planet.mtl" />
+    <None Include="resources\objects\rock\rock.mtl" />
     <None Include="resources\shaders\background.fs" />
     <None Include="resources\shaders\background.vs" />
     <None Include="resources\shaders\brdf.fs" />
     <None Include="resources\shaders\brdf.vs" />
     <None Include="resources\shaders\cubemap.vs" />
+    <None Include="resources\shaders\depth.frag" />
+    <None Include="resources\shaders\depth.vert" />
     <None Include="resources\shaders\equirectangular_to_cubemap.fs" />
     <None Include="resources\shaders\irradiance_convolution.fs" />
+    <None Include="resources\shaders\pbr.frag" />
     <None Include="resources\shaders\pbr.fs" />
+    <None Include="resources\shaders\pbr.vert" />
     <None Include="resources\shaders\pbr.vs" />
     <None Include="resources\shaders\pick.fs" />
     <None Include="resources\shaders\pick.vs" />
     <None Include="resources\shaders\prefilter.fs" />
+    <None Include="resources\shaders\shadow.frag" />
+    <None Include="resources\shaders\shadow.vert" />
+    <None Include="resources\textures\hdr\newport_loft.hdr" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="resources\objects\cyborg\cyborg_diffuse.png" />
+    <Image Include="resources\objects\cyborg\cyborg_normal.png" />
+    <Image Include="resources\objects\cyborg\cyborg_specular.png" />
+    <Image Include="resources\objects\nanosuit\arm_dif.png" />
+    <Image Include="resources\objects\nanosuit\arm_showroom_ddn.png" />
+    <Image Include="resources\objects\nanosuit\arm_showroom_refl.png" />
+    <Image Include="resources\objects\nanosuit\arm_showroom_spec.png" />
+    <Image Include="resources\objects\nanosuit\back.jpg" />
+    <Image Include="resources\objects\nanosuit\body_dif.png" />
+    <Image Include="resources\objects\nanosuit\body_showroom_ddn.png" />
+    <Image Include="resources\objects\nanosuit\body_showroom_refl.png" />
+    <Image Include="resources\objects\nanosuit\body_showroom_spec.png" />
+    <Image Include="resources\objects\nanosuit\cell_arm_alpha.png" />
+    <Image Include="resources\objects\nanosuit\cell_body_alpha.png" />
+    <Image Include="resources\objects\nanosuit\cell_ddn.png" />
+    <Image Include="resources\objects\nanosuit\cell_hand_alpha.png" />
+    <Image Include="resources\objects\nanosuit\cell_helmet_alpha.png" />
+    <Image Include="resources\objects\nanosuit\cell_leg_alpha.png" />
+    <Image Include="resources\objects\nanosuit\front.jpg" />
+    <Image Include="resources\objects\nanosuit\glass_ddn.png" />
+    <Image Include="resources\objects\nanosuit\glass_dif.png" />
+    <Image Include="resources\objects\nanosuit\glass_refl.png" />
+    <Image Include="resources\objects\nanosuit\hand_dif.png" />
+    <Image Include="resources\objects\nanosuit\hand_showroom_ddn.png" />
+    <Image Include="resources\objects\nanosuit\hand_showroom_refl.png" />
+    <Image Include="resources\objects\nanosuit\hand_showroom_spec.png" />
+    <Image Include="resources\objects\nanosuit\helmet_diff.png" />
+    <Image Include="resources\objects\nanosuit\helmet_showroom_ddn.png" />
+    <Image Include="resources\objects\nanosuit\helmet_showroom_refl.png" />
+    <Image Include="resources\objects\nanosuit\helmet_showroom_spec.png" />
+    <Image Include="resources\objects\nanosuit\leg_dif.png" />
+    <Image Include="resources\objects\nanosuit\leg_showroom_ddn.png" />
+    <Image Include="resources\objects\nanosuit\leg_showroom_refl.png" />
+    <Image Include="resources\objects\nanosuit\leg_showroom_spec.png" />
+    <Image Include="resources\objects\planet\planet_Quom1200.png" />
+    <Image Include="resources\objects\rock\rock.png" />
+    <Image Include="resources\objects\ufo\ufo_BaseColor.png" />
+    <Image Include="resources\objects\ufo\ufo_Normal.png" />
+    <Image Include="resources\objects\ufo\ufo_OcclusionRoughnessMetallic.png" />
+    <Image Include="resources\textures\awesomeface.png" />
+    <Image Include="resources\textures\bricks2.jpg" />
+    <Image Include="resources\textures\bricks2_disp.jpg" />
+    <Image Include="resources\textures\bricks2_normal.jpg" />
+    <Image Include="resources\textures\brickwall.jpg" />
+    <Image Include="resources\textures\brickwall_normal.jpg" />
+    <Image Include="resources\textures\container.jpg" />
+    <Image Include="resources\textures\container2.png" />
+    <Image Include="resources\textures\container2_specular.png" />
+    <Image Include="resources\textures\grass.png" />
+    <Image Include="resources\textures\marble.jpg" />
+    <Image Include="resources\textures\matrix.jpg" />
+    <Image Include="resources\textures\metal.png" />
+    <Image Include="resources\textures\pbr\gold\albedo.png" />
+    <Image Include="resources\textures\pbr\gold\ao.png" />
+    <Image Include="resources\textures\pbr\gold\metallic.png" />
+    <Image Include="resources\textures\pbr\gold\normal.png" />
+    <Image Include="resources\textures\pbr\gold\roughness.png" />
+    <Image Include="resources\textures\pbr\grass\albedo.png" />
+    <Image Include="resources\textures\pbr\grass\ao.png" />
+    <Image Include="resources\textures\pbr\grass\metallic.png" />
+    <Image Include="resources\textures\pbr\grass\normal.png" />
+    <Image Include="resources\textures\pbr\grass\roughness.png" />
+    <Image Include="resources\textures\pbr\plastic\albedo.png" />
+    <Image Include="resources\textures\pbr\plastic\ao.png" />
+    <Image Include="resources\textures\pbr\plastic\metallic.png" />
+    <Image Include="resources\textures\pbr\plastic\normal.png" />
+    <Image Include="resources\textures\pbr\plastic\roughness.png" />
+    <Image Include="resources\textures\pbr\rusted_iron\albedo.png" />
+    <Image Include="resources\textures\pbr\rusted_iron\ao.png" />
+    <Image Include="resources\textures\pbr\rusted_iron\metallic.png" />
+    <Image Include="resources\textures\pbr\rusted_iron\normal.png" />
+    <Image Include="resources\textures\pbr\rusted_iron\roughness.png" />
+    <Image Include="resources\textures\pbr\wall\albedo.png" />
+    <Image Include="resources\textures\pbr\wall\ao.png" />
+    <Image Include="resources\textures\pbr\wall\metallic.png" />
+    <Image Include="resources\textures\pbr\wall\normal.png" />
+    <Image Include="resources\textures\pbr\wall\roughness.png" />
+    <Image Include="resources\textures\skybox\back.jpg" />
+    <Image Include="resources\textures\skybox\bottom.jpg" />
+    <Image Include="resources\textures\skybox\front.jpg" />
+    <Image Include="resources\textures\skybox\left.jpg" />
+    <Image Include="resources\textures\skybox\right.jpg" />
+    <Image Include="resources\textures\skybox\top.jpg" />
+    <Image Include="resources\textures\toy_box_diffuse.png" />
+    <Image Include="resources\textures\toy_box_disp.png" />
+    <Image Include="resources\textures\toy_box_normal.png" />
+    <Image Include="resources\textures\window.png" />
+    <Image Include="resources\textures\wood.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="resources\objects\cyborg\LICENSE.txt" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

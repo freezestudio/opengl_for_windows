@@ -1,21 +1,64 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.27128.1
+VisualStudioVersion = 15.0.27004.2010
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "glfw", "glfw\glfw.vcxproj", "{EE9C4BCD-AC75-4C22-ABB6-2F14B30D8DC6}"
-EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "glfw_wrapper", "glfw_wrapper\glfw_wrapper.vcxitems", "{98DF5C32-9340-4D1C-97FD-24578678D0E6}"
-EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "demo_and_test", "demo_and_test\demo_and_test.vcxproj", "{D0DEB8C4-531E-45D4-8E6E-26CDB8AC2F75}"
-	ProjectSection(ProjectDependencies) = postProject
-		{EE9C4BCD-AC75-4C22-ABB6-2F14B30D8DC6} = {EE9C4BCD-AC75-4C22-ABB6-2F14B30D8DC6}
-	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "readme", "readme", "{DD08EAF0-261A-4C1A-B8E5-C637093355CA}"
 	ProjectSection(SolutionItems) = preProject
 		docs.md = docs.md
 		readme.md = readme.md
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "freegl", "freegl", "{2606D55A-7241-4F19-8BE5-BC2D3C952057}"
+	ProjectSection(SolutionItems) = preProject
+		freegl\any_buffer.h = freegl\any_buffer.h
+		freegl\camera.h = freegl\camera.h
+		freegl\color.h = freegl\color.h
+		freegl\common.h = freegl\common.h
+		freegl\core.h = freegl\core.h
+		freegl\depth.h = freegl\depth.h
+		freegl\light.h = freegl\light.h
+		freegl\material.h = freegl\material.h
+		freegl\mesh.h = freegl\mesh.h
+		freegl\model.h = freegl\model.h
+		freegl\quickly.h = freegl\quickly.h
+		freegl\shader_program.h = freegl\shader_program.h
+		freegl\stencil.h = freegl\stencil.h
+		freegl\texture.h = freegl\texture.h
+		freegl\vertex.h = freegl\vertex.h
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "thirdparty", "thirdparty", "{3FCDD556-F46C-4775-BD63-E657443503E1}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "assimp", "assimp", "{17DC8AFC-6F2C-4E85-B05C-4225FFD79410}"
+	ProjectSection(SolutionItems) = preProject
+		thirdparty\assimp\Importer.hpp = thirdparty\assimp\Importer.hpp
+		thirdparty\assimp\postprocess.h = thirdparty\assimp\postprocess.h
+		thirdparty\assimp\scene.h = thirdparty\assimp\scene.h
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "glfw", "glfw", "{8AC5F610-1566-4B8D-BF16-BF5E0EFD3580}"
+	ProjectSection(SolutionItems) = preProject
+		thirdparty\glfw\glfw3.h = thirdparty\glfw\glfw3.h
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "glm", "glm", "{1B6FC4FF-FDB5-4A7D-972D-E66A3ECE3029}"
+	ProjectSection(SolutionItems) = preProject
+		thirdparty\glm\glm.hpp = thirdparty\glm\glm.hpp
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "stb", "stb", "{1EF12EA0-534A-4092-B675-7E17ABD5FAC1}"
+	ProjectSection(SolutionItems) = preProject
+		thirdparty\stb\stb_image.h = thirdparty\stb\stb_image.h
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "gtc", "gtc", "{009FCDD4-BA9E-479C-B95C-1D1B1E63C01E}"
+	ProjectSection(SolutionItems) = preProject
+		thirdparty\glm\gtc\constants.hpp = thirdparty\glm\gtc\constants.hpp
+		thirdparty\glm\gtc\matrix_transform.hpp = thirdparty\glm\gtc\matrix_transform.hpp
+		thirdparty\glm\gtc\type_ptr.hpp = thirdparty\glm\gtc\type_ptr.hpp
 	EndProjectSection
 EndProject
 Global
@@ -26,14 +69,6 @@ Global
 		Release|x86 = Release|x86
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{EE9C4BCD-AC75-4C22-ABB6-2F14B30D8DC6}.Debug|x64.ActiveCfg = Debug|x64
-		{EE9C4BCD-AC75-4C22-ABB6-2F14B30D8DC6}.Debug|x64.Build.0 = Debug|x64
-		{EE9C4BCD-AC75-4C22-ABB6-2F14B30D8DC6}.Debug|x86.ActiveCfg = Debug|Win32
-		{EE9C4BCD-AC75-4C22-ABB6-2F14B30D8DC6}.Debug|x86.Build.0 = Debug|Win32
-		{EE9C4BCD-AC75-4C22-ABB6-2F14B30D8DC6}.Release|x64.ActiveCfg = Release|x64
-		{EE9C4BCD-AC75-4C22-ABB6-2F14B30D8DC6}.Release|x64.Build.0 = Release|x64
-		{EE9C4BCD-AC75-4C22-ABB6-2F14B30D8DC6}.Release|x86.ActiveCfg = Release|Win32
-		{EE9C4BCD-AC75-4C22-ABB6-2F14B30D8DC6}.Release|x86.Build.0 = Release|Win32
 		{D0DEB8C4-531E-45D4-8E6E-26CDB8AC2F75}.Debug|x64.ActiveCfg = Debug|x64
 		{D0DEB8C4-531E-45D4-8E6E-26CDB8AC2F75}.Debug|x64.Build.0 = Debug|x64
 		{D0DEB8C4-531E-45D4-8E6E-26CDB8AC2F75}.Debug|x86.ActiveCfg = Debug|Win32
@@ -45,6 +80,13 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{17DC8AFC-6F2C-4E85-B05C-4225FFD79410} = {3FCDD556-F46C-4775-BD63-E657443503E1}
+		{8AC5F610-1566-4B8D-BF16-BF5E0EFD3580} = {3FCDD556-F46C-4775-BD63-E657443503E1}
+		{1B6FC4FF-FDB5-4A7D-972D-E66A3ECE3029} = {3FCDD556-F46C-4775-BD63-E657443503E1}
+		{1EF12EA0-534A-4092-B675-7E17ABD5FAC1} = {3FCDD556-F46C-4775-BD63-E657443503E1}
+		{009FCDD4-BA9E-479C-B95C-1D1B1E63C01E} = {1B6FC4FF-FDB5-4A7D-972D-E66A3ECE3029}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {C8E00F8E-8094-4523-9975-B10E06FC1069}

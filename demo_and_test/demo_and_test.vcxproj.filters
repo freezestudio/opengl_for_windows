@@ -22,38 +22,62 @@
     <Filter Include="资源文件\resources\textures">
       <UniqueIdentifier>{0209e260-f7d1-42b8-bfcf-625dfd6fd8eb}</UniqueIdentifier>
     </Filter>
+    <Filter Include="资源文件\resources\textures\hdr">
+      <UniqueIdentifier>{780e5ed3-2dee-4a6e-a19d-141e84c27080}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="资源文件\resources\objects">
+      <UniqueIdentifier>{d509b40e-9ccf-4594-98fb-996bd527d5b5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="资源文件\resources\objects\cyborg">
+      <UniqueIdentifier>{7e6c84ff-ee18-4384-85d6-2e8febac26a8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="资源文件\resources\objects\nanosuit">
+      <UniqueIdentifier>{87102d55-61d9-4cae-b1ba-e7a174a4a390}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="资源文件\resources\objects\planet">
+      <UniqueIdentifier>{1e53c4a6-1dce-41ce-affc-4edc6f78d326}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="资源文件\resources\objects\rock">
+      <UniqueIdentifier>{a9597544-5a0a-4089-8fc6-fafb69f80525}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="资源文件\resources\objects\ufo">
+      <UniqueIdentifier>{d178326d-93a7-46db-97a2-8adb4288fb9a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="资源文件\resources\textures\pbr">
+      <UniqueIdentifier>{9bfe1fdb-d464-4e9b-82f3-592f01ab3b61}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="资源文件\resources\textures\skybox">
+      <UniqueIdentifier>{52b52425-ee49-430d-9086-6916dfee22e3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="资源文件\resources\textures\pbr\gold">
+      <UniqueIdentifier>{f117b599-1e81-4781-9e5e-bff935f32fdd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="资源文件\resources\textures\pbr\grass">
+      <UniqueIdentifier>{6bb180a0-0fdc-41c1-9ab8-6f92fbc95ab5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="资源文件\resources\textures\pbr\plastic">
+      <UniqueIdentifier>{b677253c-422b-4604-9f5d-b968f8dcc872}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="资源文件\resources\textures\pbr\rusted_iron">
+      <UniqueIdentifier>{17c994d5-62b1-4d82-8541-29d27c3e4934}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="资源文件\resources\textures\pbr\wall">
+      <UniqueIdentifier>{6cc35d34-f85b-44a9-b2f7-1fb8789333a6}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="..\thirdparty\glad\src\glad.c">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="dir_shadow_renderer.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="point_shadow_renderer.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="pbr_renderer.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
     <ClCompile Include="ibl_renderer.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="..\thirdparty\glfw\deps\glad.c">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="renderer_base.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="dir_shadow_renderer.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="point_shadow_renderer.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="pbr_renderer.h">
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="ibl_renderer.h">
@@ -97,5 +121,315 @@
     <None Include="resources\shaders\pick.fs">
       <Filter>资源文件\resources\shaders</Filter>
     </None>
+    <None Include="resources\textures\hdr\newport_loft.hdr">
+      <Filter>资源文件\resources\textures\hdr</Filter>
+    </None>
+    <None Include="resources\objects\cyborg\cyborg.blend">
+      <Filter>资源文件\resources\objects\cyborg</Filter>
+    </None>
+    <None Include="resources\objects\cyborg\cyborg.blend1">
+      <Filter>资源文件\resources\objects\cyborg</Filter>
+    </None>
+    <None Include="resources\objects\cyborg\cyborg.mtl">
+      <Filter>资源文件\resources\objects\cyborg</Filter>
+    </None>
+    <None Include="resources\objects\nanosuit\nanosuit.mtl">
+      <Filter>资源文件\resources\objects\nanosuit</Filter>
+    </None>
+    <None Include="resources\objects\rock\rock.mtl">
+      <Filter>资源文件\resources\objects\rock</Filter>
+    </None>
+    <None Include="resources\objects\planet\planet.mtl">
+      <Filter>资源文件\resources\objects\planet</Filter>
+    </None>
+    <None Include="resources\shaders\depth.frag">
+      <Filter>资源文件\resources\shaders</Filter>
+    </None>
+    <None Include="resources\shaders\depth.vert">
+      <Filter>资源文件\resources\shaders</Filter>
+    </None>
+    <None Include="resources\shaders\pbr.frag">
+      <Filter>资源文件\resources\shaders</Filter>
+    </None>
+    <None Include="resources\shaders\pbr.vert">
+      <Filter>资源文件\resources\shaders</Filter>
+    </None>
+    <None Include="resources\shaders\shadow.frag">
+      <Filter>资源文件\resources\shaders</Filter>
+    </None>
+    <None Include="resources\shaders\shadow.vert">
+      <Filter>资源文件\resources\shaders</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="resources\objects\cyborg\cyborg_diffuse.png">
+      <Filter>资源文件\resources\objects\cyborg</Filter>
+    </Image>
+    <Image Include="resources\objects\cyborg\cyborg_normal.png">
+      <Filter>资源文件\resources\objects\cyborg</Filter>
+    </Image>
+    <Image Include="resources\objects\cyborg\cyborg_specular.png">
+      <Filter>资源文件\resources\objects\cyborg</Filter>
+    </Image>
+    <Image Include="resources\objects\nanosuit\arm_dif.png">
+      <Filter>资源文件\resources\objects\nanosuit</Filter>
+    </Image>
+    <Image Include="resources\objects\nanosuit\arm_showroom_ddn.png">
+      <Filter>资源文件\resources\objects\nanosuit</Filter>
+    </Image>
+    <Image Include="resources\objects\nanosuit\arm_showroom_refl.png">
+      <Filter>资源文件\resources\objects\nanosuit</Filter>
+    </Image>
+    <Image Include="resources\objects\nanosuit\arm_showroom_spec.png">
+      <Filter>资源文件\resources\objects\nanosuit</Filter>
+    </Image>
+    <Image Include="resources\objects\nanosuit\back.jpg">
+      <Filter>资源文件\resources\objects\nanosuit</Filter>
+    </Image>
+    <Image Include="resources\objects\nanosuit\body_dif.png">
+      <Filter>资源文件\resources\objects\nanosuit</Filter>
+    </Image>
+    <Image Include="resources\objects\nanosuit\body_showroom_ddn.png">
+      <Filter>资源文件\resources\objects\nanosuit</Filter>
+    </Image>
+    <Image Include="resources\objects\nanosuit\body_showroom_refl.png">
+      <Filter>资源文件\resources\objects\nanosuit</Filter>
+    </Image>
+    <Image Include="resources\objects\nanosuit\body_showroom_spec.png">
+      <Filter>资源文件\resources\objects\nanosuit</Filter>
+    </Image>
+    <Image Include="resources\objects\nanosuit\cell_arm_alpha.png">
+      <Filter>资源文件\resources\objects\nanosuit</Filter>
+    </Image>
+    <Image Include="resources\objects\nanosuit\cell_body_alpha.png">
+      <Filter>资源文件\resources\objects\nanosuit</Filter>
+    </Image>
+    <Image Include="resources\objects\nanosuit\cell_ddn.png">
+      <Filter>资源文件\resources\objects\nanosuit</Filter>
+    </Image>
+    <Image Include="resources\objects\nanosuit\cell_hand_alpha.png">
+      <Filter>资源文件\resources\objects\nanosuit</Filter>
+    </Image>
+    <Image Include="resources\objects\nanosuit\cell_helmet_alpha.png">
+      <Filter>资源文件\resources\objects\nanosuit</Filter>
+    </Image>
+    <Image Include="resources\objects\nanosuit\cell_leg_alpha.png">
+      <Filter>资源文件\resources\objects\nanosuit</Filter>
+    </Image>
+    <Image Include="resources\objects\nanosuit\front.jpg">
+      <Filter>资源文件\resources\objects\nanosuit</Filter>
+    </Image>
+    <Image Include="resources\objects\nanosuit\glass_ddn.png">
+      <Filter>资源文件\resources\objects\nanosuit</Filter>
+    </Image>
+    <Image Include="resources\objects\nanosuit\glass_dif.png">
+      <Filter>资源文件\resources\objects\nanosuit</Filter>
+    </Image>
+    <Image Include="resources\objects\nanosuit\glass_refl.png">
+      <Filter>资源文件\resources\objects\nanosuit</Filter>
+    </Image>
+    <Image Include="resources\objects\nanosuit\hand_dif.png">
+      <Filter>资源文件\resources\objects\nanosuit</Filter>
+    </Image>
+    <Image Include="resources\objects\nanosuit\hand_showroom_ddn.png">
+      <Filter>资源文件\resources\objects\nanosuit</Filter>
+    </Image>
+    <Image Include="resources\objects\nanosuit\hand_showroom_refl.png">
+      <Filter>资源文件\resources\objects\nanosuit</Filter>
+    </Image>
+    <Image Include="resources\objects\nanosuit\hand_showroom_spec.png">
+      <Filter>资源文件\resources\objects\nanosuit</Filter>
+    </Image>
+    <Image Include="resources\objects\nanosuit\helmet_diff.png">
+      <Filter>资源文件\resources\objects\nanosuit</Filter>
+    </Image>
+    <Image Include="resources\objects\nanosuit\helmet_showroom_ddn.png">
+      <Filter>资源文件\resources\objects\nanosuit</Filter>
+    </Image>
+    <Image Include="resources\objects\nanosuit\helmet_showroom_refl.png">
+      <Filter>资源文件\resources\objects\nanosuit</Filter>
+    </Image>
+    <Image Include="resources\objects\nanosuit\helmet_showroom_spec.png">
+      <Filter>资源文件\resources\objects\nanosuit</Filter>
+    </Image>
+    <Image Include="resources\objects\nanosuit\leg_dif.png">
+      <Filter>资源文件\resources\objects\nanosuit</Filter>
+    </Image>
+    <Image Include="resources\objects\nanosuit\leg_showroom_ddn.png">
+      <Filter>资源文件\resources\objects\nanosuit</Filter>
+    </Image>
+    <Image Include="resources\objects\nanosuit\leg_showroom_refl.png">
+      <Filter>资源文件\resources\objects\nanosuit</Filter>
+    </Image>
+    <Image Include="resources\objects\nanosuit\leg_showroom_spec.png">
+      <Filter>资源文件\resources\objects\nanosuit</Filter>
+    </Image>
+    <Image Include="resources\objects\ufo\ufo_BaseColor.png">
+      <Filter>资源文件\resources\objects\ufo</Filter>
+    </Image>
+    <Image Include="resources\objects\ufo\ufo_Normal.png">
+      <Filter>资源文件\resources\objects\ufo</Filter>
+    </Image>
+    <Image Include="resources\objects\ufo\ufo_OcclusionRoughnessMetallic.png">
+      <Filter>资源文件\resources\objects\ufo</Filter>
+    </Image>
+    <Image Include="resources\objects\rock\rock.png">
+      <Filter>资源文件\resources\objects\rock</Filter>
+    </Image>
+    <Image Include="resources\objects\planet\planet_Quom1200.png">
+      <Filter>资源文件\resources\objects\planet</Filter>
+    </Image>
+    <Image Include="resources\textures\awesomeface.png">
+      <Filter>资源文件\resources\textures</Filter>
+    </Image>
+    <Image Include="resources\textures\bricks2.jpg">
+      <Filter>资源文件\resources\textures</Filter>
+    </Image>
+    <Image Include="resources\textures\bricks2_disp.jpg">
+      <Filter>资源文件\resources\textures</Filter>
+    </Image>
+    <Image Include="resources\textures\bricks2_normal.jpg">
+      <Filter>资源文件\resources\textures</Filter>
+    </Image>
+    <Image Include="resources\textures\brickwall.jpg">
+      <Filter>资源文件\resources\textures</Filter>
+    </Image>
+    <Image Include="resources\textures\brickwall_normal.jpg">
+      <Filter>资源文件\resources\textures</Filter>
+    </Image>
+    <Image Include="resources\textures\container.jpg">
+      <Filter>资源文件\resources\textures</Filter>
+    </Image>
+    <Image Include="resources\textures\container2.png">
+      <Filter>资源文件\resources\textures</Filter>
+    </Image>
+    <Image Include="resources\textures\container2_specular.png">
+      <Filter>资源文件\resources\textures</Filter>
+    </Image>
+    <Image Include="resources\textures\grass.png">
+      <Filter>资源文件\resources\textures</Filter>
+    </Image>
+    <Image Include="resources\textures\marble.jpg">
+      <Filter>资源文件\resources\textures</Filter>
+    </Image>
+    <Image Include="resources\textures\matrix.jpg">
+      <Filter>资源文件\resources\textures</Filter>
+    </Image>
+    <Image Include="resources\textures\metal.png">
+      <Filter>资源文件\resources\textures</Filter>
+    </Image>
+    <Image Include="resources\textures\toy_box_diffuse.png">
+      <Filter>资源文件\resources\textures</Filter>
+    </Image>
+    <Image Include="resources\textures\toy_box_disp.png">
+      <Filter>资源文件\resources\textures</Filter>
+    </Image>
+    <Image Include="resources\textures\toy_box_normal.png">
+      <Filter>资源文件\resources\textures</Filter>
+    </Image>
+    <Image Include="resources\textures\window.png">
+      <Filter>资源文件\resources\textures</Filter>
+    </Image>
+    <Image Include="resources\textures\wood.png">
+      <Filter>资源文件\resources\textures</Filter>
+    </Image>
+    <Image Include="resources\textures\skybox\back.jpg">
+      <Filter>资源文件\resources\textures\skybox</Filter>
+    </Image>
+    <Image Include="resources\textures\skybox\bottom.jpg">
+      <Filter>资源文件\resources\textures\skybox</Filter>
+    </Image>
+    <Image Include="resources\textures\skybox\front.jpg">
+      <Filter>资源文件\resources\textures\skybox</Filter>
+    </Image>
+    <Image Include="resources\textures\skybox\left.jpg">
+      <Filter>资源文件\resources\textures\skybox</Filter>
+    </Image>
+    <Image Include="resources\textures\skybox\right.jpg">
+      <Filter>资源文件\resources\textures\skybox</Filter>
+    </Image>
+    <Image Include="resources\textures\skybox\top.jpg">
+      <Filter>资源文件\resources\textures\skybox</Filter>
+    </Image>
+    <Image Include="resources\textures\pbr\gold\albedo.png">
+      <Filter>资源文件\resources\textures\pbr\gold</Filter>
+    </Image>
+    <Image Include="resources\textures\pbr\gold\ao.png">
+      <Filter>资源文件\resources\textures\pbr\gold</Filter>
+    </Image>
+    <Image Include="resources\textures\pbr\gold\metallic.png">
+      <Filter>资源文件\resources\textures\pbr\gold</Filter>
+    </Image>
+    <Image Include="resources\textures\pbr\gold\normal.png">
+      <Filter>资源文件\resources\textures\pbr\gold</Filter>
+    </Image>
+    <Image Include="resources\textures\pbr\gold\roughness.png">
+      <Filter>资源文件\resources\textures\pbr\gold</Filter>
+    </Image>
+    <Image Include="resources\textures\pbr\grass\albedo.png">
+      <Filter>资源文件\resources\textures\pbr\grass</Filter>
+    </Image>
+    <Image Include="resources\textures\pbr\grass\ao.png">
+      <Filter>资源文件\resources\textures\pbr\grass</Filter>
+    </Image>
+    <Image Include="resources\textures\pbr\grass\metallic.png">
+      <Filter>资源文件\resources\textures\pbr\grass</Filter>
+    </Image>
+    <Image Include="resources\textures\pbr\grass\normal.png">
+      <Filter>资源文件\resources\textures\pbr\grass</Filter>
+    </Image>
+    <Image Include="resources\textures\pbr\grass\roughness.png">
+      <Filter>资源文件\resources\textures\pbr\grass</Filter>
+    </Image>
+    <Image Include="resources\textures\pbr\rusted_iron\albedo.png">
+      <Filter>资源文件\resources\textures\pbr\rusted_iron</Filter>
+    </Image>
+    <Image Include="resources\textures\pbr\rusted_iron\ao.png">
+      <Filter>资源文件\resources\textures\pbr\rusted_iron</Filter>
+    </Image>
+    <Image Include="resources\textures\pbr\rusted_iron\metallic.png">
+      <Filter>资源文件\resources\textures\pbr\rusted_iron</Filter>
+    </Image>
+    <Image Include="resources\textures\pbr\rusted_iron\normal.png">
+      <Filter>资源文件\resources\textures\pbr\rusted_iron</Filter>
+    </Image>
+    <Image Include="resources\textures\pbr\rusted_iron\roughness.png">
+      <Filter>资源文件\resources\textures\pbr\rusted_iron</Filter>
+    </Image>
+    <Image Include="resources\textures\pbr\plastic\albedo.png">
+      <Filter>资源文件\resources\textures\pbr\plastic</Filter>
+    </Image>
+    <Image Include="resources\textures\pbr\plastic\ao.png">
+      <Filter>资源文件\resources\textures\pbr\plastic</Filter>
+    </Image>
+    <Image Include="resources\textures\pbr\plastic\metallic.png">
+      <Filter>资源文件\resources\textures\pbr\plastic</Filter>
+    </Image>
+    <Image Include="resources\textures\pbr\plastic\normal.png">
+      <Filter>资源文件\resources\textures\pbr\plastic</Filter>
+    </Image>
+    <Image Include="resources\textures\pbr\plastic\roughness.png">
+      <Filter>资源文件\resources\textures\pbr\plastic</Filter>
+    </Image>
+    <Image Include="resources\textures\pbr\wall\albedo.png">
+      <Filter>资源文件\resources\textures\pbr\wall</Filter>
+    </Image>
+    <Image Include="resources\textures\pbr\wall\ao.png">
+      <Filter>资源文件\resources\textures\pbr\wall</Filter>
+    </Image>
+    <Image Include="resources\textures\pbr\wall\metallic.png">
+      <Filter>资源文件\resources\textures\pbr\wall</Filter>
+    </Image>
+    <Image Include="resources\textures\pbr\wall\normal.png">
+      <Filter>资源文件\resources\textures\pbr\wall</Filter>
+    </Image>
+    <Image Include="resources\textures\pbr\wall\roughness.png">
+      <Filter>资源文件\resources\textures\pbr\wall</Filter>
+    </Image>
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="resources\objects\cyborg\LICENSE.txt">
+      <Filter>资源文件\resources\objects\cyborg</Filter>
+    </Text>
   </ItemGroup>
 </Project>
