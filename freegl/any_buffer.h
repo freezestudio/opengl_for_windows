@@ -99,9 +99,8 @@ namespace freeze
 //ver4.2 layout(std140,binding = <0,1,2,...>) uniform XXX { };
 namespace freeze
 {
-    template<typename = void>
-    struct uniform_buffer_t
-        : buffer_t<GL_UNIFORM_BUFFER>
+    template<GLenum UB = GL_UNIFORM_BUFFER>
+    struct uniform_buffer_t : buffer_t<UB>
     {
         void block_binding(GLuint program, std::string const& name, GLuint index)
         {
@@ -113,13 +112,13 @@ namespace freeze
 
         void bind_base(GLuint index)
         {
-            glBindBufferBase(GL_UNIFORM_BUFFER, index, this->ref());
+            glBindBufferBase(UB, index, this->ref());
             assert_error();
         }
 
         void bind_range(GLuint index, GLintptr offset, GLsizeiptr size)
         {
-            glBindBufferRange(GL_UNIFORM_BUFFER, index, this->ref(), offset, size);
+            glBindBufferRange(UB, index, this->ref(), offset, size);
             assert_error();
         }
     };
@@ -127,9 +126,75 @@ namespace freeze
 
 namespace freeze
 {
-    template<typename = void>
+	namespace detail
+	{
+		constexpr GLenum color_render[] = {
+			GL_RED,
+			GL_RG,
+			GL_RGB,
+			GL_RGBA,
+		};
+		constexpr auto color_render_size = sizeof(color_render) / sizeof(color_render[0]);
+
+		constexpr GLenum depth_render[] = {
+			GL_DEPTH_COMPONENT,
+			GL_DEPTH_COMPONENT16,
+			GL_DEPTH_COMPONENT24,
+			GL_DEPTH_COMPONENT32,
+			GL_DEPTH_COMPONENT32F,
+		};
+		constexpr auto depth_render_size = sizeof(depth_render) / sizeof(depth_render[0]);
+
+		constexpr GLenum depth_stencil_render[] = {
+			GL_DEPTH_STENCIL,
+			GL_DEPTH24_STENCIL8,
+			GL_DEPTH32F_STENCIL8,
+		};
+		constexpr auto depth_stencil_render_size = sizeof(depth_stencil_render) / sizeof(depth_stencil_render[0]);
+
+		constexpr GLenum stencil_render = GL_STENCIL_INDEX8;
+
+		constexpr GLenum get_attachment_type(GLenum render_type)
+		{
+			for (auto i = 0; i < color_render_size; ++i)
+			{
+				if (render_type == color_render[i])
+				{
+					return GL_COLOR_ATTACHMENT0;
+				}
+			}
+
+			for (auto i = 0; i < depth_render_size; ++i)
+			{
+				if (render_type == depth_render[i])
+				{
+					return GL_DEPTH_ATTACHMENT;
+				}
+			}
+
+			for (auto i = 0; i < depth_stencil_render_size; ++i)
+			{
+				if (render_type == depth_stencil_render[i])
+				{
+					return GL_DEPTH_STENCIL_ATTACHMENT;
+				}
+			}
+
+			if (render_type == stencil_render)
+			{
+				return GL_STENCIL_ATTACHMENT;
+			}
+
+			return -1;
+		}
+	}
+}
+
+namespace freeze
+{
+    template<GLenum RB = GL_RENDERBUFFER>
     struct render_buffer_t
-        : make_object<render_buffer_t<void>>
+        : make_object<render_buffer_t<RB>>
     {
         void create(GLuint* buffers)
         {
@@ -145,31 +210,40 @@ namespace freeze
 
         void bind()
         {
-            glBindRenderbuffer(GL_RENDERBUFFER, this->ref());
+            glBindRenderbuffer(RB, this->ref());
             assert_error();
         }
 
         void unbind()
         {
-            glBindRenderbuffer(GL_RENDERBUFFER, 0);
+            glBindRenderbuffer(RB, 0);
             assert_error();
         }
 
-		//color-renderable GL_RED GL_RG GL_RGB GL_RGBA
-		//depth-renderable GL_DEPTH_COMPONENT GL_STENCIL_INDEX GL_DEPTH_STENCIL
-		//                 GL_DEPTH_COMPONENT<16,24,32,32F> GL_DEPTH24_STENCIL8 GL_DEPTH32F_STENCIL8
-		//stencil-renderable GL_STENCIL_INDEX8
+		//color-renderable  -- GL_RED, GL_RG, GL_RGB, GL_RGBA
+		//depth-renderable  -- GL_DEPTH_COMPONENT, GL_STENCIL_INDEX, GL_DEPTH_STENCIL, 
+		//                     GL_DEPTH_COMPONENT<16,24,32,32F>, GL_DEPTH24_STENCIL8, 
+		//                     GL_DEPTH32F_STENCIL8
+		//stencil-renderable-- GL_STENCIL_INDEX8
         void storage(GLsizei width, GLsizei height,GLenum internal_format = GL_DEPTH24_STENCIL8)
         {
-            glRenderbufferStorage(GL_RENDERBUFFER, internal_format, width, height);
+            glRenderbufferStorage(RB, internal_format, width, height);
+			attachment_type_ = detail::get_attachment_type(internal_format);
             assert_error();
         }
 
         void storage_multisample(GLsizei samples,GLenum internalformat,GLsizei width,GLsizei height)
         {
-            glRenderbufferStorageMultisample(GL_RENDERBUFFER, samples, internalformat, width, height);
+            glRenderbufferStorageMultisample(RB, samples, internalformat, width, height);
             assert_error();
         }
+
+		GLenum attachment_type() const
+		{
+			return attachment_type_;
+		}
+	private:
+		GLenum attachment_type_ = -1;
     };
 }
 
@@ -180,9 +254,10 @@ namespace freeze
     // 至少有一个颜色附件(Attachment)。
     // 所有的附件都必须是完整的（保留了内存）。
     // 每个缓冲都应该有相同的样本数。
-    // GL_FRAMEBUFFER
-    // GL_DRAW_FRAMEBUFFER  (= GL_FRAMEBUFFER)
-    // GL_READ_FRAMEBUFFER
+	// FrameBuffer:
+    //     GL_FRAMEBUFFER
+    //     GL_DRAW_FRAMEBUFFER  (= GL_FRAMEBUFFER)
+    //     GL_READ_FRAMEBUFFER
     //
     template<GLenum FrameBuffer>
     struct frame_buffer_t
@@ -224,21 +299,22 @@ namespace freeze
             assert_error();
         }
 
-        // GL_FRAMEBUFFER_COMPLETE 0x8CD5==36053
-        // GL_FRAMEBUFFER_UNDEFINED 0x8219
-        // GL_FRAMEBUFFER_INCOMPLETE_ATTACHMENT
-        // GL_FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT
-        // GL_FRAMEBUFFER_UNSUPPORTED
-        // GL_FRAMEBUFFER_INCOMPLETE_MULTISAMPLE
-        // GL_FRAMEBUFFER_INCOMPLETE_LAYER_TARGETS
-        GLenum check_status()
+		// status:
+        //     GL_FRAMEBUFFER_COMPLETE  0x8CD5==36053
+        //     GL_FRAMEBUFFER_UNDEFINED 0x8219
+        //     GL_FRAMEBUFFER_INCOMPLETE_ATTACHMENT
+        //     GL_FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT
+        //     GL_FRAMEBUFFER_UNSUPPORTED
+        //     GL_FRAMEBUFFER_INCOMPLETE_MULTISAMPLE
+        //     GL_FRAMEBUFFER_INCOMPLETE_LAYER_TARGETS
+        GLenum check_status() const
         {
             auto status = glCheckFramebufferStatus(FrameBuffer);
             assert_error();
             return status;
         }
 
-        bool is_complete()
+        bool is_complete() const
         {
             auto status = check_status();
             assert_error();
@@ -246,16 +322,16 @@ namespace freeze
         }
 
         template<typename Texture>
-        void attachement_texture(GLenum attachment, Texture const& texture, GLint level = 0)
+        void attachement_color(Texture const& texture,GLenum textarget= GL_TEXTURE_2D,GLint level=0)
         {
-            glFramebufferTexture(FrameBuffer, attachment, texture.ref(), level);
+            glFramebufferTexture2D(FrameBuffer, GL_COLOR_ATTACHMENT0, textarget, texture.ref(), level);
             assert_error();
         }
 
         template<typename Texture>
-        void attachement_color(Texture const& texture,GLenum textarget= GL_TEXTURE_2D,GLint level=0)
+        void attachement_texture(GLenum attachment, Texture const& texture, GLint level = 0)
         {
-            glFramebufferTexture2D(FrameBuffer, GL_COLOR_ATTACHMENT0, textarget, texture.ref(), level);
+            glFramebufferTexture(FrameBuffer, attachment, texture.ref(), level);
             assert_error();
         }
 
@@ -295,6 +371,12 @@ namespace freeze
             assert_error();
         }
 
+		void attachement_render_buffer(render_buffer_t<GL_RENDERBUFFER> const& renderbuffer)
+		{			
+			glFramebufferRenderbuffer(FrameBuffer, renderbuffer.attachment_type(), GL_RENDERBUFFER, renderbuffer);
+			assert_error();
+		}
+
         void draw_buffer(GLenum buf)
         {
 #if defined(WIN32) || defined(_WIN32) || defined(__WIN32__)
@@ -318,7 +400,10 @@ namespace freeze
             assert_error();
         }
 
-        //mask -- GL_COLOR_BUFFER_BIT, GL_DEPTH_BUFFER_BIT, GL_STENCIL_BUFFER_BIT
+		//usage:
+		//    src:GL_DRAW_FRAMEBUFFER
+		//    dst:GL_READ_FRAMEBUFFER
+        //mask   -- GL_COLOR_BUFFER_BIT, GL_DEPTH_BUFFER_BIT, GL_STENCIL_BUFFER_BIT
         //filter -- GL_NEAREST, GL_LINEAR
         void blit(GLint srcx0,GLint srcy0,GLint srcx1,GLint srcy1,
             GLint dstx0,GLint dsty0,GLint dstx1,GLint dsty1,
@@ -329,7 +414,6 @@ namespace freeze
         }
     };
 }
-
 
 namespace freeze
 {
