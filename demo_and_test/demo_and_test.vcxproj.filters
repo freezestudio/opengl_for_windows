@@ -166,6 +166,12 @@
     <None Include="resources\shaders\test_only.fs">
       <Filter>资源文件\resources\shaders</Filter>
     </None>
+    <None Include="resources\shaders\test_pick.vs">
+      <Filter>资源文件\resources\shaders</Filter>
+    </None>
+    <None Include="resources\shaders\test_pick.fs">
+      <Filter>资源文件\resources\shaders</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Image Include="resources\objects\cyborg\cyborg_diffuse.png">

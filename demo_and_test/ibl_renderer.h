@@ -52,6 +52,8 @@ private:
 
 	////test
 	//freeze::program test_only_shader;
+	//freeze::program test_pick_shader;
+	//freeze::texture2d test_pick_tex;
 
     freeze::vertex_array_buffer cube_vao;
     freeze::vertex_array_buffer quad_vao;

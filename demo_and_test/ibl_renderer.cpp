@@ -144,6 +144,9 @@ void ibl_renderer::set_shader()
 	//test_only_shader.compile_file("resources/shaders/test_only.vs"s, "resources/shaders/test_only.fs"s);
 	//test_only_shader.use();
 	//test_only_shader.set_int("cube"s, 0);
+	//test_pick_shader.compile_file("resources/shaders/test_pick.vs"s, "resources/shaders/test_pick.fs"s);
+	//test_pick_shader.use();
+	//test_pick_shader.set_int("texture1"s, 0);
 
     pbr_shader.use();
     pbr_shader.set_int("irradianceMap"s, 3);
@@ -368,6 +371,7 @@ void ibl_renderer::set_texture()
     bg_shader.set_mat4("projection"s, proj);
     pick_shader.use();
     pick_shader.set_mat4("projection"s, proj);
+	pick_shader.set_float("id"s, 123.0f);
 
 	////test
 	//test_only_shader.use();
@@ -384,11 +388,18 @@ void ibl_renderer::set_model()
     rbo.bind();
     rbo.storage(SCR_WIDTH, SCR_HEIGHT, GL_DEPTH_COMPONENT24);
     rbo.unbind();
+
     auto tex = freeze::make_texture2d();
     tex.bind();
     tex.set_image(GL_R16F, SCR_WIDTH, SCR_HEIGHT, GL_RED, GL_FLOAT, nullptr);
     tex.unbind();
     pick_fbo.attachement_color(tex);
+
+	//test_pick_tex.bind();
+	//test_pick_tex.set_image(GL_R16F, SCR_WIDTH, SCR_HEIGHT, GL_RED, GL_FLOAT, nullptr);
+	//test_pick_tex.unbind();
+	//pick_fbo.attachement_color(test_pick_tex);
+
     pick_fbo.attachement_render_buffer(rbo, GL_DEPTH_ATTACHMENT);
     pick_fbo.unbind();
 }
@@ -450,20 +461,27 @@ void ibl_renderer::draw()
 	//cube_vao.bind();
 	//glDrawArrays(GL_TRIANGLES, 0, 36);
 	//cube_vao.unbind();
+
+	//test_pick_shader.use();
+	//test_pick_tex.active();
+	//test_pick_tex.bind();
+	//quad_vao.bind();
+	//glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+	//quad_vao.unbind();
 }
 
 void ibl_renderer::picking()
 {
     auto view = scene_camera.get_view_matrix();
     auto model = glm::mat4{ 1.0f };
-    model = glm::scale(glm::mat4{ 1.0f }, glm::vec3{ 0.03f });
-    model = glm::rotate(model, glm::radians(-20.0f), glm::vec3{ 0.0f,1.0f,0.0f });
-    model = glm::translate(model, glm::vec3{ 0.0f,-25.0f,0.0f });
+    model = glm::translate(model, glm::vec3{ 0.0f,-0.8f,0.0f });
+    model = glm::rotate(model, glm::radians(-30.0f), glm::vec3{ 0.0f,1.0f,0.0f });
+    model = glm::scale(model, glm::vec3{ 0.03f });
 
     pick_shader.use();
     pick_shader.set_mat4("view"s, view);
     pick_shader.set_mat4("model"s, model);
-    pick_shader.set_float("id"s, 123.0f);
+    //pick_shader.set_float("id"s, 123.0f);
 
     pick_fbo.bind();
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
