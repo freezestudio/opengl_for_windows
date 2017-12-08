@@ -92,12 +92,7 @@ ibl_renderer::~ibl_renderer()
 void ibl_renderer::do_init()
 {
     ms_instance = shared_from_this();
-
-    auto current_frame = freeze::freegl::get_time();
-
-    delta_time = current_frame - last_frame;
-    last_frame = current_frame;
-
+	    
     freeze::depth::enable();
     freeze::depth::test_less_equal();
     glEnable(GL_TEXTURE_CUBE_MAP_SEAMLESS);
@@ -145,6 +140,11 @@ void ibl_renderer::set_shader()
     bg_shader.compile_file("resources/shaders/background.vs"s, "resources/shaders/background.fs"s);
     pick_shader.compile_file("resources/shaders/pick.vs"s, "resources/shaders/pick.fs"s);
 
+	////test
+	//test_only_shader.compile_file("resources/shaders/test_only.vs"s, "resources/shaders/test_only.fs"s);
+	//test_only_shader.use();
+	//test_only_shader.set_int("cube"s, 0);
+
     pbr_shader.use();
     pbr_shader.set_int("irradianceMap"s, 3);
     pbr_shader.set_int("prefilterMap"s, 4);
@@ -167,6 +167,7 @@ void ibl_renderer::set_texture()
         glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f,  0.0f, -1.0f), glm::vec3(0.0f, -1.0f,  0.0f))
     };
 
+	//初始化渲染缓冲区
     pbr_fbo.bind();
     auto rbo = freeze::make_render_buffer();
     rbo.bind();
@@ -175,7 +176,7 @@ void ibl_renderer::set_texture()
     pbr_fbo.attachement_render_buffer(rbo.ref(), GL_DEPTH_ATTACHMENT);
     pbr_fbo.unbind();
 
-    //hdr纹理
+    //从外部加载hdr纹理
     stbi_set_flip_vertically_on_load(true);
     int width, height, nrComponents;
     float* data = stbi_loadf("resources/textures/hdr/newport_loft.hdr",
@@ -192,7 +193,7 @@ void ibl_renderer::set_texture()
         stbi_image_free(data);
     }
 
-    //cubemap纹理
+    //cubemap纹理,空
     cubemap_tex.bind();
     for (unsigned i = 0; i < 6; ++i)
     {
@@ -306,12 +307,16 @@ void ibl_renderer::set_texture()
             // reisze framebuffer according to mip-level size.
             int mipWidth = 128 * std::pow(0.5, mip);
             int mipHeight = 128 * std::pow(0.5, mip);
+
             rbo.bind();
             rbo.storage(mipWidth, mipHeight, GL_DEPTH_COMPONENT24);
+			rbo.unbind();
+
             glViewport(0, 0, mipWidth, mipHeight);
 
             float roughness = (float)mip / (float)(maxMipLevels - 1);
             pft_shader.set_float("roughness"s, roughness);
+
             for (unsigned int i = 0; i < 6; ++i)
             {
                 pft_shader.set_mat4("view", views[i]);
@@ -363,6 +368,10 @@ void ibl_renderer::set_texture()
     bg_shader.set_mat4("projection"s, proj);
     pick_shader.use();
     pick_shader.set_mat4("projection"s, proj);
+
+	////test
+	//test_only_shader.use();
+	//test_only_shader.set_mat4("projection"s, proj);
 }
 
 void ibl_renderer::set_model()
@@ -386,6 +395,10 @@ void ibl_renderer::set_model()
 
 void ibl_renderer::draw()
 {
+	auto current_frame = freeze::freegl::get_time();
+	delta_time = current_frame - last_frame;
+	last_frame = current_frame;
+
     auto view = scene_camera.get_view_matrix();
     auto model = glm::mat4{ 1.0f };
     model = glm::scale(glm::mat4{ 1.0f }, glm::vec3{ 0.03f });
@@ -422,6 +435,21 @@ void ibl_renderer::draw()
     cube_vao.bind();
     glDrawArrays(GL_TRIANGLES, 0, 36);
     cube_vao.unbind();
+
+	////test
+	//test_only_shader.use();
+	//test_only_shader.set_mat4("view"s, view);
+	////输出立方体贴图
+	////cubemap_tex.active();
+	////cubemap_tex.bind();
+	////输出辐照贴图
+	////irr_tex.active();
+	////irr_tex.bind();
+	//pft_tex.active();
+	//pft_tex.bind();
+	//cube_vao.bind();
+	//glDrawArrays(GL_TRIANGLES, 0, 36);
+	//cube_vao.unbind();
 }
 
 void ibl_renderer::picking()

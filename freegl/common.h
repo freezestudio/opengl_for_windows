@@ -926,6 +926,9 @@ inline void __assert_error__(char const* func, char const* name)
 }
 #define assert_error()  __assert_error__(__FUNCTION__)
 #define assert_name_error(name) __assert_error__(__FUNCTION__,name)
+#else
+#define assert_error() 
+#define assert_name_error(name) 
 #endif
 
 using namespace std::literals;

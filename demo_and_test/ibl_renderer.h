@@ -50,6 +50,9 @@ private:
     freeze::program bg_shader;
     freeze::program pick_shader;
 
+	////test
+	//freeze::program test_only_shader;
+
     freeze::vertex_array_buffer cube_vao;
     freeze::vertex_array_buffer quad_vao;
 

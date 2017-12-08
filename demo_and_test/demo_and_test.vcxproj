@@ -188,6 +188,8 @@
     <None Include="resources\shaders\prefilter.fs" />
     <None Include="resources\shaders\shadow.frag" />
     <None Include="resources\shaders\shadow.vert" />
+    <None Include="resources\shaders\test_only.fs" />
+    <None Include="resources\shaders\test_only.vs" />
     <None Include="resources\textures\hdr\newport_loft.hdr" />
   </ItemGroup>
   <ItemGroup>
