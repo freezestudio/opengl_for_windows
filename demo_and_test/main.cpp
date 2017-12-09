@@ -22,6 +22,10 @@ int main()
     auto render = std::make_shared<RENDERER>();
     render->init();
 
+	auto wnd = window.get_window_handler();
+	window.set_user_data(render.get());
+	void* data = window.get_user_data();
+
     // then before rendering, 
     // configure the viewport to the original framebuffer's screen dimensions
     int scrWidth, scrHeight;

@@ -53,6 +53,8 @@
 
 #include <glad/glad.h>
 #include <glfw/glfw3.h>
+#define GLFW_EXPOSE_NATIVE_WIN32
+#include <glfw/glfw3native.h>
 
 using namespace std::literals;
 namespace fs = std::experimental::filesystem;
@@ -737,6 +739,26 @@ namespace freeze
 		const_pointer get() const
 		{
 			return windowp_;
+		}
+
+		void set_user_data(void* data)
+		{
+			glfwSetWindowUserPointer(windowp_, data);
+		}
+
+		void* get_user_data() const
+		{
+			return glfwGetWindowUserPointer(windowp_);
+		}
+
+		void* get_user_data()
+		{
+			return glfwGetWindowUserPointer(windowp_);
+		}
+
+		HWND get_window_handler() const
+		{			
+			return glfwGetWin32Window(windowp_);
 		}
 
 		//callback
