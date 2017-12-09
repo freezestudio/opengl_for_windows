@@ -23,6 +23,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "freegl", "freegl", "{2606D5
 		freegl\material.h = freegl\material.h
 		freegl\mesh.h = freegl\mesh.h
 		freegl\model.h = freegl\model.h
+		freegl\particle.h = freegl\particle.h
 		freegl\quickly.h = freegl\quickly.h
 		freegl\shader_program.h = freegl\shader_program.h
 		freegl\stencil.h = freegl\stencil.h

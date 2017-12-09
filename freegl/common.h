@@ -756,7 +756,7 @@ namespace freeze
 			return glfwGetWindowUserPointer(windowp_);
 		}
 
-		HWND get_window_handler() const
+		HWND get_window_handle() const
 		{			
 			return glfwGetWin32Window(windowp_);
 		}
@@ -972,6 +972,7 @@ using namespace std::literals;
 #include "light.h"
 #include "material.h"
 #include "quickly.h"
+#include "particle.h"
 
 //////////////////////////////////////////////////////////////////////////
 #endif //FREEGL_COMMON_H

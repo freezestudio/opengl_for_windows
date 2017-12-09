@@ -417,6 +417,50 @@ namespace freeze
 
 namespace freeze
 {
+	template<GLenum TFB = GL_TRANSFORM_FEEDBACK>
+	struct transform_feedback_buffer_t
+		: make_object<transform_feedback_buffer_t<TFB>>
+	{
+		void create(GLuint* buffers)
+		{
+			glGenTransformFeedbacks(1, buffers);
+			assert_error();
+		}
+
+		void destroy(GLuint const* buffers)
+		{
+			glDeleteTransformFeedbacks(1, buffers);
+			assert_error();
+		}
+
+		void bind()
+		{
+			glBindTransformFeedback(TFB, this->ref());
+			assert_error();
+		}
+
+		void unbind()
+		{
+			glBindTransformFeedback(TFB, 0);
+			assert_error();
+		}
+
+		void bind_base(GLuint index)
+		{
+			glBindBufferBase(TFB, index, this->ref());
+			assert_error();
+		}
+
+		void bind_range(GLuint index, GLintptr offset, GLsizeiptr size)
+		{
+			glBindBufferRange(TFB, index, this->ref(), offset, size);
+			assert_error();
+		}
+	};
+}
+
+namespace freeze
+{
 
     using vertex_buffer = buffer_t<GL_ARRAY_BUFFER>;
     using element_buffer = buffer_t<GL_ELEMENT_ARRAY_BUFFER>;
@@ -426,6 +470,7 @@ namespace freeze
     using frame_buffer = frame_buffer_t<GL_FRAMEBUFFER>;
     using read_frame_buffer = frame_buffer_t<GL_READ_FRAMEBUFFER>;
     using draw_frame_buffer = frame_buffer_t<GL_DRAW_FRAMEBUFFER>;
+	using transform_feedback_buffer = transform_feedback_buffer_t<>;
 
     constexpr auto make_vertex_buffer = make<vertex_buffer>;
     constexpr auto make_element_buffer = make<element_buffer>;

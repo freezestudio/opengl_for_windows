@@ -22,7 +22,7 @@ int main()
     auto render = std::make_shared<RENDERER>();
     render->init();
 
-	auto wnd = window.get_window_handler();
+	auto wnd = window.get_window_handle();
 	window.set_user_data(render.get());
 	void* data = window.get_user_data();
 
