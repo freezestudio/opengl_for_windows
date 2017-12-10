@@ -95,7 +95,7 @@ namespace freeze
             GLintptr writeOffset,
             GLsizeiptr size)
         {
-            void glCopyBufferSubData(readTarget,
+            glCopyBufferSubData(readTarget,
                 writeTarget,
                 readOffset,
                 writeOffset,
@@ -108,7 +108,7 @@ namespace freeze
             GLenum type,
             const void * data)
         {
-            void glClearBufferData(Target, internalformat,
+            glClearBufferData(Target, internalformat,
                 format, type, data);
             assert_error();
         }
@@ -120,7 +120,7 @@ namespace freeze
             GLenum type,
             const void * data)
         {
-            void glClearBufferSubData(Target,
+            glClearBufferSubData(Target,
                 internalformat,
                 offset,
                 size,
@@ -147,19 +147,19 @@ namespace freeze
 
         void flush(GLintptr offset, GLsizeiptr length)
         {
-            void glFlushMappedBufferRange(Target,offset,length);
+            glFlushMappedBufferRange(Target,offset,length);
             assert_error();
         }
 
         void invalidate()
         {
-            void glInvalidateBufferData(this->ref());
+            glInvalidateBufferData(this->ref());
             assert_error();
         }
 
         void invalidate_subdata(GLintptr offset, GLsizeiptr length)
         {
-            void glInvalidateBufferSubData(this->ref(), offset, length);
+            glInvalidateBufferSubData(this->ref(), offset, length);
             assert_error();
         }
     };
@@ -558,6 +558,65 @@ namespace freeze
 			glBindBufferRange(TFB, index, this->ref(), offset, size);
 			assert_error();
 		}
+
+        //void varyings(GLuint program, GLsizei count, const char **varyings, GLenum bufferMode)
+        //{
+        //    void glTransformFeedbackVaryings(program, count,varyings,bufferMode);
+        //    assert_error();
+        //}
+
+        //GL_POINTS,GL_LINES,GL_TRIANGLES
+        void begin(GLenum primitiveMode)
+        {
+            glBeginTransformFeedback(primitiveMode);
+            assert_error();
+        }
+
+        void end()
+        {
+            glEndTransformFeedback();
+            assert_error();
+        }
+
+        void pause()
+        {
+            glPauseTransformFeedback();
+            assert_error();
+        }
+
+        void resume()
+        {
+            glResumeTransformFeedback();
+            assert_error();
+        }
+
+        //GL_POINTS, 
+        //GL_LINE_STRIP, GL_LINE_LOOP, GL_LINES, GL_LINE_STRIP_ADJACENCY, GL_LINES_ADJACENCY, 
+        //GL_TRIANGLE_STRIP, GL_TRIANGLE_FAN, GL_TRIANGLES, GL_TRIANGLE_STRIP_ADJACENCY, GL_TRIANGLES_ADJACENCY,
+        //GL_PATCHES
+        void draw(GLenum mode)
+        {
+            glDrawTransformFeedback(mode,this->ref());
+            assert_error();
+        }
+
+        void draw_instanced(GLenum mode, GLsizei primcount)
+        {
+            glDrawTransformFeedbackInstanced(mode,this->ref(), primcount);
+            assert_error();
+        }
+
+        void draw_stream(GLenum mode, GLuint stream)
+        {
+            glDrawTransformFeedbackStream(GLenum mode,this->ref(), stream);
+            assert_error();
+        }
+
+        void draw_stream_instanced(GLenum mode, GLuint stream, GLsizei primcount)
+        {
+            glDrawTransformFeedbackStreamInstanced(GLenum mode,this->ref(), tream, primcount);
+            assert_error();
+        }
 	};
 }
 
