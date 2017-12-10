@@ -7,7 +7,47 @@
 
 namespace freeze
 {
-
+    //
+    //Target :
+    //
+    //GL_ARRAY_BUFFER
+    //    缓冲区将被用作顶点数据的源，但只有在调用glVertexAttribPointer时才会进行连接。
+    //    该函数的指针字段取自当前绑定到此目标的任何缓冲区的开始的字节偏移量。
+    //GL_ELEMENT_ARRAY_BUFFER
+    //    gl*Draw*Elements* 形式的所有渲染函数将使用指针字段作为绑定到此目标的缓冲区对象的开头的字节偏移量。
+    //    用于索引渲染的索引将取自缓冲区对象。
+    //    请注意，此绑定目标是“ 顶点数组对象”状态的一部分，因此必须在此处绑定缓冲区之前绑定VAO。
+    //GL_COPY_READ_BUFFER和GL_COPY_WRITE_BUFFER
+    //    没有特定的语义。
+    //    因为它们没有实际意义，所以它们是用glCopyBufferSubData复制缓冲区对象数据的有用目标。
+    //    拷贝时不必使用这些目标，但是通过使用它们，可以避免具有实际语义的令人不安的缓冲区目标。
+    //GL_PIXEL_UNPACK_BUFFER和GL_PIXEL_PACK_BUFFER
+    //    用于执行异步像素传输操作。
+    //    如果缓冲区绑定到GL_PIXEL_UNPACK_BUFFER，
+    //    则glTexImage*，glTexSubImage*，glCompressedTexImage*和glCompressedTexSubImage*都将受到影响。
+    //    这些函数将从绑定的缓冲区对象读取它们的数据，而不是客户端指针指向的位置。
+    //    同样，如果一个缓冲区绑定到GL_PIXEL_PACK_BUFFER，
+    //    glGetTexImage和glReadPixels将把它们的数据存储到绑定的缓冲区对象，而不是客户端指针指向的地方。
+    //GL_QUERY_BUFFER
+    //    用于执行从异步查询到缓冲区对象内存的直接写入。
+    //    如果一个缓冲区绑定到GL_QUERY_BUFFER，
+    //    那么所有的glGetQueryObject[ui64v]函数调用都会将结果写入一个偏移量到绑定的缓冲区对象中。
+    //GL_TEXTURE_BUFFER
+    //    没有特殊的语义，
+    //    但是如果你打算为缓冲区纹理使用一个缓冲区对象，当你第一次创建它的时候，在这里绑定它是一个好主意。
+    //GL_TRANSFORM_FEEDBACK_BUFFER
+    //    Transform Feedback操作中使用的缓冲区的索引缓冲区绑定。
+    //GL_UNIFORM_BUFFER
+    //    用作缓冲区的索引缓冲区绑定，用作统一块的存储。
+    //GL_DRAW_INDIRECT_BUFFER
+    //    绑定到此目标的缓冲区在执行间接渲染时将用作间接数据的源。仅在核心OpenGL 4.0或ARB_draw_indirect中可用。
+    //GL_ATOMIC_COUNTER_BUFFER
+    //    用作原子计数器存储的缓冲区的索引缓冲区绑定。需要OpenGL 4.2或ARB_shader_atomic_counters
+    //GL_DISPATCH_INDIRECT_BUFFER
+    //    绑定到此目标的缓冲区将通过glDispatchComputeIndirect用作间接计算调度操作的源。需要OpenGL 4.3或ARB_compute_shader。
+    //GL_SHADER_STORAGE_BUFFER
+    //    用作存储着色器存储块的缓冲区的索引缓冲区绑定。
+    //
     template<GLenum Target>
     struct buffer_t : make_object<buffer_t<Target>>
     {
@@ -34,6 +74,9 @@ namespace freeze
             assert_error();
         }
 
+        //DRAW：用户将数据写入缓冲区，但用户不会读取它。
+        //READ：用户将不会写入数据，但用户将读取数据。
+        //COPY：用户既不会写也不能读数据。
         void copy_data(void const *data, GLsizeiptr size, GLenum usage = GL_STATIC_DRAW)
         {
             glBufferData(Target, size, data, usage);
@@ -43,6 +86,47 @@ namespace freeze
         void copy_subdata(void const *data, GLsizeiptr size, GLintptr offset)
         {
             glBufferSubData(Target, offset, size, data);
+            assert_error();
+        }
+
+        void copy_subdata(GLenum readTarget,
+            GLenum writeTarget,
+            GLintptr readOffset,
+            GLintptr writeOffset,
+            GLsizeiptr size)
+        {
+            void glCopyBufferSubData(readTarget,
+                writeTarget,
+                readOffset,
+                writeOffset,
+                size);
+            assert_error();
+        }
+
+        void clear_data(GLenum internalformat,
+            GLenum format,
+            GLenum type,
+            const void * data)
+        {
+            void glClearBufferData(Target, internalformat,
+                format, type, data);
+            assert_error();
+        }
+
+        void cleare_subdata(GLenum internalformat,
+            GLintptr offset,
+            GLsizeiptr size,
+            GLenum format,
+            GLenum type,
+            const void * data)
+        {
+            void glClearBufferSubData(Target,
+                internalformat,
+                offset,
+                size,
+                format,
+                type,
+                data);
             assert_error();
         }
 
@@ -59,6 +143,24 @@ namespace freeze
             auto unmap = glUnmapBuffer(Target);
             assert_error();
             return unmap == GL_TRUE;
+        }
+
+        void flush(GLintptr offset, GLsizeiptr length)
+        {
+            void glFlushMappedBufferRange(Target,offset,length);
+            assert_error();
+        }
+
+        void invalidate()
+        {
+            void glInvalidateBufferData(this->ref());
+            assert_error();
+        }
+
+        void invalidate_subdata(GLintptr offset, GLsizeiptr length)
+        {
+            void glInvalidateBufferSubData(this->ref(), offset, length);
+            assert_error();
         }
     };
 }
