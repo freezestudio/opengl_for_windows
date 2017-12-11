@@ -423,25 +423,48 @@ namespace freeze
             return status == GL_FRAMEBUFFER_COMPLETE;
         }
 
+		//textarget:
+		//    GL_TEXTURE_2D,
+		//    GL_TEXTURE_RECTANGLE, 
+		//    GL_TEXTURE_CUBE_MAP_POSITIVE_X, GL_TEXTURE_CUBE_MAP_POSITIVE_Y, GL_TEXTURE_CUBE_MAP_POSITIVE_Z, 
+		//    GL_TEXTURE_CUBE_MAP_NEGATIVE_X, GL_TEXTURE_CUBE_MAP_NEGATIVE_Y, GL_TEXTURE_CUBE_MAP_NEGATIVE_Z,
+		//    GL_TEXTURE_2D_MULTISAMPLE
         template<typename Texture>
-        void attachement_color(Texture const& texture,GLenum textarget= GL_TEXTURE_2D,GLint level=0)
+        void attachement_color(Texture&& texture,GLuint index = 0,GLenum textarget= GL_TEXTURE_2D,GLint level=0)
         {
-            glFramebufferTexture2D(FrameBuffer, GL_COLOR_ATTACHMENT0, textarget, texture.ref(), level);
+            glFramebufferTexture2D(FrameBuffer, GL_COLOR_ATTACHMENT0+index, textarget, texture.ref(), level);
             assert_error();
         }
 
         template<typename Texture>
-        void attachement_texture(GLenum attachment, Texture const& texture, GLint level = 0)
+        void attachement_texture(Texture&& texture, GLenum attachment, GLint level = 0)
         {
             glFramebufferTexture(FrameBuffer, attachment, texture.ref(), level);
             assert_error();
         }
 
-        void attachement_texture2d(GLenum attachment, GLuint texture, GLenum textarget = GL_TEXTURE_2D, GLuint level = 0)
+		void attachement_texture1d(GLuint texture,GLenum attachment = GL_COLOR_ATTACHMENT0, GLint level = 0)
+		{
+			glFramebufferTexture1D(FrameBuffer,attachment, GL_TEXTURE_1D,texture,level);
+			assert_error();
+		}
+
+		//textarget:
+		//    GL_TEXTURE_2D,
+		//    GL_TEXTURE_RECTANGLE, 
+		//    GL_TEXTURE_CUBE_MAP_POSITIVE_X, GL_TEXTURE_CUBE_MAP_POSITIVE_Y, GL_TEXTURE_CUBE_MAP_POSITIVE_Z, 
+		//    GL_TEXTURE_CUBE_MAP_NEGATIVE_X, GL_TEXTURE_CUBE_MAP_NEGATIVE_Y, GL_TEXTURE_CUBE_MAP_NEGATIVE_Z,
+		//    GL_TEXTURE_2D_MULTISAMPLE
+        void attachement_texture2d(GLuint texture, GLenum attachment, GLenum textarget = GL_TEXTURE_2D, GLuint level = 0)
         {
             glFramebufferTexture2D(FrameBuffer, attachment, textarget, texture, level);
             assert_error();
         }
+
+		void attachement_texture3d(GLuint texture, GLenum attachment = GL_COLOR_ATTACHMENT0, GLint level = 0,GLint zoffset = 0)
+		{
+			glFramebufferTexture3D(FrameBuffer,GL_COLOR_ATTACHMENT0,GL_TEXTURE_3D,texture,level,zoffset);
+		}
 
         void attachement_depth(GLuint texture)
         {

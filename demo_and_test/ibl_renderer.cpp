@@ -223,7 +223,7 @@ void ibl_renderer::set_texture()
         for (auto i = 0; i < 6; ++i)
         {
             etc_shader.set_mat4("view"s, views[i]);
-            pbr_fbo.attachement_color(cubemap_tex, GL_TEXTURE_CUBE_MAP_POSITIVE_X + i);
+            pbr_fbo.attachement_color(cubemap_tex, 0, GL_TEXTURE_CUBE_MAP_POSITIVE_X + i);
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
             cube_vao.bind();
             glDrawArrays(GL_TRIANGLES, 0, 36);
@@ -270,7 +270,7 @@ void ibl_renderer::set_texture()
         for (auto i = 0; i < 6; ++i)
         {
             irr_shader.set_mat4("view"s, views[i]);
-            pbr_fbo.attachement_color(irr_tex, GL_TEXTURE_CUBE_MAP_POSITIVE_X + i);
+            pbr_fbo.attachement_color(irr_tex,0, GL_TEXTURE_CUBE_MAP_POSITIVE_X + i);
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
             cube_vao.bind();
             glDrawArrays(GL_TRIANGLES, 0, 36);
@@ -323,7 +323,7 @@ void ibl_renderer::set_texture()
             for (unsigned int i = 0; i < 6; ++i)
             {
                 pft_shader.set_mat4("view", views[i]);
-                pbr_fbo.attachement_color(pft_tex, GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, mip);
+                pbr_fbo.attachement_color(pft_tex, 0, GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, mip);
 
                 glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
                 cube_vao.bind();
@@ -406,7 +406,7 @@ void ibl_renderer::set_model()
 
 void ibl_renderer::draw()
 {
-	auto current_frame = freeze::freegl::get_time();
+	auto current_frame = freeze::window::get_time();
 	delta_time = current_frame - last_frame;
 	last_frame = current_frame;
 

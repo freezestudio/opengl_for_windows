@@ -467,26 +467,7 @@ namespace freeze
         }
 
         //feature
-    public:
-        void swap_interval(int interval = 0)
-        {
-            detail::swap_interval(interval);
-        }
-
-        bool load_loader()
-        {
-            return detail::load_gl_loader();
-        }
-
-        void poll_events()
-        {
-            detail::poll_events();
-        }
-
-        static float get_time()
-        {
-            return (float)detail::get_time();
-        }
+    public:        
 
         static void hint(window_hint_type type,int value)
         {
@@ -759,6 +740,27 @@ namespace freeze
 		HWND get_window_handle() const
 		{			
 			return glfwGetWin32Window(windowp_);
+		}
+
+	public:
+		void swap_interval(int interval = 0)
+		{
+			detail::swap_interval(interval);
+		}
+
+		bool load_loader()
+		{
+			return detail::load_gl_loader();
+		}
+
+		void poll_events()
+		{
+			detail::poll_events();
+		}
+
+		static float get_time()
+		{
+			return (float)detail::get_time();
 		}
 
 		//callback
