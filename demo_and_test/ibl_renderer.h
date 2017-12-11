@@ -33,6 +33,8 @@ private:
     void set_shader();
     void set_texture();
     void set_model();
+
+	void set_particle();
 private:
     float last_x;
     float last_y;
@@ -50,11 +52,10 @@ private:
     freeze::program bg_shader;
     freeze::program pick_shader;
 
-	////test
-	//freeze::program test_only_shader;
-	//freeze::program test_pick_shader;
-	//freeze::texture2d test_pick_tex;
-
+	freeze::program particle_shader;
+	freeze::texture2d particle_tex;
+	freeze::vertex_array_buffer particle_vao;
+	
     freeze::vertex_array_buffer cube_vao;
     freeze::vertex_array_buffer quad_vao;
 

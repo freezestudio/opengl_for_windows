@@ -179,6 +179,8 @@
     <None Include="resources\shaders\depth.vert" />
     <None Include="resources\shaders\equirectangular_to_cubemap.fs" />
     <None Include="resources\shaders\irradiance_convolution.fs" />
+    <None Include="resources\shaders\particle.fs" />
+    <None Include="resources\shaders\particle.vs" />
     <None Include="resources\shaders\pbr.frag" />
     <None Include="resources\shaders\pbr.fs" />
     <None Include="resources\shaders\pbr.vert" />

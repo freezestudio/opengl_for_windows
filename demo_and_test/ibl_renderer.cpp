@@ -72,6 +72,17 @@ static float quad_vertices[] = {
      1.0f, -1.0f, 0.0f, 1.0f, 0.0f,
 };
 
+static float particle_vertices[] = {
+	// positions        // uv       // colors
+	-0.05f,  0.05f, 0.0f, 0.0f, 1.0f, /* 1.0f,0.0f,0.0f, */
+	-0.05f, -0.05f, 0.0f, 0.0f, 0.0f, /* 1.0f,0.0f,0.0f, */
+	 0.05f,  0.05f, 0.0f, 1.0f, 1.0f, /* 1.0f,0.0f,0.0f, */
+	 0.05f, -0.05f, 0.0f, 1.0f, 0.0f, /* 1.0f,0.0f,0.0f, */
+};
+
+static std::vector<freeze::particle> particles;
+static int last_particle = 0;
+
 /////////////////////////////////////////////////////////////
 
 ibl_renderer::ibl_renderer()
@@ -98,12 +109,13 @@ void ibl_renderer::do_init()
     glEnable(GL_TEXTURE_CUBE_MAP_SEAMLESS);
 
     glEnable(GL_MULTISAMPLE);
+	
+	set_particle();
 
     set_vertices();
     set_shader();
     set_texture();
     set_model();
-
 }
 
 void ibl_renderer::set_vertices()
@@ -139,14 +151,6 @@ void ibl_renderer::set_shader()
     brdf_shader.compile_file("resources/shaders/brdf.vs"s, "resources/shaders/brdf.fs"s);
     bg_shader.compile_file("resources/shaders/background.vs"s, "resources/shaders/background.fs"s);
     pick_shader.compile_file("resources/shaders/pick.vs"s, "resources/shaders/pick.fs"s);
-
-	////test
-	//test_only_shader.compile_file("resources/shaders/test_only.vs"s, "resources/shaders/test_only.fs"s);
-	//test_only_shader.use();
-	//test_only_shader.set_int("cube"s, 0);
-	//test_pick_shader.compile_file("resources/shaders/test_pick.vs"s, "resources/shaders/test_pick.fs"s);
-	//test_pick_shader.use();
-	//test_pick_shader.set_int("texture1"s, 0);
 
     pbr_shader.use();
     pbr_shader.set_int("irradianceMap"s, 3);
@@ -307,7 +311,6 @@ void ibl_renderer::set_texture()
         unsigned maxMipLevels = 5;
         for (auto mip = 0u; mip < maxMipLevels; ++mip)
         {
-            // reisze framebuffer according to mip-level size.
             int mipWidth = 128 * std::pow(0.5, mip);
             int mipHeight = 128 * std::pow(0.5, mip);
 
@@ -338,7 +341,6 @@ void ibl_renderer::set_texture()
     // brdf纹理，根据brdf参数方程生成二维查找纹理
     brdf_tex.bind();
     brdf_tex.set_image(GL_RG16F, 512, 512, GL_RG, GL_FLOAT, nullptr);
-    // be sure to set wrapping mode to GL_CLAMP_TO_EDGE
     brdf_tex.set_wrap_s(GL_CLAMP_TO_EDGE);
     brdf_tex.set_wrap_t(GL_CLAMP_TO_EDGE);
     brdf_tex.set_min_filter(GL_LINEAR);
@@ -346,8 +348,6 @@ void ibl_renderer::set_texture()
     brdf_tex.unbind();
 
 
-    // then re-configure capture framebuffer object
-    // and render screen-space quad with BRDF shader.
     pbr_fbo.bind();
     {
         rbo.bind();
@@ -373,9 +373,8 @@ void ibl_renderer::set_texture()
     pick_shader.set_mat4("projection"s, proj);
 	pick_shader.set_float("id"s, 123.0f);
 
-	////test
-	//test_only_shader.use();
-	//test_only_shader.set_mat4("projection"s, proj);
+	particle_shader.use();
+	particle_shader.set_mat4("projection"s, proj);
 }
 
 void ibl_renderer::set_model()
@@ -395,13 +394,57 @@ void ibl_renderer::set_model()
     tex.unbind();
     pick_fbo.attachement_color(tex);
 
-	//test_pick_tex.bind();
-	//test_pick_tex.set_image(GL_R16F, SCR_WIDTH, SCR_HEIGHT, GL_RED, GL_FLOAT, nullptr);
-	//test_pick_tex.unbind();
-	//pick_fbo.attachement_color(test_pick_tex);
-
     pick_fbo.attachement_render_buffer(rbo, GL_DEPTH_ATTACHMENT);
     pick_fbo.unbind();
+}
+
+void ibl_renderer::set_particle()
+{
+	float trans[200];
+	int index = 0;
+	for (auto y = -10; y < 10; y += 2)
+	{
+		for (auto x = -10; x < 10; x += 2)
+		{
+			float pos_x = (float)x * 0.1f + 0.1f;
+			float pos_y = (float)y * 0.1f + 0.1f;
+			trans[index++] = pos_x;
+			trans[index++] = pos_y;
+		}
+	}
+
+	particle_vao.bind();
+
+	auto pv = freeze::make_vertex();
+	auto pvbo = freeze::make_vertex_buffer();
+	pvbo.bind();
+	pvbo.copy_data(particle_vertices,sizeof(particle_vertices));
+	pv.set(0, 3, 5, 0);
+	pv.set(1, 2, 5, 3);
+	pvbo.unbind();
+
+	auto pvbo2 = freeze::make_vertex_buffer();
+	pvbo2.bind();
+	pvbo2.copy_data(trans, sizeof(trans));
+	pv.set(2, 2, 2, 0);
+	pv.divisor(2, 1);
+	pvbo2.unbind();
+
+	particle_vao.unbind();
+
+	particle_shader.compile_file("resources/shaders/particle.vs"s, "resources/shaders/particle.fs"s);
+	particle_shader.use();
+	particle_shader.set_int("sprite"s, 0);
+
+	particle_tex.bind();
+	auto data = freeze::load_image_from_file("resources/textures/particle.png"s);
+	particle_tex.set_image(data);
+	particle_tex.mipmap();
+	particle_tex.set_wrap_s(GL_REPEAT);
+	particle_tex.set_wrap_t(GL_REPEAT);
+	particle_tex.set_min_filter(GL_LINEAR);
+	particle_tex.set_mag_filter(GL_LINEAR);
+	particle_tex.unbind();
 }
 
 void ibl_renderer::draw()
@@ -431,7 +474,6 @@ void ibl_renderer::draw()
     for (unsigned int i = 0; i < sizeof(lightPositions) / sizeof(lightPositions[0]); ++i)
     {
         glm::vec3 newPos = lightPositions[i] + glm::vec3(sin(glfwGetTime() * 5.0) * 5.0, 0.0, 0.0);
-        //newPos = lightPositions[i];
         pbr_shader.set_vec3("lightPositions[" + std::to_string(i) + "]", newPos);
         pbr_shader.set_vec3("lightColors[" + std::to_string(i) + "]", lightColors[i]);
     }
@@ -447,27 +489,17 @@ void ibl_renderer::draw()
     glDrawArrays(GL_TRIANGLES, 0, 36);
     cube_vao.unbind();
 
-	////test
-	//test_only_shader.use();
-	//test_only_shader.set_mat4("view"s, view);
-	////输出立方体贴图
-	////cubemap_tex.active();
-	////cubemap_tex.bind();
-	////输出辐照贴图
-	////irr_tex.active();
-	////irr_tex.bind();
-	//pft_tex.active();
-	//pft_tex.bind();
-	//cube_vao.bind();
-	//glDrawArrays(GL_TRIANGLES, 0, 36);
-	//cube_vao.unbind();
+	particle_shader.use();
+	particle_shader.set_mat4("view"s, view);
+	particle_shader.set_mat4("model"s, glm::mat4{ 1.0f });
 
-	//test_pick_shader.use();
-	//test_pick_tex.active();
-	//test_pick_tex.bind();
-	//quad_vao.bind();
-	//glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
-	//quad_vao.unbind();
+	particle_tex.active();
+	particle_tex.bind();
+
+	particle_vao.bind();
+	glDrawArraysInstanced(GL_TRIANGLE_STRIP, 0, 4, 100);
+	particle_vao.unbind();
+	
 }
 
 void ibl_renderer::picking()
@@ -481,7 +513,6 @@ void ibl_renderer::picking()
     pick_shader.use();
     pick_shader.set_mat4("view"s, view);
     pick_shader.set_mat4("model"s, model);
-    //pick_shader.set_float("id"s, 123.0f);
 
     pick_fbo.bind();
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -530,7 +561,7 @@ void ibl_renderer::do_mouse_callback(double xpos, double ypos)
     }
 
     float xoffset = xpos - last_x;
-    float yoffset = last_y - ypos; // reversed since y-coordinates go from bottom to top
+    float yoffset = last_y - ypos; 
 
     last_x = xpos;
     last_y = ypos;

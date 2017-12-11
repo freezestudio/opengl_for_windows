@@ -30,7 +30,8 @@ namespace freeze
         // div -- 0表示每顶点，n表示希望每n个实例更新一次属性
         void divisor(GLuint index, GLuint div)
         {
-            void glVertexAttribDivisor(index,div);
+            glVertexAttribDivisor(index,div);
+			assert_error();
         }
     private:
         void internal_set(GLuint index,
