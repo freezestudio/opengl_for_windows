@@ -49,16 +49,12 @@ private:
 	freeze::texture2d billboard_tex;
 	freeze::texture1d random_tex;
 
-	//freeze::transform_feedback  tfb[2];
-	//freeze::vertex_array_buffer vao[2];
-	//freeze::vertex_buffer       vbo[2];
+	freeze::transform_feedback  tfb[2];
+	freeze::vertex_array_buffer vao[2];
+	freeze::vertex_buffer       vbo[2];
 
-	GLuint vao[2];
-	GLuint m_particleBuffer[2];
-	GLuint m_transformFeedback[2];
-
-	bool m_isFirst = true;
-	unsigned int m_currVB = 0;
-	unsigned int m_currTFB = 1;
+	bool first_render = true;
+	unsigned int current = 0;
+	unsigned int next = 1;
 };
 

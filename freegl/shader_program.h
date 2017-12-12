@@ -84,6 +84,31 @@ namespace freeze
         constexpr static auto make_fragment_shader = make<shader<GL_FRAGMENT_SHADER>>;
         constexpr static auto make_geometry_shader = make<shader<GL_GEOMETRY_SHADER>>;
 
+
+        void compile_and_link(std::string const& vs, std::string const& fs, std::string const& gs = "")
+        {
+            compile(vs, fs, gs);
+            link();
+        }
+
+        void compile_and_link(std::vector<std::string> const& shader_sources)
+        {
+            compile(shader_sources);
+            link();
+        }
+
+        void compile_file_and_link(std::vector<std::string> const& shader_files)
+        {
+            compile_file(shader_files);
+            link();
+        }
+
+        void compile_file_and_link(std::string const& vs, std::string const& fs, std::string const& gs = "")
+        {
+            compile_file(vs, fs, gs);
+            link();
+        }
+
         void compile_file(std::vector<std::string> const& shader_files)
         {
             if (shader_files.size() < 2)
@@ -143,6 +168,10 @@ namespace freeze
                 glAttachShader(this->ref(), fs_shader.ref());
             }
 
+        }
+
+        void link()
+        {
             glLinkProgram(this->ref());
 
             GLint success = 0;

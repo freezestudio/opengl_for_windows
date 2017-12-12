@@ -28,13 +28,7 @@ particle_renderer::particle_renderer()
 
 particle_renderer::~particle_renderer()
 {
-	if (m_transformFeedback[0] != 0) {
-		glDeleteTransformFeedbacks(2, m_transformFeedback);
-	}
-
-	if (m_particleBuffer[0] != 0) {
-		glDeleteBuffers(2, m_particleBuffer);
-	}
+	
 }
 
 void particle_renderer::do_init()
@@ -49,23 +43,20 @@ void particle_renderer::do_init()
 	Particles[0].vy = 0.0001f;
 	Particles[0].age = 0.0f;
 	
-	glGenVertexArrays(2, vao);
-	glGenTransformFeedbacks(2, m_transformFeedback);
-	glGenBuffers(2, m_particleBuffer);
 
 	for (auto i = 0; i < 2; ++i)
 	{
-		glBindVertexArray(vao[i]);
-		glBindTransformFeedback(GL_TRANSFORM_FEEDBACK, m_transformFeedback[i]);
-		glBindBuffer(GL_ARRAY_BUFFER, m_particleBuffer[i]);
-		glBufferData(GL_ARRAY_BUFFER, sizeof(Particles), Particles, GL_DYNAMIC_DRAW);
-		glBindBufferBase(GL_TRANSFORM_FEEDBACK_BUFFER, 0, m_particleBuffer[i]);
-		glBindBufferBase(GL_TRANSFORM_FEEDBACK_BUFFER, 1, m_particleBuffer[i]);
-		glBindBufferBase(GL_TRANSFORM_FEEDBACK_BUFFER, 2, m_particleBuffer[i]);
-		glBindBufferBase(GL_TRANSFORM_FEEDBACK_BUFFER, 3, m_particleBuffer[i]);
+        tfb[i].bind();
+        vao[i].bind();
+        vbo[i].bind();
+        vbo[i].copy_data(Particles, sizeof(Particles), GL_DYNAMIC_DRAW);
+        tfb[i].bind_base(0);
+        vbo[i].unbind();
+        vao[i].unbind();
+        tfb[i].unbind();
 	}
 
-	billboard_shader.compile_file("resources/shaders/billboard.vs"s,
+	billboard_shader.compile_file_and_link("resources/shaders/billboard.vs"s,
 		"resources/shaders/billboard.fs"s,
 		"resources/shaders/billboard.gs"s);
 	//uniform mat4 gVP;
@@ -96,6 +87,8 @@ void particle_renderer::do_init()
 	Varyings[3] = "Age1";
 
 	glTransformFeedbackVaryings(partical_shader, 4, Varyings, GL_INTERLEAVED_ATTRIBS);
+
+    partical_shader.link();
 
 	//uniform float gDeltaTimeMillis;
 	//uniform float gTime;
@@ -137,38 +130,36 @@ void particle_renderer::update()
 
 	glEnable(GL_RASTERIZER_DISCARD);
 
-	glBindVertexArray(vao[m_currVB]);
-	glBindBuffer(GL_ARRAY_BUFFER, m_particleBuffer[m_currVB]);
-	glBindTransformFeedback(GL_TRANSFORM_FEEDBACK, m_transformFeedback[m_currTFB]);
+    vao[current].bind();
+	vbo[current].bind();
+    tfb[next].bind();
 
-	glEnableVertexAttribArray(0);
-	glEnableVertexAttribArray(1);
-	glEnableVertexAttribArray(2);
-	glEnableVertexAttribArray(3);
+    freeze::vertex::enable(0);
+    freeze::vertex::enable(1);
+    freeze::vertex::enable(2);
+    freeze::vertex::enable(3);
 
-	glVertexAttribPointer(0, 1, GL_FLOAT, GL_FALSE, sizeof(Particle), 0);                          // type
-	assert_error();
-	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Particle), (const GLvoid*)4);         // position
-	glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, sizeof(Particle), (const GLvoid*)16);        // velocity
-	glVertexAttribPointer(3, 1, GL_FLOAT, GL_FALSE, sizeof(Particle), (const GLvoid*)28);          // lifetime
+    freeze::vertex::set(0, 1, sizeof(Particle) / sizeof(float), 0);
+    freeze::vertex::set(1, 3, sizeof(Particle) / sizeof(float), 1);
+    freeze::vertex::set(2, 3, sizeof(Particle) / sizeof(float), 4);
+    freeze::vertex::set(3, 1, sizeof(Particle) / sizeof(float), 7);
 
-	glBeginTransformFeedback(GL_POINTS);
-	assert_error();
-	if (m_isFirst) {
+	freeze::transform_feedback::begin(GL_POINTS);
+	if (first_render) {
 		glDrawArrays(GL_POINTS, 0, 1);
-
-		m_isFirst = false;
+        first_render = false;
 	}
 	else {
-		glDrawTransformFeedback(GL_POINTS, m_transformFeedback[m_currVB]);
+		tfb[current].draw(GL_POINTS);
 	}
+    freeze::transform_feedback::end();
 
-	glEndTransformFeedback();
+    freeze::vertex::disable(0);
+    freeze::vertex::disable(1);
+    freeze::vertex::disable(2);
+    freeze::vertex::disable(3);
 
-	glDisableVertexAttribArray(0);
-	glDisableVertexAttribArray(1);
-	glDisableVertexAttribArray(2);
-	glDisableVertexAttribArray(3);
+	glDisable(GL_RASTERIZER_DISCARD);
 
 }
 
@@ -186,18 +177,15 @@ void particle_renderer::draw_particle()
 	billboard_tex.active();
 	billboard_tex.bind();
 
-	glDisable(GL_RASTERIZER_DISCARD);
+    vao[next].bind();
+	vbo[next].bind();
 
-	glBindVertexArray(vao[m_currTFB]);
-	glBindBuffer(GL_ARRAY_BUFFER, m_particleBuffer[m_currTFB]);
+    freeze::vertex::enable(0);
+    freeze::vertex::set(0, 3, sizeof(Particle) / sizeof(float), 1);
 
-	glEnableVertexAttribArray(0);
+    tfb[next].draw(GL_POINTS);
 
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Particle), (const GLvoid*)4);  // position
-
-	glDrawTransformFeedback(GL_POINTS, m_transformFeedback[m_currTFB]);
-
-	glDisableVertexAttribArray(0);
+    freeze::vertex::disable(0);
 }
 
 void particle_renderer::draw()
@@ -210,8 +198,7 @@ void particle_renderer::draw()
 	update();
 	draw_particle();
 
-	m_currVB = m_currTFB;
-	m_currTFB = (m_currTFB + 1) & 0x1;
+    std::swap(current, next);
 }
 
 void particle_renderer::process_event(window_pointer window)

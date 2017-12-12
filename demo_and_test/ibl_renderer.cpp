@@ -73,11 +73,11 @@ static float quad_vertices[] = {
 };
 
 static float particle_vertices[] = {
-	// positions        // uv       // colors
-	-0.05f,  0.05f, 0.0f, 0.0f, 1.0f, /* 1.0f,0.0f,0.0f, */
-	-0.05f, -0.05f, 0.0f, 0.0f, 0.0f, /* 1.0f,0.0f,0.0f, */
-	 0.05f,  0.05f, 0.0f, 1.0f, 1.0f, /* 1.0f,0.0f,0.0f, */
-	 0.05f, -0.05f, 0.0f, 1.0f, 0.0f, /* 1.0f,0.0f,0.0f, */
+    // positions        // uv       // colors
+    -0.05f,  0.05f, 0.0f, 0.0f, 1.0f, /* 1.0f,0.0f,0.0f, */
+    -0.05f, -0.05f, 0.0f, 0.0f, 0.0f, /* 1.0f,0.0f,0.0f, */
+     0.05f,  0.05f, 0.0f, 1.0f, 1.0f, /* 1.0f,0.0f,0.0f, */
+     0.05f, -0.05f, 0.0f, 1.0f, 0.0f, /* 1.0f,0.0f,0.0f, */
 };
 
 static std::vector<freeze::particle> particles;
@@ -103,14 +103,14 @@ ibl_renderer::~ibl_renderer()
 void ibl_renderer::do_init()
 {
     ms_instance = shared_from_this();
-	    
+
     freeze::depth::enable();
     freeze::depth::test_less_equal();
     glEnable(GL_TEXTURE_CUBE_MAP_SEAMLESS);
 
     glEnable(GL_MULTISAMPLE);
-	
-	set_particle();
+
+    set_particle();
 
     set_vertices();
     set_shader();
@@ -134,21 +134,21 @@ void ibl_renderer::set_vertices()
     auto qvbo = freeze::make_vertex_buffer();
     qvbo.bind();
     qvbo.copy_data(quad_vertices, sizeof(quad_vertices));
-    freeze::vertex::set_enable(0, 3, GL_FLOAT,GL_FALSE, 5 * sizeof(float), 0);
-    freeze::vertex::set_enable(1, 2, GL_FLOAT,GL_FALSE, 5 * sizeof(float), 3 * sizeof(float));
+    freeze::vertex::set_enable(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), 0);
+    freeze::vertex::set_enable(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), 3 * sizeof(float));
     qvbo.unbind();
     quad_vao.unbind();
 }
 
 void ibl_renderer::set_shader()
 {
-    pbr_shader.compile_file("resources/shaders/pbr.vs"s, "resources/shaders/pbr.fs");
-    etc_shader.compile_file("resources/shaders/cubemap.vs"s, "resources/shaders/equirectangular_to_cubemap.fs"s);
-    irr_shader.compile_file("resources/shaders/cubemap.vs"s, "resources/shaders/irradiance_convolution.fs"s);
-    pft_shader.compile_file("resources/shaders/cubemap.vs"s, "resources/shaders/prefilter.fs"s);
-    brdf_shader.compile_file("resources/shaders/brdf.vs"s, "resources/shaders/brdf.fs"s);
-    bg_shader.compile_file("resources/shaders/background.vs"s, "resources/shaders/background.fs"s);
-    pick_shader.compile_file("resources/shaders/pick.vs"s, "resources/shaders/pick.fs"s);
+    pbr_shader.compile_file_and_link("resources/shaders/pbr.vs"s, "resources/shaders/pbr.fs");
+    etc_shader.compile_file_and_link("resources/shaders/cubemap.vs"s, "resources/shaders/equirectangular_to_cubemap.fs"s);
+    irr_shader.compile_file_and_link("resources/shaders/cubemap.vs"s, "resources/shaders/irradiance_convolution.fs"s);
+    pft_shader.compile_file_and_link("resources/shaders/cubemap.vs"s, "resources/shaders/prefilter.fs"s);
+    brdf_shader.compile_file_and_link("resources/shaders/brdf.vs"s, "resources/shaders/brdf.fs"s);
+    bg_shader.compile_file_and_link("resources/shaders/background.vs"s, "resources/shaders/background.fs"s);
+    pick_shader.compile_file_and_link("resources/shaders/pick.vs"s, "resources/shaders/pick.fs"s);
 
     pbr_shader.use();
     pbr_shader.set_int("irradianceMap"s, 3);
@@ -172,7 +172,7 @@ void ibl_renderer::set_texture()
         glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f,  0.0f, -1.0f), glm::vec3(0.0f, -1.0f,  0.0f))
     };
 
-	//≥ı ºªØ‰÷»æª∫≥Â«¯
+    //≥ı ºªØ‰÷»æª∫≥Â«¯
     pbr_fbo.bind();
     auto rbo = freeze::make_render_buffer();
     rbo.bind();
@@ -272,7 +272,7 @@ void ibl_renderer::set_texture()
         for (auto i = 0; i < 6; ++i)
         {
             irr_shader.set_mat4("view"s, views[i]);
-            pbr_fbo.attachement_color(irr_tex,0, GL_TEXTURE_CUBE_MAP_POSITIVE_X + i);
+            pbr_fbo.attachement_color(irr_tex, 0, GL_TEXTURE_CUBE_MAP_POSITIVE_X + i);
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
             cube_vao.bind();
             glDrawArrays(GL_TRIANGLES, 0, 36);
@@ -314,7 +314,7 @@ void ibl_renderer::set_texture()
 
             rbo.bind();
             rbo.storage(mipWidth, mipHeight, GL_DEPTH_COMPONENT24);
-			rbo.unbind();
+            rbo.unbind();
 
             glViewport(0, 0, mipWidth, mipHeight);
 
@@ -369,10 +369,10 @@ void ibl_renderer::set_texture()
     bg_shader.set_mat4("projection"s, proj);
     pick_shader.use();
     pick_shader.set_mat4("projection"s, proj);
-	pick_shader.set_float("id"s, 123.0f);
+    pick_shader.set_float("id"s, 123.0f);
 
-	particle_shader.use();
-	particle_shader.set_mat4("projection"s, proj);
+    particle_shader.use();
+    particle_shader.set_mat4("projection"s, proj);
 }
 
 void ibl_renderer::set_model()
@@ -398,58 +398,58 @@ void ibl_renderer::set_model()
 
 void ibl_renderer::set_particle()
 {
-	float trans[200];
-	int index = 0;
-	for (auto y = -10; y < 10; y += 2)
-	{
-		for (auto x = -10; x < 10; x += 2)
-		{
-			float pos_x = (float)x * 0.1f + 0.1f;
-			float pos_y = (float)y * 0.1f + 0.1f;
-			trans[index++] = pos_x;
-			trans[index++] = pos_y;
-		}
-	}
+    float trans[200];
+    int index = 0;
+    for (auto y = -10; y < 10; y += 2)
+    {
+        for (auto x = -10; x < 10; x += 2)
+        {
+            float pos_x = (float)x * 0.1f + 0.1f;
+            float pos_y = (float)y * 0.1f + 0.1f;
+            trans[index++] = pos_x;
+            trans[index++] = pos_y;
+        }
+    }
 
-	particle_vao.bind();
+    particle_vao.bind();
 
-	auto pv = freeze::make_vertex();
-	auto pvbo = freeze::make_vertex_buffer();
-	pvbo.bind();
-	pvbo.copy_data(particle_vertices,sizeof(particle_vertices));
-	pv.set(0, 3, 5, 0);
-	pv.set(1, 2, 5, 3);
-	pvbo.unbind();
+    auto pv = freeze::make_vertex();
+    auto pvbo = freeze::make_vertex_buffer();
+    pvbo.bind();
+    pvbo.copy_data(particle_vertices, sizeof(particle_vertices));
+    pv.set(0, 3, 5, 0);
+    pv.set(1, 2, 5, 3);
+    pvbo.unbind();
 
-	auto pvbo2 = freeze::make_vertex_buffer();
-	pvbo2.bind();
-	pvbo2.copy_data(trans, sizeof(trans));
-	pv.set(2, 2, 2, 0);
-	pv.divisor(2, 1);
-	pvbo2.unbind();
+    auto pvbo2 = freeze::make_vertex_buffer();
+    pvbo2.bind();
+    pvbo2.copy_data(trans, sizeof(trans));
+    pv.set(2, 2, 2, 0);
+    pv.divisor(2, 1);
+    pvbo2.unbind();
 
-	particle_vao.unbind();
+    particle_vao.unbind();
 
-	particle_shader.compile_file("resources/shaders/particle.vs"s, "resources/shaders/particle.fs"s);
-	particle_shader.use();
-	particle_shader.set_int("sprite"s, 0);
+    particle_shader.compile_file("resources/shaders/particle.vs"s, "resources/shaders/particle.fs"s);
+    particle_shader.use();
+    particle_shader.set_int("sprite"s, 0);
 
-	particle_tex.bind();
-	auto data = freeze::load_image_from_file("resources/textures/particle.png"s);
-	particle_tex.set_image(data);
-	particle_tex.mipmap();
-	particle_tex.set_wrap_s(GL_REPEAT);
-	particle_tex.set_wrap_t(GL_REPEAT);
-	particle_tex.set_min_filter(GL_LINEAR);
-	particle_tex.set_mag_filter(GL_LINEAR);
-	particle_tex.unbind();
+    particle_tex.bind();
+    auto data = freeze::load_image_from_file("resources/textures/particle.png"s);
+    particle_tex.set_image(data);
+    particle_tex.mipmap();
+    particle_tex.set_wrap_s(GL_REPEAT);
+    particle_tex.set_wrap_t(GL_REPEAT);
+    particle_tex.set_min_filter(GL_LINEAR);
+    particle_tex.set_mag_filter(GL_LINEAR);
+    particle_tex.unbind();
 }
 
 void ibl_renderer::draw()
 {
-	auto current_frame = freeze::window::get_time();
-	delta_time = current_frame - last_frame;
-	last_frame = current_frame;
+    auto current_frame = freeze::window::get_time();
+    delta_time = current_frame - last_frame;
+    last_frame = current_frame;
 
     auto view = scene_camera.get_view_matrix();
     auto model = glm::mat4{ 1.0f };
@@ -487,17 +487,17 @@ void ibl_renderer::draw()
     glDrawArrays(GL_TRIANGLES, 0, 36);
     cube_vao.unbind();
 
-	particle_shader.use();
-	particle_shader.set_mat4("view"s, view);
-	particle_shader.set_mat4("model"s, glm::mat4{ 1.0f });
+    particle_shader.use();
+    particle_shader.set_mat4("view"s, view);
+    particle_shader.set_mat4("model"s, glm::mat4{ 1.0f });
 
-	particle_tex.active();
-	particle_tex.bind();
+    particle_tex.active();
+    particle_tex.bind();
 
-	particle_vao.bind();
-	glDrawArraysInstanced(GL_TRIANGLE_STRIP, 0, 4, 100);
-	particle_vao.unbind();
-	
+    particle_vao.bind();
+    glDrawArraysInstanced(GL_TRIANGLE_STRIP, 0, 4, 100);
+    particle_vao.unbind();
+
 }
 
 void ibl_renderer::picking()
@@ -523,7 +523,7 @@ int ibl_renderer::hit_test(int x, int y)
     pick_fbo.bind();
     pick_fbo.read_buffer(GL_COLOR_ATTACHMENT0);
     float v;
-    pick_fbo.read_pixels(x, y, 1, 1, GL_RED,GL_FLOAT,(GLvoid*)&v);
+    pick_fbo.read_pixels(x, y, 1, 1, GL_RED, GL_FLOAT, (GLvoid*)&v);
     pick_fbo.read_buffer(GL_NONE);
     pick_fbo.unbind();
     return (int)v;
@@ -559,7 +559,7 @@ void ibl_renderer::do_mouse_callback(double xpos, double ypos)
     }
 
     float xoffset = xpos - last_x;
-    float yoffset = last_y - ypos; 
+    float yoffset = last_y - ypos;
 
     last_x = xpos;
     last_y = ypos;

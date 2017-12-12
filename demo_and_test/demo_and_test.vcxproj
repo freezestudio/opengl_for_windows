@@ -160,11 +160,13 @@
     <ClCompile Include="ibl_renderer.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="particle_renderer.cpp" />
+    <ClCompile Include="transform_feedback_test.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ibl_renderer.h" />
     <ClInclude Include="particle_renderer.h" />
     <ClInclude Include="renderer_base.h" />
+    <ClInclude Include="transform_feedback_test.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="resources\objects\cyborg\cyborg.blend" />
@@ -201,6 +203,7 @@
     <None Include="resources\shaders\test_only.fs" />
     <None Include="resources\shaders\test_only.vs" />
     <None Include="resources\shaders\test_pick.vs" />
+    <None Include="resources\shaders\tfb_test.vs" />
     <None Include="resources\textures\hdr\newport_loft.hdr" />
   </ItemGroup>
   <ItemGroup>

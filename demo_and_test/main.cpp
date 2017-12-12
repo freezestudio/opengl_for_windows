@@ -1,12 +1,13 @@
 //
 //main.cpp
 
-#include "particle_renderer.h"
+//#include "particle_renderer.h"
 //#include "ibl_renderer.h"
+#include "transform_feedback_test.h"
 
 int main()
 {
-	auto gl = freeze::make<freeze::freegl>(3, 3);
+	auto gl = freeze::make<freeze::freegl>(4, 3);
 	gl.hint(freeze::window_hint_type::samples, 4);
 
 	auto window = freeze::make<freeze::window>(SCR_WIDTH, SCR_HEIGHT);
