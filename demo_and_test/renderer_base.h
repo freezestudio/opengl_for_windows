@@ -55,6 +55,7 @@ public:
 
 protected:
     static std::shared_ptr<Singleton> ms_instance;
+
 public:
     static void framebuffer_size_callback(
         freeze::window::pointer window, int width, int height)

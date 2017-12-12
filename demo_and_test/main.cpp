@@ -1,16 +1,12 @@
 //
 //main.cpp
 
-#include "ibl_renderer.h"
-
-//auto load_gl()
-//{
-//	
-//}
+#include "particle_renderer.h"
+//#include "ibl_renderer.h"
 
 int main()
 {
-	auto gl = freeze::make<freeze::freegl>(4, 3);
+	auto gl = freeze::make<freeze::freegl>(3, 3);
 	gl.hint(freeze::window_hint_type::samples, 4);
 
 	auto window = freeze::make<freeze::window>(SCR_WIDTH, SCR_HEIGHT);
@@ -30,20 +26,17 @@ int main()
 	window.set_user_data(render.get());
 	void* data = window.get_user_data();
 
-	// then before rendering, 
-	// configure the viewport to the original framebuffer's screen dimensions
 	int scrWidth, scrHeight;
 	freeze::get_frame_buffer_size(window.get(), &scrWidth, &scrHeight);
 	glViewport(0, 0, scrWidth, scrHeight);
+
+	freeze::depth::enable();
 
 	while (!window.should_close())
 	{
 		render->process_event(window.get());
 
-		auto color = freeze::make_color(0.1f, 0.1f, 0.1f, 1.0f);
-		color.clear();
-		freeze::depth::clear();
-
+		freeze::clear_color_depth(0.1f, 0.1f, 0.1f);
 		render->draw();
 
 		window.swap_buffers();

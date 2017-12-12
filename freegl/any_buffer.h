@@ -66,6 +66,7 @@ namespace freeze
         void bind()
         {
             glBindBuffer(Target, this->ref());
+			assert_error();
         }
 
         void unbind()
@@ -543,8 +544,8 @@ namespace freeze
 namespace freeze
 {
 	template<GLenum TFB = GL_TRANSFORM_FEEDBACK>
-	struct transform_feedback_buffer_t
-		: make_object<transform_feedback_buffer_t<TFB>>
+	struct transform_feedback_t
+		: make_object<transform_feedback_t<TFB>>
 	{
 		void create(GLuint* buffers)
 		{
@@ -572,13 +573,25 @@ namespace freeze
 
 		void bind_base(GLuint index)
 		{
-			glBindBufferBase(TFB, index, this->ref());
+			glBindBufferBase(GL_TRANSFORM_FEEDBACK_BUFFER, index, this->ref());
 			assert_error();
 		}
 
 		void bind_range(GLuint index, GLintptr offset, GLsizeiptr size)
 		{
-			glBindBufferRange(TFB, index, this->ref(), offset, size);
+			glBindBufferRange(GL_TRANSFORM_FEEDBACK_BUFFER, index, this->ref(), offset, size);
+			assert_error();
+		}
+
+		void copy_data(void const *data, GLsizeiptr size, GLenum usage = GL_STATIC_DRAW)
+		{
+			glBufferData(GL_TRANSFORM_FEEDBACK_BUFFER, size, data, usage);
+			assert_error();
+		}
+
+		void copy_subdata(void const *data, GLsizeiptr size, GLintptr offset)
+		{
+			glBufferSubData(GL_TRANSFORM_FEEDBACK_BUFFER, offset, size, data);
 			assert_error();
 		}
 
@@ -589,25 +602,25 @@ namespace freeze
         //}
 
         //GL_POINTS,GL_LINES,GL_TRIANGLES
-        void begin(GLenum primitiveMode)
+        static void begin(GLenum primitiveMode)
         {
             glBeginTransformFeedback(primitiveMode);
             assert_error();
         }
 
-        void end()
+        static void end()
         {
             glEndTransformFeedback();
             assert_error();
         }
 
-        void pause()
+        static void pause()
         {
             glPauseTransformFeedback();
             assert_error();
         }
 
-        void resume()
+        static void resume()
         {
             glResumeTransformFeedback();
             assert_error();
@@ -654,7 +667,7 @@ namespace freeze
     using frame_buffer = frame_buffer_t<GL_FRAMEBUFFER>;
     using read_frame_buffer = frame_buffer_t<GL_READ_FRAMEBUFFER>;
     using draw_frame_buffer = frame_buffer_t<GL_DRAW_FRAMEBUFFER>;
-	using transform_feedback_buffer = transform_feedback_buffer_t<>;
+	using transform_feedback = transform_feedback_t<>;
 
     constexpr auto make_vertex_buffer = make<vertex_buffer>;
     constexpr auto make_element_buffer = make<element_buffer>;

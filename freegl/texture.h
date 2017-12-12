@@ -253,6 +253,18 @@ namespace freeze
 
 namespace freeze
 {
+	template<GLenum T1D = GL_TEXTURE_1D>
+	struct texture1d_impl : texture_base<T1D>
+	{
+		//must use bind()
+		void set_image(GLint internalFormat,
+			GLsizei width, GLenum format, GLenum type,
+			const GLvoid * data)
+		{
+			glTexImage1D(T1D, 0, internalFormat, width, 0, format, type, data);
+		}
+	};
+
 	template<GLenum T2D = GL_TEXTURE_2D>
 	struct texture2d_impl : texture_base<T2D>
 	{
@@ -368,6 +380,7 @@ namespace freeze
 
 namespace freeze
 {
+	using texture1d = texture1d_impl<>;
     using texture2d = texture2d_impl<>;
     using texture2d_multisample = texture2d_multisample_impl<>;
     using texture_cube = texture_cube_impl<>;
@@ -538,6 +551,8 @@ namespace freeze
         std::vector<char> buffer;
 
         auto path = fs::path{ file };
+		if (!fs::exists(path))return buffer;
+
         auto file_size = fs::file_size(path);
         if (file_size <= 0)return buffer;
 

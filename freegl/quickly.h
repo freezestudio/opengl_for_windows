@@ -55,6 +55,24 @@ namespace freeze
 		}, args...);
 		vbo.unbind();
 	}
+
+	static inline void clear_color(float r, float g, float b, float a = 1.0f)
+	{
+		glClearColor(r, g, b, a);
+		glClear(GL_COLOR_BUFFER_BIT);
+	}
+
+	static inline void clear_color_depth(float r, float g, float b, float a = 1.0f)
+	{
+		glClearColor(r, g, b, a);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	}
+
+	static inline void clear_color_depth_stencil(float r, float g, float b, float a = 1.0f)
+	{
+		glClearColor(r, g, b, a);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+	}
 }
 
 #endif //FREEGL_QUICKLY_H

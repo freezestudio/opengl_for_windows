@@ -110,6 +110,7 @@
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
       <AdditionalIncludeDirectories>..\thirdparty;..\thirdparty\glfw\deps;..\thirdparty\stb;..\freegl;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <LanguageStandard>stdcpplatest</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -158,9 +159,11 @@
     <ClCompile Include="..\thirdparty\glfw\deps\glad.c" />
     <ClCompile Include="ibl_renderer.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="particle_renderer.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ibl_renderer.h" />
+    <ClInclude Include="particle_renderer.h" />
     <ClInclude Include="renderer_base.h" />
   </ItemGroup>
   <ItemGroup>
@@ -172,6 +175,9 @@
     <None Include="resources\objects\rock\rock.mtl" />
     <None Include="resources\shaders\background.fs" />
     <None Include="resources\shaders\background.vs" />
+    <None Include="resources\shaders\billboard.fs" />
+    <None Include="resources\shaders\billboard.gs" />
+    <None Include="resources\shaders\billboard.vs" />
     <None Include="resources\shaders\brdf.fs" />
     <None Include="resources\shaders\brdf.vs" />
     <None Include="resources\shaders\cubemap.vs" />
@@ -180,6 +186,7 @@
     <None Include="resources\shaders\equirectangular_to_cubemap.fs" />
     <None Include="resources\shaders\irradiance_convolution.fs" />
     <None Include="resources\shaders\particle.fs" />
+    <None Include="resources\shaders\particle.gs" />
     <None Include="resources\shaders\particle.vs" />
     <None Include="resources\shaders\pbr.frag" />
     <None Include="resources\shaders\pbr.fs" />
@@ -245,10 +252,12 @@
     <Image Include="resources\textures\container.jpg" />
     <Image Include="resources\textures\container2.png" />
     <Image Include="resources\textures\container2_specular.png" />
+    <Image Include="resources\textures\fireworks_red.jpg" />
     <Image Include="resources\textures\grass.png" />
     <Image Include="resources\textures\marble.jpg" />
     <Image Include="resources\textures\matrix.jpg" />
     <Image Include="resources\textures\metal.png" />
+    <Image Include="resources\textures\particle.png" />
     <Image Include="resources\textures\pbr\gold\albedo.png" />
     <Image Include="resources\textures\pbr\gold\ao.png" />
     <Image Include="resources\textures\pbr\gold\metallic.png" />

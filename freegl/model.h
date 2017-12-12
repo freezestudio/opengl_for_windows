@@ -60,10 +60,9 @@ namespace freeze
             auto ebo = make_element_buffer();
             ebo.bind();
             ebo.copy_data(&vecIndices[0], vecIndices.size() * sizeof(GLuint));
-            auto vp = make_vertex();
-            vp.set(0, 3, GL_FLOAT, 8 * sizeof(float), 0);
-            vp.set(1, 3, GL_FLOAT, 8 * sizeof(float), 3 * sizeof(float));
-            vp.set(2, 2, GL_FLOAT, 8 * sizeof(float), 6 * sizeof(float));
+            vertex::set_enable(0, 3, GL_FLOAT,GL_FALSE, 8 * sizeof(float), 0);
+            vertex::set_enable(1, 3, GL_FLOAT,GL_FALSE, 8 * sizeof(float), 3 * sizeof(float));
+            vertex::set_enable(2, 2, GL_FLOAT,GL_FALSE, 8 * sizeof(float), 6 * sizeof(float));
             vbo.unbind();
             //ebo.unbind();
             vao.unbind();

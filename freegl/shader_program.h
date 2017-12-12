@@ -267,6 +267,14 @@ namespace freeze
             assert_error();
         }
 
+		//bufferMode:
+		//   GL_INTERLEAVED_ATTRIBS,GL_SEPARATE_ATTRIBS
+		void set_varyings(GLchar const** varyings, GLsizei count, GLenum bufferMode = GL_INTERLEAVED_ATTRIBS)
+		{
+			glTransformFeedbackVaryings(this->ref(), count, varyings, bufferMode);
+			assert_error();
+		}
+
     private:
         auto get_loc(std::string const& name)  const
         {

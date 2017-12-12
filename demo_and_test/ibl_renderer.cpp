@@ -124,10 +124,9 @@ void ibl_renderer::set_vertices()
     auto cvbo = freeze::make_vertex_buffer();
     cvbo.bind();
     cvbo.copy_data(cube_vertices, sizeof(cube_vertices));
-    auto cv = freeze::make_vertex();
-    cv.set(0, 3, GL_FLOAT, 8 * sizeof(float), 0);
-    cv.set(1, 3, GL_FLOAT, 8 * sizeof(float), 3 * sizeof(float));
-    cv.set(2, 2, GL_FLOAT, 8 * sizeof(float), 6 * sizeof(float));
+    freeze::vertex::set_enable(0, 3, 8, 0);
+    freeze::vertex::set_enable(1, 3, 8, 3);
+    freeze::vertex::set_enable(2, 2, 8, 6);
     cvbo.unbind();
     cube_vao.unbind();
 
@@ -135,9 +134,8 @@ void ibl_renderer::set_vertices()
     auto qvbo = freeze::make_vertex_buffer();
     qvbo.bind();
     qvbo.copy_data(quad_vertices, sizeof(quad_vertices));
-    auto qv = freeze::make_vertex();
-    qv.set(0, 3, GL_FLOAT, 5 * sizeof(float), 0);
-    qv.set(1, 2, GL_FLOAT, 5 * sizeof(float), 3 * sizeof(float));
+    freeze::vertex::set_enable(0, 3, GL_FLOAT,GL_FALSE, 5 * sizeof(float), 0);
+    freeze::vertex::set_enable(1, 2, GL_FLOAT,GL_FALSE, 5 * sizeof(float), 3 * sizeof(float));
     qvbo.unbind();
     quad_vao.unbind();
 }

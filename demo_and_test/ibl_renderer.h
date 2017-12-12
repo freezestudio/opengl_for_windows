@@ -20,11 +20,11 @@ public:
     virtual ~ibl_renderer();
 public:
     void do_init();
-    void draw();
+    virtual void draw() override;
+    void process_event(window_pointer window);
     void picking();
     int hit_test(int x, int y);
     void on_hit(int hit);
-    void process_event(window_pointer window);
     void do_mouse_callback(double xpos, double ypos);
     void do_scroll_callback(double xoffset, double yoffset);
     void do_button_callback(int button, int action, int mods, double xpos, double ypos);

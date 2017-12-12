@@ -75,12 +75,18 @@
     <ClCompile Include="..\thirdparty\glfw\deps\glad.c">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="particle_renderer.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="renderer_base.h">
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="ibl_renderer.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="particle_renderer.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>
@@ -176,6 +182,18 @@
       <Filter>资源文件\resources\shaders</Filter>
     </None>
     <None Include="resources\shaders\particle.fs">
+      <Filter>资源文件\resources\shaders</Filter>
+    </None>
+    <None Include="resources\shaders\billboard.vs">
+      <Filter>资源文件\resources\shaders</Filter>
+    </None>
+    <None Include="resources\shaders\billboard.gs">
+      <Filter>资源文件\resources\shaders</Filter>
+    </None>
+    <None Include="resources\shaders\billboard.fs">
+      <Filter>资源文件\resources\shaders</Filter>
+    </None>
+    <None Include="resources\shaders\particle.gs">
       <Filter>资源文件\resources\shaders</Filter>
     </None>
   </ItemGroup>
@@ -443,6 +461,12 @@
     </Image>
     <Image Include="resources\textures\pbr\wall\roughness.png">
       <Filter>资源文件\resources\textures\pbr\wall</Filter>
+    </Image>
+    <Image Include="resources\textures\fireworks_red.jpg">
+      <Filter>资源文件\resources\textures</Filter>
+    </Image>
+    <Image Include="resources\textures\particle.png">
+      <Filter>资源文件\resources\textures</Filter>
     </Image>
   </ItemGroup>
   <ItemGroup>

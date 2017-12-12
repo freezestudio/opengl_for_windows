@@ -262,13 +262,12 @@ namespace freeze
             /*auto*/ mEbo = make_element_buffer();
             mEbo.bind();
             mEbo.copy_data(&mIndices[0], mIndices.size() * sizeof(GLuint));
-
-            auto this_vertex = make_vertex();
-            this_vertex.set(0, 3, GL_FLOAT, sizeof(Vertex), offsetof(Vertex, Position)/*0*/);
-            this_vertex.set(1, 3, GL_FLOAT, sizeof(Vertex), offsetof(Vertex, Normal));
-            this_vertex.set(2, 2, GL_FLOAT, sizeof(Vertex), offsetof(Vertex, TexCoords));
-            this_vertex.set(3, 3, GL_FLOAT, sizeof(Vertex), offsetof(Vertex, Tangent));
-            this_vertex.set(4, 3, GL_FLOAT, sizeof(Vertex), offsetof(Vertex, Bitangent));
+			            
+            vertex::set_enable(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), offsetof(Vertex, Position)/*0*/);
+            vertex::set_enable(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), offsetof(Vertex, Normal));
+            vertex::set_enable(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), offsetof(Vertex, TexCoords));
+            vertex::set_enable(3, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), offsetof(Vertex, Tangent));
+            vertex::set_enable(4, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), offsetof(Vertex, Bitangent));
 
             //解绑ebo将不会显示
             //ebo.unbind();
@@ -785,13 +784,12 @@ namespace freeze
             auto ebo = make_element_buffer();
             ebo.bind();
             ebo.copy_data(vec_indices.data(), vec_indices.size() * sizeof(GLuint));
-
-            auto this_vertex = make_vertex();
-            this_vertex.set(0, 3, GL_FLOAT, sizeof(Vertex), offsetof(Vertex, x)/*0*/);
-            this_vertex.set(1, 3, GL_FLOAT, sizeof(Vertex), offsetof(Vertex, nx));
-            this_vertex.set(2, 2, GL_FLOAT, sizeof(Vertex), offsetof(Vertex, u));
-            this_vertex.set(3, 3, GL_FLOAT, sizeof(Vertex), offsetof(Vertex, tx));
-            this_vertex.set(4, 3, GL_FLOAT, sizeof(Vertex), offsetof(Vertex, bx));
+			            
+            vertex::set_enable(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), offsetof(Vertex, x)/*0*/);
+            vertex::set_enable(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), offsetof(Vertex, nx));
+            vertex::set_enable(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), offsetof(Vertex, u));
+            vertex::set_enable(3, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), offsetof(Vertex, tx));
+            vertex::set_enable(4, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), offsetof(Vertex, bx));
 
             //解绑ebo将不会显示
             //ebo.unbind();

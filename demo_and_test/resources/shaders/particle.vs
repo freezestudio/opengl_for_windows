@@ -1,20 +1,19 @@
-#version 430 core
+#version 330 core
 
-layout(location = 0) in vec3 pos;
-layout(location = 1) in vec2 uv;
-layout(location = 2) in vec2 offset;
-
-uniform mat4 projection;
-uniform mat4 view;
-uniform mat4 model;
-
-out VS
-{
-	vec2 TexCoords;
-} vs_out;
-
-void main()
-{
-	vs_out.TexCoords = uv;
-	gl_Position = projection * view * model * vec4(pos.x+offset.x,pos.y+offset.y, pos.z, 1.0f);
+layout (location = 0) in float Type;                                                
+layout (location = 1) in vec3  Position;                                             
+layout (location = 2) in vec3  Velocity;                                             
+layout (location = 3) in float Age;                                                 
+                                                                                    
+out float Type0;                                                                    
+out vec3 Position0;                                                                 
+out vec3 Velocity0;                                                                 
+out float Age0;                                                                     
+                                                                                    
+void main()                                                                         
+{                                                                                   
+    Type0 = Type;                                                                   
+    Position0 = Position;                                                           
+    Velocity0 = Velocity;                                                           
+    Age0 = Age;                                                                     
 }
