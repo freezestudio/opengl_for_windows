@@ -2,10 +2,10 @@
 
 struct Particle
 {
-	float type;
 	float x,y,z;
 	float vx,vy,vz;
 	float age;
+	float type;
 };
 
 #define NUMBERS 1000
@@ -23,6 +23,7 @@ particle_renderer::particle_renderer()
 	, last_frame(0.0f)
 	, ftimes{0.0f}
 {
+
 }
 
 
@@ -38,25 +39,27 @@ void particle_renderer::do_init()
 	Particle Particles[NUMBERS];
 	memset(Particles, 0, sizeof(Particles));
 
-	Particles[0].type = PARTICLE_TYPE_LAUNCHER;
 	Particles[0].z = 1.0f;
 	Particles[0].vy = 0.0001f;
 	Particles[0].age = 0.0f;
+	Particles[0].type = PARTICLE_TYPE_LAUNCHER;
 	
-
+    vao.bind();
 	for (auto i = 0; i < 2; ++i)
 	{
-        tfb[i].bind();
-        vao[i].bind();
         vbo[i].bind();
         vbo[i].copy_data(Particles, sizeof(Particles), GL_DYNAMIC_DRAW);
-        tfb[i].bind_base(vao[i],0);
-        vbo[i].unbind();
-        vao[i].unbind();
-        tfb[i].unbind();
-	}
 
-	billboard_shader.compile_file_and_link("resources/shaders/billboard.vs"s,
+        tfb[i].bind();
+        tfb[i].bind_base(vbo[i], 0);
+        //tfb[i].unbind();
+
+        //vbo[i].unbind();
+	}
+    //vao.unbind();
+
+	billboard_shader.compile_file_and_link(
+        "resources/shaders/billboard.vs"s,
 		"resources/shaders/billboard.fs"s,
 		"resources/shaders/billboard.gs"s);
 	//uniform mat4 gVP;
@@ -65,18 +68,19 @@ void particle_renderer::do_init()
 	//uniform sampler2D gColorMap; 
 	billboard_shader.use();
 	billboard_shader.set_int("gColorMap"s, 0);
-	billboard_shader.set_float("gBillboardSize"s, 0.01f);
+	billboard_shader.set_float("gBillboardSize"s, 0.1f);
 
 	auto data = freeze::load_image_from_file("resources/textures/fireworks_red.jpg"s);
 	billboard_tex.bind();
 	billboard_tex.set_image(data);
-	billboard_tex.set_wrap_s(GL_REPEAT);
-	billboard_tex.set_wrap_t(GL_REPEAT);
-	billboard_tex.set_min_filter(GL_NEAREST);
-	billboard_tex.set_mag_filter(GL_NEAREST);
+	//billboard_tex.set_wrap_s(GL_REPEAT);
+	//billboard_tex.set_wrap_t(GL_REPEAT);
+	billboard_tex.set_min_filter(GL_LINEAR);
+	billboard_tex.set_mag_filter(GL_LINEAR);
 	billboard_tex.unbind();
 
-	partical_shader.compile_file("resources/shaders/particle.vs"s,
+	partical_shader.compile_file(
+        "resources/shaders/particle.vs"s,
 		"resources/shaders/particle.fs"s,
 		"resources/shaders/particle.gs"s);
 
@@ -92,10 +96,10 @@ void particle_renderer::do_init()
 
 	//uniform float gDeltaTimeMillis;
 	//uniform float gTime;
-	//uniform sampler1D gRandomTexture;
 	//uniform float gLauncherLifetime;
 	//uniform float gShellLifetime;
 	//uniform float gSecondaryShellLifetime;
+	//uniform sampler1D gRandomTexture;
 
 	partical_shader.use();
 	partical_shader.set_int("gRandomTexture"s, 3);
@@ -128,37 +132,28 @@ void particle_renderer::update()
 	random_tex.active(3);
 	random_tex.bind();
 
-	glEnable(GL_RASTERIZER_DISCARD);
-
-    vao[current].bind();
+    vao.bind();
 	vbo[current].bind();
+
+    freeze::vertex::set_enable(0, 3, sizeof(Particle) / sizeof(float), 0);
+    freeze::vertex::set_enable(1, 3, sizeof(Particle) / sizeof(float), 3);
+    freeze::vertex::set_enable(2, 1, sizeof(Particle) / sizeof(float), 6);
+    freeze::vertex::set_enable(3, 1, sizeof(Particle) / sizeof(float), 7);
+
     tfb[next].bind();
 
-    freeze::vertex::enable(0);
-    freeze::vertex::enable(1);
-    freeze::vertex::enable(2);
-    freeze::vertex::enable(3);
-
-    freeze::vertex::set(0, 1, sizeof(Particle) / sizeof(float), 0);
-    freeze::vertex::set(1, 3, sizeof(Particle) / sizeof(float), 1);
-    freeze::vertex::set(2, 3, sizeof(Particle) / sizeof(float), 4);
-    freeze::vertex::set(3, 1, sizeof(Particle) / sizeof(float), 7);
-
-	freeze::transform_feedback::begin(GL_POINTS);
-	if (first_render) {
+	glEnable(GL_RASTERIZER_DISCARD);
+	freeze::transform_feedback::begin(GL_POINTS);    
+	if (first_render)
+    {
 		glDrawArrays(GL_POINTS, 0, 1);
         first_render = false;
 	}
-	else {
+	else
+    {
 		tfb[current].draw(GL_POINTS);
 	}
     freeze::transform_feedback::end();
-
-    freeze::vertex::disable(0);
-    freeze::vertex::disable(1);
-    freeze::vertex::disable(2);
-    freeze::vertex::disable(3);
-
 	glDisable(GL_RASTERIZER_DISCARD);
 
 }
@@ -177,15 +172,11 @@ void particle_renderer::draw_particle()
 	billboard_tex.active();
 	billboard_tex.bind();
 
-    vao[next].bind();
+    vao.bind();
 	vbo[next].bind();
-
-    freeze::vertex::enable(0);
-    freeze::vertex::set(0, 3, sizeof(Particle) / sizeof(float), 1);
+    freeze::vertex::set_enable(0, 3, 0, 0);
 
     tfb[next].draw(GL_POINTS);
-
-    freeze::vertex::disable(0);
 }
 
 void particle_renderer::draw()

@@ -50,7 +50,7 @@ private:
 	freeze::texture1d random_tex;
 
 	freeze::transform_feedback  tfb[2];
-	freeze::vertex_array_buffer vao[2];
+	freeze::vertex_array_buffer vao;
 	freeze::vertex_buffer       vbo[2];
 
 	bool first_render = true;

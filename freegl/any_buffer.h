@@ -671,6 +671,48 @@ namespace freeze
 
 namespace freeze
 {
+    template<GLenum TQ = GL_QUERY>
+    struct query_t : make_object<query_t<TQ>>
+    {
+        void create(GLuint* buffer)
+        {
+            glGenQueries(1, buffer);
+            assert_error();
+        }
+
+        void destroy(GLuint const* buffer)
+        {
+            glDeleteQueries(1, buffer);
+            assert_error();
+        }
+
+        void begin(GLenum buffer)
+        {
+            glBeginQuery(buffer, this->ref());
+            assert_error();
+        }
+
+        void end(GLenum buffer)
+        {
+            glEndQuery(buffer);
+        }
+
+        //pname:
+        //    GL_QUERY_RESULT
+        //    GL_QUERY_RESULT_NO_WAIT
+        //    GL_QUERY_RESULT_AVAILABLE
+        GLuint get(GLenum pname)
+        {
+            GLuint ret;
+            glGetQueryObjectuiv(this->ref(), pname, &ret);
+            assert_error();
+            return ret;
+        }
+    };
+}
+
+namespace freeze
+{
 
     using vertex_buffer = buffer_t<GL_ARRAY_BUFFER>;
     using element_buffer = buffer_t<GL_ELEMENT_ARRAY_BUFFER>;
