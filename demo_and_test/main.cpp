@@ -1,8 +1,8 @@
 //
 //main.cpp
 
-//#include "particle_renderer.h"
 //#include "ibl_renderer.h"
+//#include "particle_renderer.h"
 #include "transform_feedback_test.h"
 
 int main()

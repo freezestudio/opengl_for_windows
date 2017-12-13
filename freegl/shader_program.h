@@ -85,7 +85,7 @@ namespace freeze
         constexpr static auto make_geometry_shader = make<shader<GL_GEOMETRY_SHADER>>;
 
 
-        void compile_and_link(std::string const& vs, std::string const& fs, std::string const& gs = "")
+        void compile_and_link(std::string const& vs, std::string const& fs =""s, std::string const& gs = ""s)
         {
             compile(vs, fs, gs);
             link();
@@ -103,7 +103,7 @@ namespace freeze
             link();
         }
 
-        void compile_file_and_link(std::string const& vs, std::string const& fs, std::string const& gs = "")
+        void compile_file_and_link(std::string const& vs, std::string const& fs =""s, std::string const& gs = ""s)
         {
             compile_file(vs, fs, gs);
             link();
@@ -120,10 +120,14 @@ namespace freeze
             compile_file(shader_files[0], shader_files[1], shader_files[2]);
         }
 
-        void compile_file(std::string const& vs, std::string const& fs, std::string const& gs = "")
+        void compile_file(std::string const& vs, std::string const& fs =""s, std::string const& gs = ""s)
         {
             auto vssource = source_from_file(vs);
-            auto fssource = source_from_file(fs);
+            std::string fssource;
+            if (!fs.empty())
+            {
+                fssource = source_from_file(fs);
+            }
             std::string gssource;
             if (!gs.empty())
             {
@@ -143,31 +147,27 @@ namespace freeze
             compile(shader_sources[0], shader_sources[1], shader_sources[2]);
         }
 
-        void compile(std::string const& vs, std::string const& fs, std::string const& gs = "")
+        void compile(std::string const& vs, std::string const& fs = ""s, std::string const& gs = ""s)
         {
+            if (vs.empty())return;
+
             auto vs_shader = make_vertex_shader();
             vs_shader.source(vs);
-
-            auto gs_shader = make_geometry_shader();
-            if (!gs.empty()) {
+            glAttachShader(this->ref(), vs_shader.ref());
+            
+            if (!gs.empty()) 
+            {
+                auto gs_shader = make_geometry_shader();
                 gs_shader.source(gs);
-            }
-
-            auto fs_shader = make_fragment_shader();
-            fs_shader.source(fs);
-
-            if (!gs.empty())
-            {
-                glAttachShader(this->ref(), vs_shader.ref());
                 glAttachShader(this->ref(), gs_shader.ref());
-                glAttachShader(this->ref(), fs_shader.ref());
-            }
-            else
-            {
-                glAttachShader(this->ref(), vs_shader.ref());
-                glAttachShader(this->ref(), fs_shader.ref());
             }
 
+            if (!fs.empty())
+            {
+                auto fs_shader = make_fragment_shader();
+                fs_shader.source(fs);
+                glAttachShader(this->ref(), fs_shader.ref());
+            }
         }
 
         void link()

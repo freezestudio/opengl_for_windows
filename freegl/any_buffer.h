@@ -104,6 +104,12 @@ namespace freeze
             assert_error();
         }
 
+        void get_subdata(void* data, GLintptr offset, GLsizeiptr size)
+        {
+            glGetBufferSubData(Target, offset, size, data);
+            assert_error();
+        }
+
         void clear_data(GLenum internalformat,
             GLenum format,
             GLenum type,
@@ -205,6 +211,7 @@ namespace freeze
     template<GLenum UB = GL_UNIFORM_BUFFER>
     struct uniform_buffer_t : buffer_t<UB>
     {
+        //ver4.2 layout(std140,binding=x) uniform xxx{...}
         void block_binding(GLuint program, std::string const& name, GLuint index)
         {
             auto block_index = glGetUniformBlockIndex(program, name.c_str());
@@ -571,15 +578,15 @@ namespace freeze
 			assert_error();
 		}
 
-		void bind_base(GLuint index)
+		void bind_base(GLuint buffer, GLuint index)
 		{
-			glBindBufferBase(GL_TRANSFORM_FEEDBACK_BUFFER, index, this->ref());
+			glBindBufferBase(GL_TRANSFORM_FEEDBACK_BUFFER, index, buffer);
 			assert_error();
 		}
 
-		void bind_range(GLuint index, GLintptr offset, GLsizeiptr size)
+		void bind_range(GLuint buffer,GLuint index, GLintptr offset, GLsizeiptr size)
 		{
-			glBindBufferRange(GL_TRANSFORM_FEEDBACK_BUFFER, index, this->ref(), offset, size);
+			glBindBufferRange(GL_TRANSFORM_FEEDBACK_BUFFER, index, buffer, offset, size);
 			assert_error();
 		}
 
@@ -594,6 +601,12 @@ namespace freeze
 			glBufferSubData(GL_TRANSFORM_FEEDBACK_BUFFER, offset, size, data);
 			assert_error();
 		}
+
+        void get_subdata(void* data,GLintptr offset,GLsizeiptr size)
+        {
+            glGetBufferSubData(GL_TRANSFORM_FEEDBACK_BUFFER, offset, size, data);
+            assert_error();
+        }
 
         //void varyings(GLuint program, GLsizei count, const char **varyings, GLenum bufferMode)
         //{
@@ -677,6 +690,7 @@ namespace freeze
     constexpr auto make_frame_buffer = make<frame_buffer>;
     constexpr auto make_read_frame_buffer = make<read_frame_buffer>;
     constexpr auto make_draw_frame_buffer = make<draw_frame_buffer>;
+    constexpr auto make_transform_feedback = make<transform_feedback>;
 }
 
 

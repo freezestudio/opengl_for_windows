@@ -50,7 +50,7 @@ void particle_renderer::do_init()
         vao[i].bind();
         vbo[i].bind();
         vbo[i].copy_data(Particles, sizeof(Particles), GL_DYNAMIC_DRAW);
-        tfb[i].bind_base(0);
+        tfb[i].bind_base(vao[i],0);
         vbo[i].unbind();
         vao[i].unbind();
         tfb[i].unbind();
