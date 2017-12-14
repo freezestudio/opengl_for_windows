@@ -39,8 +39,10 @@ void particle_renderer::do_init()
 	Particle Particles[NUMBERS];
 	memset(Particles, 0, sizeof(Particles));
 
+    Particles[0].x = 0.2f;
+    Particles[0].y = -0.2f;
 	Particles[0].z = 1.0f;
-	Particles[0].vy = 0.0001f;
+	Particles[0].vy = 0.1f;
 	Particles[0].age = 0.0f;
 	Particles[0].type = PARTICLE_TYPE_LAUNCHER;
 	
@@ -52,11 +54,11 @@ void particle_renderer::do_init()
 
         tfb[i].bind();
         tfb[i].bind_base(vbo[i], 0);
-        //tfb[i].unbind();
+        tfb[i].unbind();
 
-        //vbo[i].unbind();
+        vbo[i].unbind();
 	}
-    //vao.unbind();
+    vao.unbind();
 
 	billboard_shader.compile_file_and_link(
         "resources/shaders/billboard.vs"s,
@@ -68,7 +70,7 @@ void particle_renderer::do_init()
 	//uniform sampler2D gColorMap; 
 	billboard_shader.use();
 	billboard_shader.set_int("gColorMap"s, 0);
-	billboard_shader.set_float("gBillboardSize"s, 0.1f);
+	billboard_shader.set_float("gBillboardSize"s, 0.05f);
 
 	auto data = freeze::load_image_from_file("resources/textures/fireworks_red.jpg"s);
 	billboard_tex.bind();
@@ -84,14 +86,13 @@ void particle_renderer::do_init()
 		"resources/shaders/particle.fs"s,
 		"resources/shaders/particle.gs"s);
 
-	const GLchar* Varyings[4];
-	Varyings[0] = "Type1";
-	Varyings[1] = "Position1";
-	Varyings[2] = "Velocity1";
-	Varyings[3] = "Age1";
-
-	glTransformFeedbackVaryings(partical_shader, 4, Varyings, GL_INTERLEAVED_ATTRIBS);
-
+    const GLchar* Varyings[4] = {
+        "Position1",
+        "Velocity1",
+        "Age1",
+        "Type1",
+    };
+    partical_shader.set_varyings(Varyings, 4);
     partical_shader.link();
 
 	//uniform float gDeltaTimeMillis;
@@ -103,9 +104,9 @@ void particle_renderer::do_init()
 
 	partical_shader.use();
 	partical_shader.set_int("gRandomTexture"s, 3);
-	partical_shader.set_float("gLauncherLifetime"s, 100.0f);
-	partical_shader.set_float("gShellLifetime"s, 10000.0f);
-	partical_shader.set_float("gSecondaryShellLifetime"s, 2500.0f);
+	partical_shader.set_float("gLauncherLifetime"s, 10.0f);
+	partical_shader.set_float("gShellLifetime"s, 100.0f);
+	partical_shader.set_float("gSecondaryShellLifetime"s, 25.0f);
 
 	glm::vec3 pData[NUMBERS];
 	for (auto i = 0; i < NUMBERS; ++i)
@@ -134,11 +135,11 @@ void particle_renderer::update()
 
     vao.bind();
 	vbo[current].bind();
-
     freeze::vertex::set_enable(0, 3, sizeof(Particle) / sizeof(float), 0);
     freeze::vertex::set_enable(1, 3, sizeof(Particle) / sizeof(float), 3);
     freeze::vertex::set_enable(2, 1, sizeof(Particle) / sizeof(float), 6);
     freeze::vertex::set_enable(3, 1, sizeof(Particle) / sizeof(float), 7);
+    vbo[current].unbind();
 
     tfb[next].bind();
 
@@ -156,6 +157,8 @@ void particle_renderer::update()
     freeze::transform_feedback::end();
 	glDisable(GL_RASTERIZER_DISCARD);
 
+    tfb[next].unbind();
+    vao.unbind();
 }
 
 void particle_renderer::draw_particle()
@@ -173,10 +176,29 @@ void particle_renderer::draw_particle()
 	billboard_tex.bind();
 
     vao.bind();
-	vbo[next].bind();
-    freeze::vertex::set_enable(0, 3, 0, 0);
 
+	vbo[next].bind();
+    freeze::vertex::set_enable(0, 3, sizeof(Particle)/sizeof(float), 0);
+    vbo[next].unbind();
+
+    Particle feedback[10];
+    tfb[next].get_subdata(feedback, 0, sizeof(feedback));
+    std::cout << "--------------" << std::endl;
+    for (auto i = 0; i < 10; ++i)
+    {
+        std::cout <<"age:"<< feedback[i].age 
+            <<" x:"<<feedback[i].x
+            <<" y:"<<feedback[i].y 
+            << " z:" << feedback[i].z
+            << std::endl;
+    }
+
+
+    tfb[next].bind();
     tfb[next].draw(GL_POINTS);
+    tfb[next].unbind();
+
+    vao.unbind();
 }
 
 void particle_renderer::draw()

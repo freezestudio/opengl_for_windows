@@ -85,7 +85,9 @@ namespace freeze
         constexpr static auto make_geometry_shader = make<shader<GL_GEOMETRY_SHADER>>;
 
 
-        void compile_and_link(std::string const& vs, std::string const& fs =""s, std::string const& gs = ""s)
+        void compile_and_link(std::string const& vs, 
+            std::string const& fs =""s, 
+            std::string const& gs = ""s)
         {
             compile(vs, fs, gs);
             link();
@@ -103,7 +105,9 @@ namespace freeze
             link();
         }
 
-        void compile_file_and_link(std::string const& vs, std::string const& fs =""s, std::string const& gs = ""s)
+        void compile_file_and_link(std::string const& vs, 
+            std::string const& fs =""s, 
+            std::string const& gs = ""s)
         {
             compile_file(vs, fs, gs);
             link();
@@ -120,7 +124,9 @@ namespace freeze
             compile_file(shader_files[0], shader_files[1], shader_files[2]);
         }
 
-        void compile_file(std::string const& vs, std::string const& fs =""s, std::string const& gs = ""s)
+        void compile_file(std::string const& vs, 
+            std::string const& fs =""s, 
+            std::string const& gs = ""s)
         {
             auto vssource = source_from_file(vs);
             std::string fssource;
@@ -147,7 +153,9 @@ namespace freeze
             compile(shader_sources[0], shader_sources[1], shader_sources[2]);
         }
 
-        void compile(std::string const& vs, std::string const& fs = ""s, std::string const& gs = ""s)
+        void compile(std::string const& vs, 
+            std::string const& fs = ""s, 
+            std::string const& gs = ""s)
         {
             if (vs.empty())return;
 

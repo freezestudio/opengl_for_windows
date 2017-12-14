@@ -2,9 +2,9 @@
 
 layout(points) in;                                                                  
 layout(triangle_strip, max_vertices = 4) out;                                    
-                                                                                    
-uniform mat4  gVP;                                                                   
-uniform vec3  gCameraPos;                                                            
+                                                                                   
+uniform mat4 gVP;                                                                   
+uniform vec3 gCameraPos;                                                            
 uniform float gBillboardSize;                                                       
                                                                                     
 out vec2 TexCoord;                                                                  
