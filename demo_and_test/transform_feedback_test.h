@@ -34,8 +34,12 @@ public:
     void draw_particle();
     void process_event(window_pointer window);
 private:
+    freeze::program             tf_shader;
+    freeze::program             draw_shader;
     freeze::transform_feedback  tfo[2];
     freeze::vertex_buffer       vbo[2];
     freeze::vertex_array_buffer vao;
+    int prev = 0;
+    int next = 1;
 };
 
