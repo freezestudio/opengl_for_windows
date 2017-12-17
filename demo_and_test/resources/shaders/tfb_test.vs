@@ -5,5 +5,5 @@ out float gs_value;
 
 void main()
 {
-    gs_value = pow(in_value,2.0f);
+    gs_value = in_value;
 }

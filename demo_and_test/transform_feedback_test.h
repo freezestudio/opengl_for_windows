@@ -33,5 +33,9 @@ public:
     void update();
     void draw_particle();
     void process_event(window_pointer window);
+private:
+    freeze::transform_feedback  tfo[2];
+    freeze::vertex_buffer       vbo[2];
+    freeze::vertex_array_buffer vao;
 };
 

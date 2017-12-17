@@ -208,6 +208,9 @@
     <None Include="resources\shaders\tfb_test.gs">
       <Filter>资源文件\resources\shaders</Filter>
     </None>
+    <None Include="resources\shaders\tfb_test.fs">
+      <Filter>资源文件\resources\shaders</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Image Include="resources\objects\cyborg\cyborg_diffuse.png">

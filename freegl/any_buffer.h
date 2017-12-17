@@ -738,6 +738,13 @@ namespace freeze
     constexpr auto make_read_frame_buffer = make<read_frame_buffer>;
     constexpr auto make_draw_frame_buffer = make<draw_frame_buffer>;
     constexpr auto make_transform_feedback = make<transform_feedback>;
+
+    constexpr auto make_vbo = make<vertex_buffer>;
+    constexpr auto make_ebo = make<element_buffer>;
+    constexpr auto make_vao = make<vertex_array_buffer>;
+    constexpr auto make_ubo = make<uniform_buffer>;
+    constexpr auto make_rbo = make<render_buffer>;
+    constexpr auto make_tfo = make<transform_feedback>;
 }
 
 

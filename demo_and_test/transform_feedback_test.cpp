@@ -18,7 +18,8 @@ void transform_feedback_test::do_init()
     auto tfb = freeze::make_transform_feedback();
 
     auto tfb_shader = freeze::make_program();
-    tfb_shader.compile_file("resources/shaders/tfb_test.vs"s,
+    tfb_shader.compile_file(
+        "resources/shaders/tfb_test.vs"s,
         ""s, 
         "resources/shaders/tfb_test.gs"s);
 
@@ -39,22 +40,22 @@ void transform_feedback_test::do_init()
 
     auto output_vbo = freeze::make_vertex_buffer();
     output_vbo.bind();
-    output_vbo.copy_data(nullptr, sizeof(data)*3, GL_STATIC_READ);
-
+    output_vbo.copy_data(nullptr, sizeof(data)*2, GL_STATIC_READ);
+    
     tfb.bind();
     tfb.bind_base(output_vbo,0);
 
     glEnable(GL_RASTERIZER_DISCARD);
-    tfb.begin(GL_TRIANGLES);
+    tfb.begin(GL_POINTS);
     glDrawArrays(GL_POINTS, 0, 5);
     tfb.end();
     glDisable(GL_RASTERIZER_DISCARD);
     glFlush();
+    
+    GLfloat feedback[5*2];
+    tfb.get_subdata(feedback, 0, sizeof(feedback));
 
-    GLfloat feed_back[5*3];
-    tfb.get_subdata(feed_back, 0, sizeof(feed_back));
-
-    for (auto fb : feed_back)
+    for (auto fb : feedback)
     {
         std::cout << fb << " ";
     }

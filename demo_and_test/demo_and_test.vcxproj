@@ -203,6 +203,7 @@
     <None Include="resources\shaders\test_only.fs" />
     <None Include="resources\shaders\test_only.vs" />
     <None Include="resources\shaders\test_pick.vs" />
+    <None Include="resources\shaders\tfb_test.fs" />
     <None Include="resources\shaders\tfb_test.gs" />
     <None Include="resources\shaders\tfb_test.vs" />
     <None Include="resources\textures\hdr\newport_loft.hdr" />
