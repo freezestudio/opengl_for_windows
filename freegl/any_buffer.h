@@ -745,6 +745,16 @@ namespace freeze
     constexpr auto make_ubo = make<uniform_buffer>;
     constexpr auto make_rbo = make<render_buffer>;
     constexpr auto make_tfo = make<transform_feedback>;
+
+    using vbo = vertex_buffer;
+    using ebo = element_buffer;
+    using vao = vertex_array_buffer;
+    using ubo = uniform_buffer;
+    using rbo = render_buffer;
+    using fbo = frame_buffer;
+    //using tbo = transform_feedback_buffer;
+
+    using tfo = transform_feedback;
 }
 
 

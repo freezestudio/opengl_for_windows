@@ -27,6 +27,10 @@ namespace freeze
     // gl_FragCoord中也包含了一个z分量，它包含了片段真正的深度值。
     // z值就是需要与深度缓冲内容所对比的那个值。
     //
+    // 1. enable()和disable()控制是否启用深度测试
+    // 2. glDepthFunc(f)控制比较操作，f是比较操作符。片段的深度值与对应深度缓冲中的值用f进行比较。
+    // 3. glDepthMask(b)控制深度值的写入
+    //
     struct depth
     {
         static inline void enable()
@@ -42,6 +46,11 @@ namespace freeze
         static inline void clear()
         {
             glClear(GL_DEPTH_BUFFER_BIT);
+        }
+
+        static inline void mask(GLboolean flag)
+        {
+            glDepthMask(flag);
         }
 
         static inline void test(GLenum func = GL_LESS)

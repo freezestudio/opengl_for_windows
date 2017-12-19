@@ -45,15 +45,17 @@ void transform_feedback_test::do_init()
     vbo[prev].copy_subdata(data, sizeof(data), 0);
     freeze::vertex::set_enable(0, 1, 0, 0);
     
+    //激活后一个回馈
     tfo[next].bind();
+
     //tfo绑定的是后一个
     //这里，仅回馈而不用于渲染
     //数据将回馈到tfo[next]所绑定的缓冲区中
     //tfo[next]所绑定的缓冲区是vbo[next]
     glEnable(GL_RASTERIZER_DISCARD);
-    tfo[next].begin(GL_POINTS);
+    freeze::tfo::begin(GL_POINTS);
     glDrawArrays(GL_POINTS, 0, 5);
-    tfo[next].end();
+    freeze::tfo::end();
     glDisable(GL_RASTERIZER_DISCARD);
     //glFlush();
     
@@ -69,6 +71,7 @@ void transform_feedback_test::draw()
 
 void transform_feedback_test::draw_particle()
 {
+    //test
     GLfloat feedback[5];
     tfo[next].get_subdata(feedback, 0, sizeof(feedback));
     for (auto fb : feedback)
@@ -76,6 +79,8 @@ void transform_feedback_test::draw_particle()
         std::cout << fb << " ";
     }
     std::cout << std::endl;
+
+    //draw
 
     draw_shader.use();
     
@@ -87,23 +92,22 @@ void transform_feedback_test::draw_particle()
 
 void transform_feedback_test::update()
 {
-    std::swap(prev, next);
+    tfo[prev].bind();
+    vbo[next].bind();
 
     tf_shader.use();
 
-    tfo[next].bind();
-    vbo[prev].bind();
-
     //tfo绑定的是后一个
     //这里，仅回馈而不用于渲染
-    //数据将回馈到tfo[next]所绑定的缓冲区中
-    //tfo[next]所绑定的缓冲区是vbo[next]
+    //数据将回馈到tfo[prev]所绑定的缓冲区中
+    //tfo[prev]所绑定的缓冲区是vbo[prev]
     glEnable(GL_RASTERIZER_DISCARD);
-    tfo[prev].begin(GL_POINTS);
-    tfo[prev].draw(GL_POINTS);
-    tfo[prev].end();
+    freeze::tfo::begin(GL_POINTS);
+    tfo[next].draw(GL_POINTS);
+    freeze::tfo::end();
     glDisable(GL_RASTERIZER_DISCARD);
 
+    std::swap(prev, next);
 }
 
 void transform_feedback_test::process_event(window_pointer window)
