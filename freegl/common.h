@@ -967,7 +967,7 @@ using namespace std::literals;
 #include "shader_program.h"
 #include "texture.h"
 #include "vertex.h"
-#include "mesh.h"
+//#include "mesh.h"
 #include "model.h"
 #include "camera.h"
 #include "color.h"
