@@ -7,6 +7,28 @@
 
 namespace freeze
 {
+
+    inline std::string source_from_file(std::string const& file)
+    {
+        std::ifstream ifs{ file };
+        if (!ifs.good())
+        {
+            ifs.clear();
+            ifs.close();
+            ifs.open(file); if (ifs.bad() || !ifs.is_open())
+                return ""s;
+        }
+
+        std::stringstream ss;
+        ss << ifs.rdbuf();
+        auto source = ss.str();
+        ifs.close();
+        return source;
+    }
+}
+
+namespace freeze
+{
     template<typename = void>
     struct program_t
         : make_object<program_t<void>, false>
@@ -115,9 +137,9 @@ namespace freeze
 
         void compile_file(std::vector<std::string> const& shader_files)
         {
-            if (shader_files.size() < 2)
+            if (shader_files.size() < 1)
             {
-                LOGE("compile file must at least 2 files");
+                LOGE("compile file must at least 1 files");
                 return;
             }
 
@@ -320,23 +342,6 @@ namespace freeze
             return loc;
         }
 
-        std::string source_from_file(std::string const& file)
-        {
-            std::ifstream ifs{ file };
-            if (!ifs.good())
-            {
-                ifs.clear();
-                ifs.close();
-                ifs.open(file); if (ifs.bad() || !ifs.is_open())
-                    return ""s;
-            }
-
-            std::stringstream ss;
-            ss << ifs.rdbuf();
-            auto source = ss.str();
-            ifs.close();
-            return source;
-        }
     };
 }
 
