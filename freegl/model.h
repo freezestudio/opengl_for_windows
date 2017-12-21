@@ -19,16 +19,24 @@ namespace freeze
 
     struct mesh_data
     {
+        //顶点
         std::vector<model_vertex> Vertices;
-        std::vector<unsigned> Indices;
-        std::vector<char> Albedo;
-        std::vector<char> Normal;
-        std::vector<char> Orm;
+        //索引
+        std::vector<unsigned>     Indices;
+        //基本颜色
+        std::vector<char>         Albedo;
+        //法线
+        std::vector<char>         Normal;
+        //遮蔽度，粗糙度，金属度
+        std::vector<char>         Orm;
+        //3 texture
+        std::vector<texture2d>    Textures;
     };
 }
+
 namespace freeze
 {
-    template<typename Vertex,bool Delay>
+    template<typename Vertex, bool Delay>
     class mesh_t
     {
     public:
@@ -38,16 +46,10 @@ namespace freeze
         }
 
     public:
-        void load(std::vector<Vertex>& v,
-            std::vector<GLuint>& i,
-            std::vector<texture2d>& t)
-        {
-            vecVertices = v;
-            vecIndices = i;
-            vecTextures = t;
-        }
-
-        void setup(program& shader)
+        void setup(
+            program& shader,
+            std::vector<Vertex>& vecVertices,
+            std::vector<GLuint>& vecIndices)
         {
             if (!vao && vao.is_delayed())
             {
@@ -60,9 +62,9 @@ namespace freeze
             auto ebo = make_element_buffer();
             ebo.bind();
             ebo.copy_data(&vecIndices[0], vecIndices.size() * sizeof(GLuint));
-            vertex::set_enable(0, 3, GL_FLOAT,GL_FALSE, 8 * sizeof(float), 0);
-            vertex::set_enable(1, 3, GL_FLOAT,GL_FALSE, 8 * sizeof(float), 3 * sizeof(float));
-            vertex::set_enable(2, 2, GL_FLOAT,GL_FALSE, 8 * sizeof(float), 6 * sizeof(float));
+            vertex::set_enable(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), 0);
+            vertex::set_enable(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), 3 * sizeof(float));
+            vertex::set_enable(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), 6 * sizeof(float));
             vbo.unbind();
             //ebo.unbind();
             vao.unbind();
@@ -73,7 +75,10 @@ namespace freeze
             shader.set_int("material.orm", 2);
         }
 
-        void draw(program& shader)
+        void draw(
+            program& shader, 
+            std::vector<texture2d>& vecTextures, 
+            std::vector<GLuint>& vecIndices)
         {
             shader.use();
             vecTextures[0].active(0);
@@ -88,9 +93,6 @@ namespace freeze
             vao.unbind();
         }
     private:
-        std::vector<Vertex> vecVertices;
-        std::vector<GLuint> vecIndices;
-        std::vector<texture2d> vecTextures;
         vertex_array_buffer_t<Delay> vao;
     };
 }
@@ -103,18 +105,19 @@ namespace freeze
     public:
         struct mesh_list
         {
-            mesh_t<Vertex,Delay> mesh;
-            mesh_data      data;
+            mesh_t<Vertex, Delay> mesh;
+            mesh_data             data;
         };
 
         model_t()
         {
 
         }
+
     public:
         void load(std::string const& file)
         {
-            auto pos = file.find_last_of("\\/")+1;
+            auto pos = file.find_last_of("\\/") + 1;
             dir = file.substr(0, pos);
             name = file.substr(pos, file.size() - pos - 4);//length(".obj")==4
 
@@ -127,23 +130,21 @@ namespace freeze
 
         void setup(program& shader)
         {
-            for (auto& list : vecMeshs)
-            {  
-                std::vector<texture2d> texs =
-                    to_texture(
-                        std::vector<std::vector<char>>{ list.data.Albedo,list.data.Normal,list.data.Orm });
-                list.mesh.load(list.data.Vertices, list.data.Indices, texs);
-                list.mesh.setup(shader);
+            for (auto& list : vec_mesh_data)
+            {
+                list.data.Textures = to_texture(list.data.Albedo, list.data.Normal, list.data.Orm);
+                list.mesh.setup(shader, list.data.Vertices, list.data.Indices);
             }
         }
 
         void draw(program& shader)
         {
-            for (auto& list : vecMeshs)
+            for (auto& list : vec_mesh_data)
             {
-                list.mesh.draw(shader);
+                list.mesh.draw(shader,list.data.Textures,list.data.Indices);
             }
         }
+
     private:
         void process_node(aiNode const* node, aiScene const* scene)
         {
@@ -194,19 +195,19 @@ namespace freeze
 
             //纹理            
             auto texture_name = name + "_BaseColor.png"s;
-            auto albedo =load_texture(texture_name);
+            auto albedo = load_texture(texture_name);
             texture_name = name + "_Normal.png"s;
             auto normal = load_texture(texture_name);
             texture_name = name + "_OcclusionRoughnessMetallic.png"s;
             auto orm = load_texture(texture_name);
 
             //装载一个网格
-            auto tMesh = make<mesh_t<Vertex,Delay>>();
-            mesh_data dataMesh = {
+            auto mesh_instance = make<mesh_t<Vertex, Delay>>();
+            mesh_data data = {
                 vecVerices,vecIndices,albedo,normal,orm,
             };
 
-            vecMeshs.emplace_back(mesh_list{ tMesh,dataMesh });
+            vec_mesh_data.emplace_back(mesh_list{ mesh_instance,data });
         }
 
         std::vector<char> load_texture(std::string const& name)
@@ -229,26 +230,34 @@ namespace freeze
             return buffer;
         }
 
-        std::vector<texture2d> to_texture(std::vector<std::vector<char>>& datas)
+        std::vector<texture2d> to_texture(
+            std::vector<char> const& albedo,
+            std::vector<char> const& normal,
+            std::vector<char> const& orm)
         {
             std::vector<texture2d> t2d;
-            for (auto& d : datas)
-            {
-                auto tex = make_texture2d();
-                tex.bind();
-                tex.set_image(d);
-                tex.mipmap();
-                tex.set_wrap_s(GL_REPEAT);
-                tex.set_wrap_t(GL_REPEAT);
-                tex.set_min_filter(GL_LINEAR_MIPMAP_LINEAR);
-                tex.set_mag_filter(GL_LINEAR);
-                tex.unbind();
-                t2d.emplace_back(tex);
-            }
+            t2d.emplace_back(to_texture(albedo));
+            t2d.emplace_back(to_texture(normal));
+            t2d.emplace_back(to_texture(orm));
             return t2d;
         }
+
+        texture2d to_texture(std::vector<char> const& data)
+        {            
+            auto tex = make_texture2d();
+            tex.bind();
+            tex.set_image(data);
+            tex.mipmap();
+            tex.set_wrap_s(GL_REPEAT);
+            tex.set_wrap_t(GL_REPEAT);
+            tex.set_min_filter(GL_LINEAR_MIPMAP_LINEAR);
+            tex.set_mag_filter(GL_LINEAR);
+            tex.unbind();
+            return tex;
+        }
     private:
-        std::vector<mesh_list> vecMeshs;
+        std::vector<mesh_list> vec_mesh_data;
+        std::vector < std::vector<texture2d> > vec_mesh_tex;
         std::string dir;
         std::string name;
     };
@@ -257,7 +266,7 @@ namespace freeze
 namespace freeze
 {
     using modeless = model_t<model_vertex, true>;
-    using modeled  = model_t<model_vertex, false>;
+    using modeled = model_t<model_vertex, false>;
 }
 
 #endif

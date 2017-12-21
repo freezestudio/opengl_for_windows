@@ -928,6 +928,7 @@ inline void __assert_error__(char const* func)
         case GL_INVALID_FRAMEBUFFER_OPERATION:errmsg = "读取或写入一个不完整的帧缓冲"s; break;
         }
         LOGE("%s error : %d, msg: %s\n", func, err, errmsg.c_str());
+        assert(err != 0);
     }
 }
 
@@ -948,6 +949,7 @@ inline void __assert_error__(char const* func, char const* name)
         case GL_INVALID_FRAMEBUFFER_OPERATION:errmsg = "读取或写入一个不完整的帧缓冲"s; break;
         }
         LOGE("%s error('%s') : %d, msg: %s\n", func, name, err, errmsg.c_str());
+        assert(err != 0);
     }
 }
 #define assert_error()  __assert_error__(__FUNCTION__)

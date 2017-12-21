@@ -295,12 +295,12 @@ namespace freeze
 
 		//别忘了先绑定
 		bool set_image(std::vector<char> const& data)
-		{
+		{            
 			int x, y, channels;
 
 			auto image_data = stbi_load_from_memory((stbi_uc*)data.data(), data.size(), &x, &y, &channels, 0);
 			if (!image_data)return false;
-
+            
 			switch (channels)
 			{
 			default:

@@ -172,7 +172,17 @@ namespace freeze
                 LOGE("compile must at least 2 sources");
                 return;
             }
-            compile(shader_sources[0], shader_sources[1], shader_sources[2]);
+
+            auto size = shader_sources.size();
+            if (size == 0)return;
+
+            if (size == 1)compile(shader_sources[0]);
+            else if (size == 2)compile(shader_sources[0], shader_sources[1]);
+            else if(size>2) compile(shader_sources[0], shader_sources[1], shader_sources[2]);
+            else
+            {
+                //other ... nothings
+            }
         }
 
         void compile(std::string const& vs, 

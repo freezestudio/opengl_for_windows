@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.27004.2010
+VisualStudioVersion = 15.0.27130.2010
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "demo_and_test", "demo_and_test\demo_and_test.vcxproj", "{D0DEB8C4-531E-45D4-8E6E-26CDB8AC2F75}"
 EndProject
@@ -21,7 +21,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "freegl", "freegl", "{2606D5
 		freegl\depth.h = freegl\depth.h
 		freegl\light.h = freegl\light.h
 		freegl\material.h = freegl\material.h
-		freegl\mesh.h = freegl\mesh.h
 		freegl\model.h = freegl\model.h
 		freegl\particle.h = freegl\particle.h
 		freegl\quickly.h = freegl\quickly.h
