@@ -53,6 +53,11 @@ namespace freeze
             glDepthMask(flag);
         }
 
+        static inline void read_only(bool ro = true)
+        {
+            mask(ro ? GL_FALSE : GL_TRUE);
+        }
+
         static inline void test(GLenum func = GL_LESS)
         {
             glDepthFunc(func);

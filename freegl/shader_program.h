@@ -115,6 +115,14 @@ namespace freeze
             link();
         }
 
+        void compile_file_and_link(std::string const& vs, 
+            std::string const& fs =""s, 
+            std::string const& gs = ""s)
+        {
+            compile_file(vs, fs, gs);
+            link();
+        }
+
         void compile_and_link(std::vector<std::string> const& shader_sources)
         {
             compile(shader_sources);
@@ -127,14 +135,6 @@ namespace freeze
             link();
         }
 
-        void compile_file_and_link(std::string const& vs, 
-            std::string const& fs =""s, 
-            std::string const& gs = ""s)
-        {
-            compile_file(vs, fs, gs);
-            link();
-        }
-
         void compile_file(std::vector<std::string> const& shader_files)
         {
             if (shader_files.size() < 1)
@@ -143,7 +143,11 @@ namespace freeze
                 return;
             }
 
-            compile_file(shader_files[0], shader_files[1], shader_files[2]);
+            auto size = shader_sources.size();
+
+            if      (size == 1) compile_file(shader_files[0]);
+            else if (size == 2) compile_file(shader_files[0], shader_files[1]);
+            else                compile_file(shader_files[0], shader_files[1], shader_files[2]);
         }
 
         void compile_file(std::string const& vs, 
@@ -167,22 +171,18 @@ namespace freeze
 
         void compile(std::vector<std::string> const& shader_sources)
         {
-            if (shader_sources.size() < 2)
+            if (shader_sources.size() < 1)
             {
-                LOGE("compile must at least 2 sources");
+                LOGE("compile must at least 1 sources");
                 return;
             }
 
             auto size = shader_sources.size();
-            if (size == 0)return;
 
-            if (size == 1)compile(shader_sources[0]);
-            else if (size == 2)compile(shader_sources[0], shader_sources[1]);
-            else if(size>2) compile(shader_sources[0], shader_sources[1], shader_sources[2]);
-            else
-            {
-                //other ... nothings
-            }
+            if      (size == 1) compile(shader_sources[0]);
+            else if (size == 2) compile(shader_sources[0], shader_sources[1]);
+            else                compile(shader_sources[0], shader_sources[1], shader_sources[2]);
+            
         }
 
         void compile(std::string const& vs, 
