@@ -5,14 +5,9 @@ struct Particle
 	float x,y,z;
 	float vx,vy,vz;
 	float age;
-	float type;
 };
 
 #define NUMBERS 1000
-
-#define PARTICLE_TYPE_LAUNCHER 0.0f
-#define PARTICLE_TYPE_SHELL    1.0f
-#define PARTICLE_TYPE_SHELL_2  2.0f
 
 particle_renderer::particle_renderer()
 	: scene_camera{0.0f,0.0f,3.0f}
@@ -39,12 +34,12 @@ void particle_renderer::do_init()
 	Particle Particles[NUMBERS];
 	memset(Particles, 0, sizeof(Particles));
 
-    Particles[0].x = 0.2f;
-    Particles[0].y = -0.2f;
-	Particles[0].z = 1.0f;
-	Particles[0].vy = 0.1f;
+    Particles[0].x = 0.0f;
+    Particles[0].y = 0.0f;
+	Particles[0].z = 0.0f;
+    Particles[0].vx = 0.01f;
+	Particles[0].vy = 0.01f;
 	Particles[0].age = 0.0f;
-	Particles[0].type = PARTICLE_TYPE_LAUNCHER;
 	
     vao.bind();
 	for (auto i = 0; i < 2; ++i)
@@ -54,11 +49,11 @@ void particle_renderer::do_init()
 
         tfb[i].bind();
         tfb[i].bind_base(vbo[i], 0);
-        tfb[i].unbind();
 
-        vbo[i].unbind();
+        //tfb[i].unbind();
+        //vbo[i].unbind();
 	}
-    vao.unbind();
+    //vao.unbind();
 
 	billboard_shader.compile_file_and_link(
         "resources/shaders/billboard.vs"s,
@@ -70,7 +65,7 @@ void particle_renderer::do_init()
 	//uniform sampler2D gColorMap; 
 	billboard_shader.use();
 	billboard_shader.set_int("gColorMap"s, 0);
-	billboard_shader.set_float("gBillboardSize"s, 0.05f);
+	billboard_shader.set_float("gBillboardSize"s, 0.1f);
 
 	auto data = freeze::load_image_from_file("resources/textures/fireworks_red.jpg"s);
 	billboard_tex.bind();
@@ -84,29 +79,22 @@ void particle_renderer::do_init()
 	partical_shader.compile_file(
         "resources/shaders/particle.vs"s,
 		"resources/shaders/particle.fs"s,
-		"resources/shaders/particle.gs"s);
+        "resources/shaders/particle.gs"s);
 
-    const GLchar* Varyings[4] = {
-        "Position1",
-        "Velocity1",
-        "Age1",
-        "Type1",
+    const GLchar* Varyings[] = {
+        "GS.Position",
+        "GS.Velocity",
+        "GS.Age",
     };
-    partical_shader.set_varyings(Varyings, 4);
+    partical_shader.set_varyings(Varyings, 3);
     partical_shader.link();
 
-	//uniform float gDeltaTimeMillis;
-	//uniform float gTime;
-	//uniform float gLauncherLifetime;
-	//uniform float gShellLifetime;
-	//uniform float gSecondaryShellLifetime;
-	//uniform sampler1D gRandomTexture;
+    //uniform float gDeltaTime;
+    //uniform float gTime;
+    //uniform sampler1D gRandomTexture;
 
 	partical_shader.use();
 	partical_shader.set_int("gRandomTexture"s, 3);
-	partical_shader.set_float("gLauncherLifetime"s, 10.0f);
-	partical_shader.set_float("gShellLifetime"s, 100.0f);
-	partical_shader.set_float("gSecondaryShellLifetime"s, 25.0f);
 
 	glm::vec3 pData[NUMBERS];
 	for (auto i = 0; i < NUMBERS; ++i)
@@ -127,24 +115,21 @@ void particle_renderer::do_init()
 void particle_renderer::update()
 {
 	partical_shader.use();
-	partical_shader.set_float("gDeltaTimeMillis"s, delta_time);
+	partical_shader.set_float("gDeltaTime"s, delta_time);
 	partical_shader.set_float("gTime"s, ftimes);
 
 	random_tex.active(3);
 	random_tex.bind();
 
-    vao.bind();
 	vbo[current].bind();
     freeze::vertex::set_enable(0, 3, sizeof(Particle) / sizeof(float), 0);
     freeze::vertex::set_enable(1, 3, sizeof(Particle) / sizeof(float), 3);
     freeze::vertex::set_enable(2, 1, sizeof(Particle) / sizeof(float), 6);
-    freeze::vertex::set_enable(3, 1, sizeof(Particle) / sizeof(float), 7);
-    vbo[current].unbind();
-
+    
     tfb[next].bind();
 
 	glEnable(GL_RASTERIZER_DISCARD);
-	freeze::transform_feedback::begin(GL_POINTS);    
+	freeze::tfo::begin(GL_POINTS);    
 	if (first_render)
     {
 		glDrawArrays(GL_POINTS, 0, 1);
@@ -154,11 +139,9 @@ void particle_renderer::update()
     {
 		tfb[current].draw(GL_POINTS);
 	}
-    freeze::transform_feedback::end();
+    freeze::tfo::end();
 	glDisable(GL_RASTERIZER_DISCARD);
 
-    tfb[next].unbind();
-    vao.unbind();
 }
 
 void particle_renderer::draw_particle()
@@ -167,38 +150,17 @@ void particle_renderer::draw_particle()
 	auto view = scene_camera.get_view_matrix();
 
 	billboard_shader.use();
-	//billboard_shader.set_mat4("projection"s, projection);
-	//billboard_shader.set_mat4("view"s, view);
 	billboard_shader.set_mat4("gVP"s, projection * view);
 	billboard_shader.set_vec3("gCameraPos"s, scene_camera.Position);
 
 	billboard_tex.active();
 	billboard_tex.bind();
 
-    vao.bind();
-
 	vbo[next].bind();
     freeze::vertex::set_enable(0, 3, sizeof(Particle)/sizeof(float), 0);
-    vbo[next].unbind();
-
-    Particle feedback[10];
-    tfb[next].get_subdata(feedback, 0, sizeof(feedback));
-    std::cout << "--------------" << std::endl;
-    for (auto i = 0; i < 10; ++i)
-    {
-        std::cout <<"age:"<< feedback[i].age 
-            <<" x:"<<feedback[i].x
-            <<" y:"<<feedback[i].y 
-            << " z:" << feedback[i].z
-            << std::endl;
-    }
-
 
     tfb[next].bind();
     tfb[next].draw(GL_POINTS);
-    tfb[next].unbind();
-
-    vao.unbind();
 }
 
 void particle_renderer::draw()

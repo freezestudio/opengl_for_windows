@@ -7,7 +7,8 @@
 
 namespace freeze
 {
-    // 定义摄像机移动的几种可能选项。用作抽象以避开特定于窗口系统的输入方法
+    // 定义摄像机移动的几种可能选项。
+    // 用作抽象以避开特定于窗口系统的输入方法
     enum camera_movement
     {
         FORWARD,
@@ -33,7 +34,7 @@ namespace freeze
 
         //在世界坐标系中的位置
         glm::vec3 Position;
-        //方向，代表z
+        //向前，代表z
         glm::vec3 Front;
         //向上，代表y
         glm::vec3 Up;
@@ -57,10 +58,11 @@ namespace freeze
         //缩放
         float Zoom;
 
+    public:
         // 使用向量构造
         camera_t(glm::vec3 position = glm::vec3{ 0.0f, 0.0f, 0.0f }, // 位置
-            glm::vec3 up = glm::vec3{ 0.0f, 1.0f, 0.0f },       // 世界坐标系中的向上方向
-            float yaw = YAW,                                  // y偏航
+            glm::vec3 up = glm::vec3{ 0.0f, 1.0f, 0.0f },    // 世界坐标系中的向上方向
+            float yaw = YAW,                                 // y偏航
             float pitch = PITCH)                             // x俯仰
             : Front{ 0.0f, 0.0f, -1.0f }
             , MovementSpeed(SPEED)
@@ -77,7 +79,7 @@ namespace freeze
         }
 
         // 使用标量值构造
-        camera_t(float posX, float posY, float posZ,                      //位置
+        camera_t(float posX, float posY, float posZ,                 //位置
             float upX = 0.0f, float upY = 1.0f, float upZ = 0.0f,    //世界坐标系中的向上方向
             float yaw = YAW,                                         //y偏航
             float pitch = PITCH)                                     //x俯仰
@@ -117,7 +119,8 @@ namespace freeze
         }
 
         // 处理从鼠标输入系统接收的输入。 期望x和y方向上的偏移值。
-        void process_mouse_movement(float xoffset, float yoffset, bool constrainPitch = true)
+        void process_mouse_movement(float xoffset, float yoffset, 
+            bool constrainPitch = true)
         {
             xoffset *= MouseSensitivity;
             yoffset *= MouseSensitivity;

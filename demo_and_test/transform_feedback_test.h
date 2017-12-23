@@ -30,16 +30,15 @@ public:
 public:
     void do_init();
     virtual void draw() override;
-    void update();
-    void draw_particle();
     void process_event(window_pointer window);
 private:
-    freeze::program             tf_shader;
-    freeze::program             draw_shader;
-    freeze::transform_feedback  tfo[2];
-    freeze::vertex_buffer       vbo[2];
-    freeze::vertex_array_buffer vao;
-    int prev = 0;
-    int next = 1;
+    freeze::camera              scene_camera;
+private:
+    freeze::program             planet_shader;
+    freeze::program             rock_shader;
+    freeze::modeled             planet_model;
+    freeze::modeled             rock_model;
+    freeze::texture2d           planet_tex;
+    freeze::texture2d           rock_tex;
 };
 

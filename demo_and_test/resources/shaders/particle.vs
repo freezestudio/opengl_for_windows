@@ -2,18 +2,18 @@
                                                
 layout (location = 0) in vec3  Position;                                             
 layout (location = 1) in vec3  Velocity;                                             
-layout (location = 2) in float Age;
-layout (location = 3) in float Type;                                                  
-                                                                    
-out vec3  Position0;                                                                 
-out vec3  Velocity0;                                                                 
-out float Age0;                                                                                  
-out float Type0;                                                                       
+layout (location = 2) in float Age;                                                
+     
+out VS
+{
+    vec3  Position;                                                                 
+    vec3  Velocity;                                                                 
+    float Age;
+} vs_out;                                                          
                                                                                     
 void main()                                                                         
 {                                                                   
-    Position0 = Position;                                                           
-    Velocity0 = Velocity;                                                           
-    Age0      = Age;                                                                                
-    Type0     = Type;                                                                        
+    vs_out.Position = Position;                                                           
+    vs_out.Velocity = Velocity;                                                           
+    vs_out.Age      = Age;                                                                      
 }

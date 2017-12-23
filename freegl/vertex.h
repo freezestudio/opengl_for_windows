@@ -15,7 +15,8 @@ namespace freeze
 		// type    数据类型(enum)
 		// stride  步长，连续顶点属性组之间的间隔
 		// pointer 位置数据在缓冲中起始位置的偏移量
-		static void set(GLuint index, GLint size, GLenum type, GLboolean normalized, GLsizei stride, GLint pointer)
+		static void set(GLuint index, GLint size, GLenum type, 
+            GLboolean normalized, GLsizei stride, GLint pointer)
 		{
 			glVertexAttribPointer(index, size, type, normalized, stride,
 				reinterpret_cast<GLvoid const*>(pointer));
@@ -24,10 +25,12 @@ namespace freeze
 
 		static void set(GLuint index, GLint size, GLsizei stride, GLint pointer)
 		{
-			set(index, size, GL_FLOAT, GL_FALSE, stride * sizeof(GLfloat), pointer * sizeof(GLfloat));
+			set(index, size, GL_FLOAT, GL_FALSE, stride * sizeof(GLfloat), 
+                pointer * sizeof(GLfloat));
 		}
 
-		static void set_enable(GLuint index, GLint size, GLenum type, GLboolean normalized, GLsizei stride, GLint pointer)
+		static void set_enable(GLuint index, GLint size, GLenum type, 
+            GLboolean normalized, GLsizei stride, GLint pointer)
 		{
 			set(index, size, type, normalized, stride,pointer);
 			enable(index);
@@ -35,7 +38,8 @@ namespace freeze
 
 		static void set_enable(GLuint index, GLint size, GLsizei stride, GLint pointer)
 		{
-			set_enable(index, size,GL_FLOAT,GL_FALSE, stride * sizeof(GLfloat), pointer * sizeof(GLfloat));
+			set_enable(index, size,GL_FLOAT,GL_FALSE, stride * sizeof(GLfloat), 
+                pointer * sizeof(GLfloat));
 		}
 
 		// div -- 0表示每顶点，n表示希望每n个实例更新一次属性

@@ -45,7 +45,8 @@ namespace freeze
 	}
 	
 	template<typename... Args>
-	static inline void quickly_set_vbo(vertex_buffer& vbo,void const* data,std::size_t size,Args... args)
+	static inline void quickly_set_vbo(vertex_buffer& vbo,
+        void const* data,std::size_t size,Args... args)
 	{
 		vbo.bind();
 		vbo.copy_data(data, size);

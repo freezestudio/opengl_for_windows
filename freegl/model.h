@@ -78,9 +78,9 @@ namespace freeze
             auto ebo = make_element_buffer();
             ebo.bind();
             ebo.copy_data(&vecIndices[0], vecIndices.size() * sizeof(GLuint));
-            vertex::set_enable(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), 0);
-            vertex::set_enable(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), 3 * sizeof(float));
-            vertex::set_enable(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), 6 * sizeof(float));
+            vertex::set_enable(0, 3, 8, 0);
+            vertex::set_enable(1, 3, 8, 3);
+            vertex::set_enable(2, 2, 8, 6);
             vbo.unbind();
             //ebo.unbind();
             vao.unbind();
@@ -154,8 +154,12 @@ namespace freeze
         {
             for (auto& list : _vec_mesh_data)
             {
-                //list.data.Textures = to_texture(list.data.Albedo, list.data.Normal, list.data.Orm);
-                list.data.Textures = to_texture_2(list.data.Albedo, list.data.Normal, list.data.Orm);
+                //list.data.Textures = to_texture(list.data.Albedo,
+                //    list.data.Normal, 
+                //    list.data.Orm);
+                list.data.Textures = to_texture_2(list.data.Albedo, 
+                    list.data.Normal, 
+                    list.data.Orm);
                 list.mesh.setup(shader, list.data.Vertices, list.data.Indices);
             }
         }

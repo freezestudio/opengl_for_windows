@@ -133,39 +133,74 @@ namespace freeze {
 
     enum class window_hint_type
     {
-        // ----------------------------------------------------------- 缺省值 ----------------------------- 支持的值 --------
-        resizable = GLFW_RESIZABLE,	                                //GLFW_TRUE                    GLFW_TRUE or GLFW_FALSE
-        visible = GLFW_VISIBLE,	                                    //GLFW_TRUE                    GLFW_TRUE or GLFW_FALSE
-        decorated = GLFW_DECORATED,	                                //GLFW_TRUE                    GLFW_TRUE or GLFW_FALSE
-        focused = GLFW_FOCUSED,	                                    //GLFW_TRUE                    GLFW_TRUE or GLFW_FALSE
-        auto_iconify = GLFW_AUTO_ICONIFY,	                        //GLFW_TRUE                    GLFW_TRUE or GLFW_FALSE
-        floating = GLFW_FLOATING,	                                //GLFW_FALSE                   GLFW_TRUE or GLFW_FALSE
-        maximized = GLFW_MAXIMIZED,	                                //GLFW_FALSE                   GLFW_TRUE or GLFW_FALSE
-        red_bits = GLFW_RED_BITS,                                   //8                            0 to INT_MAX or GLFW_DONT_CARE
-        green_bits = GLFW_GREEN_BITS,	                            //8                            0 to INT_MAX or GLFW_DONT_CARE
-        blue_bits = GLFW_BLUE_BITS,	                                //8                            0 to INT_MAX or GLFW_DONT_CARE
-        alpha_bits = GLFW_ALPHA_BITS,	                            //8                            0 to INT_MAX or GLFW_DONT_CARE
-        depth_bits = GLFW_DEPTH_BITS,	                            //24                           0 to INT_MAX or GLFW_DONT_CARE
-        stencil_bits = GLFW_STENCIL_BITS,	                        //8                            0 to INT_MAX or GLFW_DONT_CARE
-        accum_red_bits = GLFW_ACCUM_RED_BITS,	                    //0                            0 to INT_MAX or GLFW_DONT_CARE
-        accum_green_bits = GLFW_ACCUM_GREEN_BITS,	                //0	                           0 to INT_MAX or GLFW_DONT_CARE
-        accum_blue_bits = GLFW_ACCUM_BLUE_BITS,	                    //0                            0 to INT_MAX or GLFW_DONT_CARE
-        accum_alpha_bits = GLFW_ACCUM_ALPHA_BITS,                   //0                            0 to INT_MAX or GLFW_DONT_CARE
-        aux_buffers = GLFW_AUX_BUFFERS,	                            //0                            0 to INT_MAX or GLFW_DONT_CARE
-        samples = GLFW_SAMPLES,	                                    //0                            0 to INT_MAX or GLFW_DONT_CARE
-        refresh_rate = GLFW_REFRESH_RATE,	                        //GLFW_DONT_CARE               0 to INT_MAX or GLFW_DONT_CARE
-        stereo = GLFW_STEREO,	                                    //GLFW_FALSE                   GLFW_TRUE or GLFW_FALSE
-        srgb_capable = GLFW_SRGB_CAPABLE,	                        //GLFW_FALSE                   GLFW_TRUE or GLFW_FALSE
-        doubleubffer = GLFW_DOUBLEBUFFER,	                        //GLFW_TRUE                    GLFW_TRUE or GLFW_FALSE
-        client_api = GLFW_CLIENT_API,	                            //GLFW_OPENGL_API              GLFW_OPENGL_API, GLFW_OPENGL_ES_API or GLFW_NO_API
-        context_creation_api = GLFW_CONTEXT_CREATION_API,	        //GLFW_NATIVE_CONTEXT_API      GLFW_NATIVE_CONTEXT_API or GLFW_EGL_CONTEXT_API
-        context_version_major = GLFW_CONTEXT_VERSION_MAJOR,	        //1	                           Any valid major version number of the chosen client API
-        context_version_minor = GLFW_CONTEXT_VERSION_MINOR,	        //0	                           Any valid minor version number of the chosen client API
-        context_robustness = GLFW_CONTEXT_ROBUSTNESS,	            //GLFW_NO_ROBUSTNESS           GLFW_NO_ROBUSTNESS, GLFW_NO_RESET_NOTIFICATION or GLFW_LOSE_CONTEXT_ON_RESET
-        context_release_behavior = GLFW_CONTEXT_RELEASE_BEHAVIOR,	//GLFW_ANY_RELEASE_BEHAVIOR    GLFW_ANY_RELEASE_BEHAVIOR, GLFW_RELEASE_BEHAVIOR_FLUSH or GLFW_RELEASE_BEHAVIOR_NONE
-        opengl_forward_compat = GLFW_OPENGL_FORWARD_COMPAT,	        //GLFW_FALSE                   GLFW_TRUE or GLFW_FALSE
-        opengl_debug_context = GLFW_OPENGL_DEBUG_CONTEXT,	        //GLFW_FALSE                   GLFW_TRUE or GLFW_FALSE
-        opengl_profile = GLFW_OPENGL_PROFILE,	                    //GLFW_OPENGL_ANY_PROFILE      GLFW_OPENGL_ANY_PROFILE, GLFW_OPENGL_COMPAT_PROFILE or GLFW_OPENGL_CORE_PROFILE
+        //缺省值:GLFW_TRUE (GLFW_TRUE or GLFW_FALSE)
+        re_sizable = GLFW_RESIZABLE,
+        //缺省值:GLFW_TRUE (GLFW_TRUE or GLFW_FALSE)
+        visible = GLFW_VISIBLE,
+        //缺省值:GLFW_TRUE (GLFW_TRUE or GLFW_FALSE)
+        decorated = GLFW_DECORATED,
+        //缺省值:GLFW_TRUE (GLFW_TRUE or GLFW_FALSE)
+        focused = GLFW_FOCUSED,
+        //缺省值:GLFW_TRUE (GLFW_TRUE or GLFW_FALSE)
+        auto_iconify = GLFW_AUTO_ICONIFY,
+        //缺省值:GLFW_FALSE (GLFW_TRUE or GLFW_FALSE)
+        floating = GLFW_FLOATING,
+        //缺省值:GLFW_FALSE (GLFW_TRUE or GLFW_FALSE)
+        maximized = GLFW_MAXIMIZED,
+        //缺省值:8 (0 to INT_MAX or GLFW_DONT_CARE)
+        red_bits = GLFW_RED_BITS,
+        //缺省值:8 (0 to INT_MAX or GLFW_DONT_CARE)
+        green_bits = GLFW_GREEN_BITS,
+        //缺省值:8 (0 to INT_MAX or GLFW_DONT_CARE)
+        blue_bits = GLFW_BLUE_BITS,
+        //缺省值:8 (0 to INT_MAX or GLFW_DONT_CARE)
+        alpha_bits = GLFW_ALPHA_BITS,
+        //缺省值:2 (0 to INT_MAX or GLFW_DONT_CARE)
+        depth_bits = GLFW_DEPTH_BITS,
+        //缺省值:8 (0 to INT_MAX or GLFW_DONT_CARE)
+        stencil_bits = GLFW_STENCIL_BITS,
+        //缺省值:0 (0 to INT_MAX or GLFW_DONT_CARE)
+        accum_red_bits = GLFW_ACCUM_RED_BITS,
+        //缺省值:0 (0 to INT_MAX or GLFW_DONT_CARE)
+        accum_green_bits = GLFW_ACCUM_GREEN_BITS,
+        //缺省值:0 (0 to INT_MAX or GLFW_DONT_CARE)
+        accum_blue_bits = GLFW_ACCUM_BLUE_BITS,
+        //缺省值:0 (0 to INT_MAX or GLFW_DONT_CARE)
+        accum_alpha_bits = GLFW_ACCUM_ALPHA_BITS,
+        //缺省值:0 (0 to INT_MAX or GLFW_DONT_CARE)
+        aux_buffers = GLFW_AUX_BUFFERS,
+        //缺省值:0 (0 to INT_MAX or GLFW_DONT_CARE)
+        samples = GLFW_SAMPLES,
+        //缺省值:GLFW_DONT_CARE (0 to INT_MAX or GLFW_DONT_CARE)
+        refresh_rate = GLFW_REFRESH_RATE,
+        //缺省值:GLFW_FALSE (GLFW_TRUE or GLFW_FALSE)
+        stereo = GLFW_STEREO,
+        //缺省值:GLFW_FALSE (GLFW_TRUE or GLFW_FALSE)
+        sRGB_capable = GLFW_SRGB_CAPABLE,
+        //缺省值:GLFW_TRUE (GLFW_TRUE or GLFW_FALSE)
+        double_buffer = GLFW_DOUBLEBUFFER,
+        //缺省值:GLFW_OPENGL_API (GLFW_OPENGL_API, GLFW_OPENGL_ES_API or GLFW_NO_API)
+        client_api = GLFW_CLIENT_API,
+        //缺省值:GLFW_NATIVE_CONTEXT_API (GLFW_NATIVE_CONTEXT_API or GLFW_EGL_CONTEXT_API)
+        context_creation_api = GLFW_CONTEXT_CREATION_API,
+        //缺省值:1 (Any valid major version number of the chosen client API)
+        context_version_major = GLFW_CONTEXT_VERSION_MAJOR,
+        //缺省值:0 (Any valid minor version number of the chosen client API)
+        context_version_minor = GLFW_CONTEXT_VERSION_MINOR,
+        //缺省值:GLFW_NO_ROBUSTNESS 
+        //(GLFW_NO_ROBUSTNESS, GLFW_NO_RESET_NOTIFICATION or GLFW_LOSE_CONTEXT_ON_RESET)
+        context_robustness = GLFW_CONTEXT_ROBUSTNESS,
+        //缺省值:GLFW_ANY_RELEASE_BEHAVIOR 
+        //(GLFW_ANY_RELEASE_BEHAVIOR, GLFW_RELEASE_BEHAVIOR_FLUSH or 
+        // GLFW_RELEASE_BEHAVIOR_NONE)
+        context_release_behavior = GLFW_CONTEXT_RELEASE_BEHAVIOR,
+        //缺省值:GLFW_FALSE (GLFW_TRUE or GLFW_FALSE)
+        opengl_forward_compat = GLFW_OPENGL_FORWARD_COMPAT,
+        //缺省值:GLFW_FALSE (GLFW_TRUE or GLFW_FALSE)
+        opengl_debug_context = GLFW_OPENGL_DEBUG_CONTEXT,
+        //缺省值:GLFW_OPENGL_ANY_PROFILE 
+        //(GLFW_OPENGL_ANY_PROFILE, GLFW_OPENGL_COMPAT_PROFILE or GLFW_OPENGL_CORE_PROFILE)
+        opengl_profile = GLFW_OPENGL_PROFILE,
     };
 
     enum class key_code
@@ -323,10 +358,10 @@ namespace freeze {
         stricky_mouse_buttons = GLFW_STICKY_MOUSE_BUTTONS,
     };
 
-	enum class monitor_type
-	{
-		none,primary,
-	};
+    enum class monitor_type
+    {
+        none, primary,
+    };
 }
 
 //freeze::detail
@@ -374,7 +409,8 @@ namespace freeze
 
 #pragma endregion
 
-        //GLFWwindow* create_window(int width, int height, std::string const& title, GLFWmonitor* _monitor,GLFWwindow* share)
+        //GLFWwindow* create_window(int width, int height, 
+        //    std::string const& title, GLFWmonitor* _monitor,GLFWwindow* share)
         //{
         //	return glfwCreateWindow(width, height, title.c_str(), _monitor, share);
         //}
@@ -419,10 +455,10 @@ namespace freeze
 //freeze::class
 namespace freeze
 {
-	struct size
-	{
-		int x, y;
-	};
+    struct size
+    {
+        int x, y;
+    };
 
     class freegl
     {
@@ -469,9 +505,9 @@ namespace freeze
         }
 
         //feature
-    public:        
+    public:
 
-        static void hint(window_hint_type type,int value)
+        static void hint(window_hint_type type, int value)
         {
             detail::window_hint(type, value);
         }
@@ -489,329 +525,334 @@ namespace freeze
     };
 
 
-	class monitor
-	{
-	public:
-		using pointer = GLFWmonitor *;
-		using const_pointer = GLFWmonitor const*;
-		using mode_pointer = GLFWvidmode*;
-		using const_mode_pointer = GLFWvidmode const*;
-		using gamma_pointer = GLFWgammaramp*;
-		using const_gamma_pointer = GLFWgammaramp const*;
+    class monitor
+    {
+    public:
+        using pointer = GLFWmonitor * ;
+        using const_pointer = GLFWmonitor const*;
+        using mode_pointer = GLFWvidmode * ;
+        using const_mode_pointer = GLFWvidmode const*;
+        using gamma_pointer = GLFWgammaramp * ;
+        using const_gamma_pointer = GLFWgammaramp const*;
 
-		explicit monitor(monitor_type type = monitor_type::none)
-			: monitorp_{ nullptr }
-		{
-			if (type == monitor_type::primary)
-			{
-				set_primary();
-			}
-		}
+        explicit monitor(monitor_type type = monitor_type::none)
+            : monitorp_{ nullptr }
+        {
+            if (type == monitor_type::primary)
+            {
+                set_primary();
+            }
+        }
 
-		explicit monitor(pointer p)
-			: monitorp_{ p }
-		{
+        explicit monitor(pointer p)
+            : monitorp_{ p }
+        {
 
-		}
+        }
 
-		explicit operator bool() const
-		{
-			return monitorp_ != nullptr;
-		}
-	public:
-		pointer get()
-		{
-			return monitorp_;
-		}
+        explicit operator bool() const
+        {
+            return monitorp_ != nullptr;
+        }
+    public:
+        pointer get()
+        {
+            return monitorp_;
+        }
 
-		const_pointer get() const
-		{
-			return monitorp_;
-		}
+        const_pointer get() const
+        {
+            return monitorp_;
+        }
 
-		std::vector<monitor> get_some() const
-		{
-			int count;
-			auto ms = glfwGetMonitors(&count);
-			std::vector<monitor> monitors;
-			for (auto i = 0; i < count; ++i)
-			{
-				auto m = monitor(ms[i]);
-				monitors.emplace_back(m);
-			}
-			return monitors;
-		}
+        std::vector<monitor> get_some() const
+        {
+            int count;
+            auto ms = glfwGetMonitors(&count);
+            std::vector<monitor> monitors;
+            for (auto i = 0; i < count; ++i)
+            {
+                auto m = monitor(ms[i]);
+                monitors.emplace_back(m);
+            }
+            return monitors;
+        }
 
-		size get_pos() const
-		{
-			if (!monitorp_)return{};
+        size get_pos() const
+        {
+            if (!monitorp_)return{};
 
-			int x, y;
-			glfwGetMonitorPos(monitorp_, &x, &y);
-			return { x,y };
-		}
+            int x, y;
+            glfwGetMonitorPos(monitorp_, &x, &y);
+            return { x,y };
+        }
 
-		size get_physical_size() const
-		{
-			if (!monitorp_)return{};
-			int w, h;
-			glfwGetMonitorPhysicalSize(monitorp_, &w, &h);
-			return { w,h };
-		}
+        size get_physical_size() const
+        {
+            if (!monitorp_)return{};
+            int w, h;
+            glfwGetMonitorPhysicalSize(monitorp_, &w, &h);
+            return { w,h };
+        }
 
-		const_mode_pointer get_mode() const
-		{
-			return monitorp_ ? glfwGetVideoMode(monitorp_) : nullptr;
-		}
-		std::vector<mode_pointer> get_mode_some() const
-		{
-			std::vector<mode_pointer> modes;
-			if (!monitorp_)return modes;
+        const_mode_pointer get_mode() const
+        {
+            return monitorp_ ? glfwGetVideoMode(monitorp_) : nullptr;
+        }
+        std::vector<mode_pointer> get_mode_some() const
+        {
+            std::vector<mode_pointer> modes;
+            if (!monitorp_)return modes;
 
-			int count;
-			auto ms = glfwGetVideoModes(monitorp_, &count);
-			for (auto i = 0; i < count; ++i)
-			{
-				GLFWvidmode vm = ms[i];
-				modes.emplace_back(&vm);
-			}
+            int count;
+            auto ms = glfwGetVideoModes(monitorp_, &count);
+            for (auto i = 0; i < count; ++i)
+            {
+                GLFWvidmode vm = ms[i];
+                modes.emplace_back(&vm);
+            }
 
-			return modes;
-		}
+            return modes;
+        }
 
-		void set_primary()
-		{
-			monitorp_ = glfwGetPrimaryMonitor();
-		}
+        void set_primary()
+        {
+            monitorp_ = glfwGetPrimaryMonitor();
+        }
 
-		void set_gamma(float g)
-		{
-			if (monitorp_)
-				glfwSetGamma(monitorp_, g);
-		}
+        void set_gamma(float g)
+        {
+            if (monitorp_)
+                glfwSetGamma(monitorp_, g);
+        }
 
-		const_gamma_pointer get_gamma_ramp() const
-		{
-			return monitorp_ ?
-				glfwGetGammaRamp(monitorp_) : nullptr;
-		}
+        const_gamma_pointer get_gamma_ramp() const
+        {
+            return monitorp_ ?
+                glfwGetGammaRamp(monitorp_) : nullptr;
+        }
 
-		void set_gamma_ramp(const_gamma_pointer ramp)
-		{
-			if (monitorp_)
-				glfwSetGammaRamp(monitorp_, ramp);
-		}
+        void set_gamma_ramp(const_gamma_pointer ramp)
+        {
+            if (monitorp_)
+                glfwSetGammaRamp(monitorp_, ramp);
+        }
 
-	private:
-		GLFWmonitor * monitorp_;
-	};
+    private:
+        GLFWmonitor * monitorp_;
+    };
 
-	class cursor
-	{
+    class cursor
+    {
 
-	};
+    };
 
 
-	class window
-	{
-	public:
-		using pointer = GLFWwindow *;
-		using const_pointer = GLFWwindow const*;
+    class window
+    {
+    public:
+        using pointer = GLFWwindow * ;
+        using const_pointer = GLFWwindow const*;
 
-		enum class cursor_mode
-		{
-			normal = GLFW_CURSOR_NORMAL,
-			hidden = GLFW_CURSOR_HIDDEN,
-			disabled = GLFW_CURSOR_DISABLED,
-		};
+        enum class cursor_mode
+        {
+            normal = GLFW_CURSOR_NORMAL,
+            hidden = GLFW_CURSOR_HIDDEN,
+            disabled = GLFW_CURSOR_DISABLED,
+        };
 
-		window()
-			: windowp_(nullptr)
-		{
+        window()
+            : windowp_(nullptr)
+        {
 
-		}
+        }
 
-		window(int width, int height,
-			std::string const& title = "demo"s,
-			monitor::pointer _monitor = nullptr,
-			window::pointer _window = nullptr)
-		{
-			create(width, height, title, _monitor, _window);
-		}
+        window(int width, int height,
+            std::string const& title = "demo"s,
+            monitor::pointer _monitor = nullptr,
+            window::pointer _window = nullptr)
+        {
+            create(width, height, title, _monitor, _window);
+        }
 
-		~window()
-		{
-			if (windowp_)
-			{
-				destroy();
-				windowp_ = nullptr;
-			}
-		}
+        ~window()
+        {
+            if (windowp_)
+            {
+                destroy();
+                windowp_ = nullptr;
+            }
+        }
 
-		explicit operator bool() const
-		{
-			return windowp_ != nullptr;
-		}
-	public:
+        explicit operator bool() const
+        {
+            return windowp_ != nullptr;
+        }
+    public:
 
-		bool create(int width, int height,
-			std::string const& title = "demo"s,
-			monitor::pointer _monitor = nullptr,
-			window::pointer _window = nullptr)
-		{
-			windowp_ = glfwCreateWindow(width, height,
-				title.c_str(),
-				_monitor,
-				_window);
-			return windowp_ != nullptr;
-		}
+        bool create(int width, int height,
+            std::string const& title = "demo"s,
+            monitor::pointer _monitor = nullptr,
+            window::pointer _window = nullptr)
+        {
+            windowp_ = glfwCreateWindow(width, height,
+                title.c_str(),
+                _monitor,
+                _window);
+            return windowp_ != nullptr;
+        }
 
-		void destroy()
-		{
-			glfwDestroyWindow(windowp_);
-		}
+        void destroy()
+        {
+            glfwDestroyWindow(windowp_);
+        }
 
-		void make_context_current()
-		{
-			glfwMakeContextCurrent(windowp_);
-		}
+        void make_context_current()
+        {
+            glfwMakeContextCurrent(windowp_);
+        }
 
-		void swap_buffers()
-		{
-			glfwSwapBuffers(windowp_);
-		}
+        void swap_buffers()
+        {
+            glfwSwapBuffers(windowp_);
+        }
 
-		bool should_close() const
-		{
-			return glfwWindowShouldClose(windowp_) == GLFW_TRUE;
-		}
+        bool should_close() const
+        {
+            return glfwWindowShouldClose(windowp_) == GLFW_TRUE;
+        }
 
-		void set_should_close(bool _close = true)
-		{
-			glfwSetWindowShouldClose(windowp_, true ? GL_TRUE : GL_FALSE);
-		}
+        void set_should_close(bool _close = true)
+        {
+            glfwSetWindowShouldClose(windowp_, true ? GL_TRUE : GL_FALSE);
+        }
 
-		void get_frame_buffer_size(int& width, int& height)
-		{
-			glfwGetFramebufferSize(windowp_, &width, &height);
-		}
+        void get_frame_buffer_size(int& width, int& height)
+        {
+            glfwGetFramebufferSize(windowp_, &width, &height);
+        }
 
-		template<typename Handler>
-		void process_input_event(key_code key, Handler&& handler)
-		{
-			auto action = get_key(key);
-			handler(action);
-		}
+        template<typename Handler>
+        void process_input_event(key_code key, Handler&& handler)
+        {
+            auto action = get_key(key);
+            handler(action);
+        }
 
-		key_mouse_action get_key(key_code key) const
-		{
-			int action = glfwGetKey(windowp_, static_cast<int>(key));
-			return static_cast<key_mouse_action>(action);
-		}
+        key_mouse_action get_key(key_code key) const
+        {
+            int action = glfwGetKey(windowp_, static_cast<int>(key));
+            return static_cast<key_mouse_action>(action);
+        }
 
-		void set_cursor_mode(cursor_mode mode)
-		{
-			glfwSetInputMode(windowp_, static_cast<int>(input_mode::cursor), static_cast<int>(mode));
-		}
+        void set_cursor_mode(cursor_mode mode)
+        {
+            glfwSetInputMode(windowp_, static_cast<int>(input_mode::cursor), 
+                static_cast<int>(mode));
+        }
 
-		pointer get()
-		{
-			return windowp_;
-		}
+        pointer get()
+        {
+            return windowp_;
+        }
 
-		const_pointer get() const
-		{
-			return windowp_;
-		}
+        const_pointer get() const
+        {
+            return windowp_;
+        }
 
-		void set_user_data(void* data)
-		{
-			glfwSetWindowUserPointer(windowp_, data);
-		}
+        void set_user_data(void* data)
+        {
+            glfwSetWindowUserPointer(windowp_, data);
+        }
 
-		void* get_user_data() const
-		{
-			return glfwGetWindowUserPointer(windowp_);
-		}
+        void* get_user_data() const
+        {
+            return glfwGetWindowUserPointer(windowp_);
+        }
 
-		void* get_user_data()
-		{
-			return glfwGetWindowUserPointer(windowp_);
-		}
+        void* get_user_data()
+        {
+            return glfwGetWindowUserPointer(windowp_);
+        }
 
-		HWND get_window_handle() const
-		{			
-			return glfwGetWin32Window(windowp_);
-		}
+        HWND get_window_handle() const
+        {
+            return glfwGetWin32Window(windowp_);
+        }
 
-	public:
-		void swap_interval(int interval = 0)
-		{
-			detail::swap_interval(interval);
-		}
+    public:
+        void swap_interval(int interval = 0)
+        {
+            detail::swap_interval(interval);
+        }
 
-		bool load_loader()
-		{
-			return detail::load_gl_loader();
-		}
+        bool load_loader()
+        {
+            return detail::load_gl_loader();
+        }
 
-		void poll_events()
-		{
-			detail::poll_events();
-		}
+        void poll_events()
+        {
+            detail::poll_events();
+        }
 
-		static float get_time()
-		{
-			return (float)detail::get_time();
-		}
+        static float get_time()
+        {
+            return (float)detail::get_time();
+        }
 
-		//callback
-	public:
-		//void handler(GLFWwindow* window,int key,int scancode,int action,int mods)
-		template<typename KeyHandler>
-		void set_key_callback(KeyHandler&& handler)
-		{
-			glfwSetKeyCallback(windowp_, std::forward<KeyHandler>(handler));
-		}
+        //callback
+    public:
+        //void handler(GLFWwindow* window,int key,int scancode,int action,int mods)
+        template<typename KeyHandler>
+        void set_key_callback(KeyHandler&& handler)
+        {
+            glfwSetKeyCallback(windowp_, std::forward<KeyHandler>(handler));
+        }
 
-		//void handler(GLFWwindow* window,int width,int height)
-		template<typename FramebufferSizeHandler>
-		void set_frame_buffer_size_callback(FramebufferSizeHandler&& handler)
-		{
-			glfwSetFramebufferSizeCallback(windowp_, std::forward<FramebufferSizeHandler>(handler));
-		}
+        //void handler(GLFWwindow* window,int width,int height)
+        template<typename FramebufferSizeHandler>
+        void set_frame_buffer_size_callback(FramebufferSizeHandler&& handler)
+        {
+            glfwSetFramebufferSizeCallback(windowp_, 
+                std::forward<FramebufferSizeHandler>(handler));
+        }
 
-		//void handler(GLFWwindow* window,int entered)
-		template<typename CursorEnterHandler>
-		void set_cursor_enter_callback(CursorEnterHandler&& handler)
-		{
-			glfwSetCursorEnterCallback(windowp_, std::forward<CursorEnterHandler>(handler));
-		}
+        //void handler(GLFWwindow* window,int entered)
+        template<typename CursorEnterHandler>
+        void set_cursor_enter_callback(CursorEnterHandler&& handler)
+        {
+            glfwSetCursorEnterCallback(windowp_, 
+                std::forward<CursorEnterHandler>(handler));
+        }
 
-		//void handler(GLFWwindow* window,double xpos,double ypos)
-		template<typename CursorPosHandler>
-		void set_cursor_pos_callback(CursorPosHandler&& handler)
-		{
-			glfwSetCursorPosCallback(windowp_, std::forward<CursorPosHandler>(handler));
-		}
+        //void handler(GLFWwindow* window,double xpos,double ypos)
+        template<typename CursorPosHandler>
+        void set_cursor_pos_callback(CursorPosHandler&& handler)
+        {
+            glfwSetCursorPosCallback(windowp_, 
+                std::forward<CursorPosHandler>(handler));
+        }
 
-		//void handler(GLFWwindow* window,double xoffset,double yoffset)
-		template<typename ScrollHandler>
-		void set_scroll_callback(ScrollHandler&& handler)
-		{
-			glfwSetScrollCallback(windowp_, std::forward<ScrollHandler>(handler));
-		}
+        //void handler(GLFWwindow* window,double xoffset,double yoffset)
+        template<typename ScrollHandler>
+        void set_scroll_callback(ScrollHandler&& handler)
+        {
+            glfwSetScrollCallback(windowp_, std::forward<ScrollHandler>(handler));
+        }
 
-		//void handler(GLFWwindow* window,int button,int action,int mods)
-		template<typename MouseButtonHandler>
-		void set_mouse_button_callback(MouseButtonHandler&& handler)
-		{
-			glfwSetMouseButtonCallback(windowp_, std::forward<MouseButtonHandler>(handler));
-		}
+        //void handler(GLFWwindow* window,int button,int action,int mods)
+        template<typename MouseButtonHandler>
+        void set_mouse_button_callback(MouseButtonHandler&& handler)
+        {
+            glfwSetMouseButtonCallback(windowp_, 
+                std::forward<MouseButtonHandler>(handler));
+        }
 
-	private:
-		GLFWwindow * windowp_;
-	};
+    private:
+        GLFWwindow * windowp_;
+    };
 }
 
 //freeze::function
@@ -835,17 +876,20 @@ namespace freeze
 
     inline void set_cursor_normal(window::pointer win)
     {
-        glfwSetInputMode(win, static_cast<int>(input_mode::cursor), static_cast<int>(window::cursor_mode::normal));
+        glfwSetInputMode(win, static_cast<int>(input_mode::cursor), 
+            static_cast<int>(window::cursor_mode::normal));
     }
 
     inline void set_cursor_disable(window::pointer win)
     {
-        glfwSetInputMode(win, static_cast<int>(input_mode::cursor), static_cast<int>(window::cursor_mode::disabled));
+        glfwSetInputMode(win, static_cast<int>(input_mode::cursor), 
+            static_cast<int>(window::cursor_mode::disabled));
     }
 
     inline void set_cursor_hidden(window::pointer win)
     {
-        glfwSetInputMode(win, static_cast<int>(input_mode::cursor), static_cast<int>(window::cursor_mode::hidden));
+        glfwSetInputMode(win, static_cast<int>(input_mode::cursor), 
+            static_cast<int>(window::cursor_mode::hidden));
     }
 
     inline void get_frame_buffer_size(window::pointer win, int* width, int* height)
@@ -884,19 +928,23 @@ namespace freeze
 #include <jni.h>
 
 //外部声明
-////////////////////////////////////////////////////////////////////////////////////////////////////
-extern AAssetManager* g_asset_managerp;                                            //内部资产管理器
-                                                                                   ////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////
+extern AAssetManager* g_asset_managerp;                 //内部资产管理器
+ /////////////////////////////////////////////////////////////////////////////////
 
 #define CREATE_FUNCTION(name) METHOD_NAME(name)
 #define internal_args JNIEnv* pEnv,jobject obj
 
-#define METHOD_NAME(name)                                METHOD_CLASS_NAME(CLASS,name)
-#define METHOD_CLASS_NAME(cls,name)                      METHOD_PACKAGE_CLASS_NAME(PACKAGE,cls,name)
-#define METHOD_PACKAGE_CLASS_NAME(pkg,cls,name)          METHOD_PACKAGE_CLASS_NAME_INTERNAL(pkg,cls,name)
-#define METHOD_PACKAGE_CLASS_NAME_INTERNAL(pkg,cls,name) Java_##pkg##_##cls##_##name
+#define METHOD_NAME(name) \
+    METHOD_CLASS_NAME(CLASS,name)
+#define METHOD_CLASS_NAME(cls,name) \
+     METHOD_PACKAGE_CLASS_NAME(PACKAGE,cls,name)
+#define METHOD_PACKAGE_CLASS_NAME(pkg,cls,name) \
+    METHOD_PACKAGE_CLASS_NAME_INTERNAL(pkg,cls,name)
+#define METHOD_PACKAGE_CLASS_NAME_INTERNAL(pkg,cls,name) \
+    Java_##pkg##_##cls##_##name
 
-#define DEBUG 1
+#define DEBUG 1 
 
 #define LOG_TAG "Native"
 #define LOGI(...) ((void)__android_log_print(ANDROID_LOG_INFO, LOG_TAG, __VA_ARGS__))
@@ -928,8 +976,8 @@ inline void __assert_error__(char const* func)
         case GL_INVALID_FRAMEBUFFER_OPERATION:errmsg = "读取或写入一个不完整的帧缓冲"s; break;
         }
         LOGE("%s error : %d, msg: %s\n", func, err, errmsg.c_str());
-        assert(err != 0);
     }
+    assert(err == 0);
 }
 
 inline void __assert_error__(char const* func, char const* name)
@@ -949,8 +997,8 @@ inline void __assert_error__(char const* func, char const* name)
         case GL_INVALID_FRAMEBUFFER_OPERATION:errmsg = "读取或写入一个不完整的帧缓冲"s; break;
         }
         LOGE("%s error('%s') : %d, msg: %s\n", func, name, err, errmsg.c_str());
-        assert(err != 0);
     }
+    assert(err == 0);
 }
 #define assert_error()  __assert_error__(__FUNCTION__)
 #define assert_name_error(name) __assert_error__(__FUNCTION__,name)

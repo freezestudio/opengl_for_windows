@@ -72,7 +72,9 @@ namespace freeze
 
         //texture_data_t(texture_data_t&& rhs)
         //    : _data{ std::move(rhs._data) }
-        //    , _x{ std::move(rhs._x) }, _y{ std::move(rhs._y) }, _channels{ std::move(rhs._channels) }
+        //    , _x{ std::move(rhs._x) }
+        //    , _y{ std::move(rhs._y) }
+        //    , _channels{ std::move(rhs._channels) }
         //{
 
         //}
@@ -90,7 +92,7 @@ namespace freeze
 
         ~texture_data_t()
         {
-            if(!Delay)
+            if (!Delay)
                 clear();
         }
     public:
@@ -110,7 +112,8 @@ namespace freeze
 
         void set(std::vector<char> const& data)
         {
-            _data = stbi_load_from_memory((stbi_uc*)data.data(), data.size(), &_x, &_y, &_channels, 0);
+            _data = stbi_load_from_memory((stbi_uc*)data.data(), data.size(),
+                &_x, &_y, &_channels, 0);
             if (!_data)return;
 
             set_format();
@@ -277,7 +280,8 @@ namespace freeze
         }
 
         //param:
-        //    GL_LEQUAL,GL_GEQUAL,GL_LESS,GL_GREATER,GL_EQUAL,GL_NOTEQUAL,GL_ALWAYS,GL_NEVER
+        //    GL_LEQUAL,GL_GEQUAL,GL_LESS,GL_GREATER,
+        //    GL_EQUAL,GL_NOTEQUAL,GL_ALWAYS,GL_NEVER
         void set_compare_func(GLint param)
         {
             set_parameter(GL_TEXTURE_COMPARE_FUNC, param);
@@ -295,8 +299,10 @@ namespace freeze
         //GL_REPEAT	              对纹理的默认行为。重复纹理图像。
         //GL_MIRRORED_REPEAT	  和GL_REPEAT一样，但每次重复图片是镜像放置的。
         //GL_MIRROR_CLAMP_TO_EDGE (ver >= 4.4)
-        //GL_CLAMP_TO_EDGE	      纹理坐标会被约束在0到1之间，超出的部分会重复纹理坐标的边缘，产生一种边缘被拉伸的效果。
-        //GL_CLAMP_TO_BORDER	  超出的坐标为用户指定的边缘颜色。(需随后调用set_border_color，以设置一种边框色)
+        //GL_CLAMP_TO_EDGE	      纹理坐标会被约束在0到1之间，超出的部分会重复纹理坐标的边缘，
+        //                        产生一种边缘被拉伸的效果。
+        //GL_CLAMP_TO_BORDER	  超出的坐标为用户指定的边缘颜色。
+        //                        (需随后调用set_border_color，以设置一种边框色)
         void set_wrap_s(GLint param)
         {
             set_parameter(GL_TEXTURE_WRAP_S, param);
@@ -317,19 +323,23 @@ namespace freeze
         }
 
         //param: 纹理过滤
-        //   +---------------------------+------------------------------------------------------------+
-        //   | GL_NEAREST                |  邻近过滤                                                    |
-        //   +---------------------------+------------------------------------------------------------+
-        //   | GL_LINEAR                 |  线性过滤                                                    |
-        //   +---------------------------+------------------------------------------------------------+
-        //   | GL_NEAREST_MIPMAP_NEAREST |  使用最邻近的多级渐远纹理来匹配像素大小，并使用邻近插值进行纹理采样      |
-        //   +---------------------------+------------------------------------------------------------+
-        //   | GL_LINEAR_MIPMAP_NEAREST  |  使用最邻近的多级渐远纹理级别，并使用线性插值进行采样                 |
-        //   +---------------------------+------------------------------------------------------------+
-        //   | GL_NEAREST_MIPMAP_LINEAR  |  在两个最匹配像素大小的多级渐远纹理之间进行线性插值，使用邻近插值进行采样 |
-        //   +---------------------------+------------------------------------------------------------+
-        //   | GL_LINEAR_MIPMAP_LINEAR   |  在两个邻近的多级渐远纹理之间使用线性插值，并使用线性插值进行采样       |
-        //   +---------------------------+------------------------------------------------------------+
+        //   +---------------------------+-----------------------------------
+        //   | GL_NEAREST                |  邻近过滤                             
+        //   +---------------------------+-----------------------------------
+        //   | GL_LINEAR                 |  线性过滤                             
+        //   +---------------------------+-----------------------------------
+        //   | GL_NEAREST_MIPMAP_NEAREST |  使用最邻近的多级渐远纹理来匹配像素大小，
+        //   |                           |  并使用邻近插值进行纹理采样           
+        //   +---------------------------+-----------------------------------
+        //   | GL_LINEAR_MIPMAP_NEAREST  |  使用最邻近的多级渐远纹理级别，        
+        //   |                           |  并使用线性插值进行采样               
+        //   +---------------------------+-----------------------------------
+        //   | GL_NEAREST_MIPMAP_LINEAR  |  在两个最匹配像素大小的多级渐远纹理之间  
+        //   |                           |  进行线性插值，使用邻近插值进行采样    
+        //   +---------------------------+-----------------------------------
+        //   | GL_LINEAR_MIPMAP_LINEAR   |  在两个邻近的多级渐远纹理之间使用线性插值，
+        //   |                           |  并使用线性插值进行采样                
+        //   +---------------------------+-----------------------------------
         void set_min_filter(GLint param)
         {
             set_parameter(GL_TEXTURE_MIN_FILTER, param);
@@ -383,10 +393,10 @@ namespace freeze
             glTexParameterfv(Target, GL_TEXTURE_BORDER_COLOR, colors);
         }
 
-        //        void set_swizzle_rgba(GLfloat const* param)
-        //        {
-        //            set_parameter(GL_TEXTURE_SWIZZLE_RGBA, param);
-        //        }
+        //void set_swizzle_rgba(GLfloat const* param)
+        //{
+        //    set_parameter(GL_TEXTURE_SWIZZLE_RGBA, param);
+        //}
 
     };
 }
@@ -417,11 +427,16 @@ namespace freeze
         //                   GL_RGBA_INTEGER, GL_BGRA_INTEGER, 
         //                   GL_STENCIL_INDEX, GL_DEPTH_COMPONENT, GL_DEPTH_STENCIL.
         //
-        // type           -- GL_UNSIGNED_BYTE, GL_BYTE, GL_UNSIGNED_SHORT, GL_SHORT, GL_UNSIGNED_INT, 
-        //                   GL_INT, GL_FLOAT, GL_UNSIGNED_BYTE_3_3_2, GL_UNSIGNED_BYTE_2_3_3_REV, 
-        //                   GL_UNSIGNED_SHORT_5_6_5, GL_UNSIGNED_SHORT_5_6_5_REV, GL_UNSIGNED_SHORT_4_4_4_4, 
-        //                   GL_UNSIGNED_SHORT_4_4_4_4_REV, GL_UNSIGNED_SHORT_5_5_5_1, GL_UNSIGNED_SHORT_1_5_5_5_REV, 
-        //                   GL_UNSIGNED_INT_8_8_8_8, GL_UNSIGNED_INT_8_8_8_8_REV, GL_UNSIGNED_INT_10_10_10_2, 
+        // type           -- GL_UNSIGNED_BYTE, GL_BYTE, GL_UNSIGNED_SHORT, GL_SHORT, 
+        //                   GL_UNSIGNED_INT, 
+        //                   GL_INT, GL_FLOAT, GL_UNSIGNED_BYTE_3_3_2, 
+        //                   GL_UNSIGNED_BYTE_2_3_3_REV, 
+        //                   GL_UNSIGNED_SHORT_5_6_5, GL_UNSIGNED_SHORT_5_6_5_REV, 
+        //                   GL_UNSIGNED_SHORT_4_4_4_4, 
+        //                   GL_UNSIGNED_SHORT_4_4_4_4_REV, GL_UNSIGNED_SHORT_5_5_5_1,
+        //                   GL_UNSIGNED_SHORT_1_5_5_5_REV, 
+        //                   GL_UNSIGNED_INT_8_8_8_8, GL_UNSIGNED_INT_8_8_8_8_REV, 
+        //                   GL_UNSIGNED_INT_10_10_10_2, 
         //                   GL_UNSIGNED_INT_2_10_10_10_REV.
         void set_image(GLint internalFormat,
             GLsizei width, GLsizei height, GLenum format,
@@ -438,7 +453,8 @@ namespace freeze
         {
             int x, y, channels;
             //stbi_set_flip_vertically_on_load(1/*true*/);
-            auto image_data = stbi_load_from_memory((stbi_uc*)data.data(), data.size(), &x, &y, &channels, 0);
+            auto image_data = stbi_load_from_memory((stbi_uc*)data.data(), data.size(), 
+                &x, &y, &channels, 0);
             if (!image_data)return false;
 
             switch (channels)
@@ -461,8 +477,8 @@ namespace freeze
         {
             if (texdata.isnull())return false;
             set_image(texdata.format(), texdata.width(), texdata.height(),
-                texdata.format(), GL_UNSIGNED_BYTE, texdata.data());  
-            
+                texdata.format(), GL_UNSIGNED_BYTE, texdata.data());
+
             int x = texdata.width();
             int y = texdata.height();
             this->format = texdata.format();
@@ -478,7 +494,8 @@ namespace freeze
 
         //template<typename DataType>
         //void set_image(DataType&& data){
-        //    set_image(data.format,data.x,data.y,data.format,GL_UNSIGNED_BYTE,data.data.data());
+        //    set_image(data.format,data.x,data.y,
+        //        data.format,GL_UNSIGNED_BYTE,data.data.data());
         //}
 
         GLenum get_format() const
@@ -522,7 +539,8 @@ namespace freeze
             auto index = 0;
             for (auto data : datas)
             {
-                auto image_data = stbi_load_from_memory((const stbi_uc*)data.data(), data.size(), &x, &y, &channels, 0);
+                auto image_data = stbi_load_from_memory((const stbi_uc*)data.data(), 
+                    data.size(), &x, &y, &channels, 0);
                 if (!image_data)return;
                 switch (channels)
                 {
@@ -564,7 +582,8 @@ namespace freeze
             GL_RGB,
             GL_RGBA,
         };
-        constexpr auto gl_internal_format_size = sizeof(gl_internal_format) / sizeof(gl_internal_format[0]);
+        constexpr auto gl_internal_format_size = 
+            sizeof(gl_internal_format) / sizeof(gl_internal_format[0]);
 
         constexpr GLint gl_red[] = {
             GL_R8,
@@ -756,7 +775,8 @@ namespace freeze
 
         int x, y, channels;
         GLenum format;
-        auto data = stbi_load_from_memory((stbi_uc*)buffer, read_size, &x, &y, &channels, 0);
+        auto data = stbi_load_from_memory((stbi_uc*)buffer, read_size, 
+            &x, &y, &channels, 0);
         if (!data)
         {
             free(buffer);
@@ -787,7 +807,8 @@ namespace freeze
 
     template<typename TextureType, typename AssetManager>
     inline TextureType
-        load_cubetexture_from_assets(AssetManager const& assetmgr, std::vector<std::string> const& files)
+        load_cubetexture_from_assets(AssetManager const& assetmgr, 
+            std::vector<std::string> const& files)
     {
         TextureType texture;
         if (!texture)
@@ -809,7 +830,8 @@ namespace freeze
             auto read_size = assetmgr.get_file_data(file, buffer, file_size);
             if (read_size == -1)return texture;
 
-            auto data = stbi_load_from_memory((stbi_uc*)buffer, read_size, &x, &y, &channels, 0);
+            auto data = stbi_load_from_memory((stbi_uc*)buffer, read_size, 
+                &x, &y, &channels, 0);
             if (!data)
             {
                 free(buffer);

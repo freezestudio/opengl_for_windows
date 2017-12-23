@@ -24,7 +24,8 @@ namespace freeze
     //GL_PIXEL_UNPACK_BUFFER和GL_PIXEL_PACK_BUFFER
     //    用于执行异步像素传输操作。
     //    如果缓冲区绑定到GL_PIXEL_UNPACK_BUFFER，
-    //    则glTexImage*，glTexSubImage*，glCompressedTexImage*和glCompressedTexSubImage*都将受到影响。
+    //    则glTexImage*，glTexSubImage*，glCompressedTexImage*和glCompressedTexSubImage*
+    //    都将受到影响。
     //    这些函数将从绑定的缓冲区对象读取它们的数据，而不是客户端指针指向的位置。
     //    同样，如果一个缓冲区绑定到GL_PIXEL_PACK_BUFFER，
     //    glGetTexImage和glReadPixels将把它们的数据存储到绑定的缓冲区对象，而不是客户端指针指向的地方。
@@ -40,11 +41,13 @@ namespace freeze
     //GL_UNIFORM_BUFFER
     //    用作缓冲区的索引缓冲区绑定，用作统一块的存储。
     //GL_DRAW_INDIRECT_BUFFER
-    //    绑定到此目标的缓冲区在执行间接渲染时将用作间接数据的源。仅在核心OpenGL 4.0或ARB_draw_indirect中可用。
+    //    绑定到此目标的缓冲区在执行间接渲染时将用作间接数据的源。仅在核心OpenGL 4.0或
+    //    ARB_draw_indirect中可用。
     //GL_ATOMIC_COUNTER_BUFFER
     //    用作原子计数器存储的缓冲区的索引缓冲区绑定。需要OpenGL 4.2或ARB_shader_atomic_counters
     //GL_DISPATCH_INDIRECT_BUFFER
-    //    绑定到此目标的缓冲区将通过glDispatchComputeIndirect用作间接计算调度操作的源。需要OpenGL 4.3或ARB_compute_shader。
+    //    绑定到此目标的缓冲区将通过glDispatchComputeIndirect用作间接计算调度操作的源。
+    //    需要OpenGL 4.3或ARB_compute_shader。
     //GL_SHADER_STORAGE_BUFFER
     //    用作存储着色器存储块的缓冲区的索引缓冲区绑定。
     //
@@ -249,7 +252,8 @@ namespace freeze
 			GL_RGB,
 			GL_RGBA,
 		};
-		constexpr auto color_render_size = sizeof(color_render) / sizeof(color_render[0]);
+		constexpr auto color_render_size = 
+            sizeof(color_render) / sizeof(color_render[0]);
 
 		constexpr GLenum depth_render[] = {
 			GL_DEPTH_COMPONENT,
@@ -258,14 +262,16 @@ namespace freeze
 			GL_DEPTH_COMPONENT32,
 			GL_DEPTH_COMPONENT32F,
 		};
-		constexpr auto depth_render_size = sizeof(depth_render) / sizeof(depth_render[0]);
+		constexpr auto depth_render_size = 
+            sizeof(depth_render) / sizeof(depth_render[0]);
 
 		constexpr GLenum depth_stencil_render[] = {
 			GL_DEPTH_STENCIL,
 			GL_DEPTH24_STENCIL8,
 			GL_DEPTH32F_STENCIL8,
 		};
-		constexpr auto depth_stencil_render_size = sizeof(depth_stencil_render) / sizeof(depth_stencil_render[0]);
+		constexpr auto depth_stencil_render_size = 
+            sizeof(depth_stencil_render) / sizeof(depth_stencil_render[0]);
 
 		constexpr GLenum stencil_render = GL_STENCIL_INDEX8;
 
@@ -340,14 +346,16 @@ namespace freeze
 		//                     GL_DEPTH_COMPONENT<16,24,32,32F>, GL_DEPTH24_STENCIL8, 
 		//                     GL_DEPTH32F_STENCIL8
 		//stencil-renderable-- GL_STENCIL_INDEX8
-        void storage(GLsizei width, GLsizei height,GLenum internal_format = GL_DEPTH24_STENCIL8)
+        void storage(GLsizei width, GLsizei height,
+            GLenum internal_format = GL_DEPTH24_STENCIL8)
         {
             glRenderbufferStorage(RB, internal_format, width, height);
 			attachment_type_ = detail::get_attachment_type(internal_format);
             assert_error();
         }
 
-        void storage_multisample(GLsizei samples,GLenum internalformat,GLsizei width,GLsizei height)
+        void storage_multisample(GLsizei samples,GLenum internalformat,
+            GLsizei width,GLsizei height)
         {
             glRenderbufferStorageMultisample(RB, samples, internalformat, width, height);
             assert_error();
@@ -439,13 +447,19 @@ namespace freeze
 		//textarget:
 		//    GL_TEXTURE_2D,
 		//    GL_TEXTURE_RECTANGLE, 
-		//    GL_TEXTURE_CUBE_MAP_POSITIVE_X, GL_TEXTURE_CUBE_MAP_POSITIVE_Y, GL_TEXTURE_CUBE_MAP_POSITIVE_Z, 
-		//    GL_TEXTURE_CUBE_MAP_NEGATIVE_X, GL_TEXTURE_CUBE_MAP_NEGATIVE_Y, GL_TEXTURE_CUBE_MAP_NEGATIVE_Z,
+		//    GL_TEXTURE_CUBE_MAP_POSITIVE_X, 
+        //    GL_TEXTURE_CUBE_MAP_POSITIVE_Y, 
+        //    GL_TEXTURE_CUBE_MAP_POSITIVE_Z, 
+		//    GL_TEXTURE_CUBE_MAP_NEGATIVE_X, 
+        //    GL_TEXTURE_CUBE_MAP_NEGATIVE_Y, 
+        //    GL_TEXTURE_CUBE_MAP_NEGATIVE_Z,
 		//    GL_TEXTURE_2D_MULTISAMPLE
         template<typename Texture>
-        void attachement_color(Texture&& texture,GLuint index = 0,GLenum textarget= GL_TEXTURE_2D,GLint level=0)
+        void attachement_color(Texture&& texture,GLuint index = 0,
+            GLenum textarget= GL_TEXTURE_2D,GLint level=0)
         {
-            glFramebufferTexture2D(FrameBuffer, GL_COLOR_ATTACHMENT0+index, textarget, texture.ref(), level);
+            glFramebufferTexture2D(FrameBuffer, GL_COLOR_ATTACHMENT0+index, 
+                textarget, texture.ref(), level);
             assert_error();
         }
 
@@ -456,7 +470,8 @@ namespace freeze
             assert_error();
         }
 
-		void attachement_texture1d(GLuint texture,GLenum attachment = GL_COLOR_ATTACHMENT0, GLint level = 0)
+		void attachement_texture1d(GLuint texture,
+            GLenum attachment = GL_COLOR_ATTACHMENT0, GLint level = 0)
 		{
 			glFramebufferTexture1D(FrameBuffer,attachment, GL_TEXTURE_1D,texture,level);
 			assert_error();
@@ -465,29 +480,38 @@ namespace freeze
 		//textarget:
 		//    GL_TEXTURE_2D,
 		//    GL_TEXTURE_RECTANGLE, 
-		//    GL_TEXTURE_CUBE_MAP_POSITIVE_X, GL_TEXTURE_CUBE_MAP_POSITIVE_Y, GL_TEXTURE_CUBE_MAP_POSITIVE_Z, 
-		//    GL_TEXTURE_CUBE_MAP_NEGATIVE_X, GL_TEXTURE_CUBE_MAP_NEGATIVE_Y, GL_TEXTURE_CUBE_MAP_NEGATIVE_Z,
+		//    GL_TEXTURE_CUBE_MAP_POSITIVE_X, 
+        //    GL_TEXTURE_CUBE_MAP_POSITIVE_Y, 
+        //    GL_TEXTURE_CUBE_MAP_POSITIVE_Z, 
+		//    GL_TEXTURE_CUBE_MAP_NEGATIVE_X, 
+        //    GL_TEXTURE_CUBE_MAP_NEGATIVE_Y, 
+        //    GL_TEXTURE_CUBE_MAP_NEGATIVE_Z,
 		//    GL_TEXTURE_2D_MULTISAMPLE
-        void attachement_texture2d(GLuint texture, GLenum attachment, GLenum textarget = GL_TEXTURE_2D, GLuint level = 0)
+        void attachement_texture2d(GLuint texture, GLenum attachment, 
+            GLenum textarget = GL_TEXTURE_2D, GLuint level = 0)
         {
             glFramebufferTexture2D(FrameBuffer, attachment, textarget, texture, level);
             assert_error();
         }
 
-		void attachement_texture3d(GLuint texture, GLenum attachment = GL_COLOR_ATTACHMENT0, GLint level = 0,GLint zoffset = 0)
+		void attachement_texture3d(GLuint texture, 
+            GLenum attachment = GL_COLOR_ATTACHMENT0, GLint level = 0,GLint zoffset = 0)
 		{
-			glFramebufferTexture3D(FrameBuffer,GL_COLOR_ATTACHMENT0,GL_TEXTURE_3D,texture,level,zoffset);
+			glFramebufferTexture3D(FrameBuffer,GL_COLOR_ATTACHMENT0,
+                GL_TEXTURE_3D,texture,level,zoffset);
 		}
 
         void attachement_depth(GLuint texture)
         {
-            glFramebufferTexture2D(FrameBuffer, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, texture, 0);
+            glFramebufferTexture2D(FrameBuffer, GL_DEPTH_ATTACHMENT, 
+                GL_TEXTURE_2D, texture, 0);
             assert_error();
         }
 
         void attachement_stencil(GLuint texture)
         {
-            glFramebufferTexture2D(FrameBuffer, GL_STENCIL_ATTACHMENT, GL_TEXTURE_2D, texture, 0);
+            glFramebufferTexture2D(FrameBuffer, GL_STENCIL_ATTACHMENT, 
+                GL_TEXTURE_2D, texture, 0);
             assert_error();
         }
 
@@ -495,7 +519,8 @@ namespace freeze
         //               GL_DEPTH_STENCIL, GL_UNSIGNED_INT_24_8, NULL);
         void attachement_depth_stencil(GLuint texture)
         {
-            glFramebufferTexture2D(FrameBuffer, GL_DEPTH_STENCIL_ATTACHMENT, GL_TEXTURE_2D, texture, 0);
+            glFramebufferTexture2D(FrameBuffer, GL_DEPTH_STENCIL_ATTACHMENT, 
+                GL_TEXTURE_2D, texture, 0);
             assert_error();
         }
 
@@ -503,15 +528,18 @@ namespace freeze
 		//              GL_DEPTH_ATTACHMENT
 		//              GL_STENCIL_ATTACHMENT
 		//              GL_DEPTH_STENCIL_ATTACHMENT
-        void attachement_render_buffer(GLuint renderbuffer,GLenum attachment = GL_DEPTH_STENCIL_ATTACHMENT)
+        void attachement_render_buffer(GLuint renderbuffer,
+            GLenum attachment = GL_DEPTH_STENCIL_ATTACHMENT)
         {
-            glFramebufferRenderbuffer(FrameBuffer, attachment, GL_RENDERBUFFER, renderbuffer);
+            glFramebufferRenderbuffer(FrameBuffer, attachment, 
+                GL_RENDERBUFFER, renderbuffer);
             assert_error();
         }
 
 		void attachement_render_buffer(render_buffer_t<GL_RENDERBUFFER> const& renderbuffer)
 		{			
-			glFramebufferRenderbuffer(FrameBuffer, renderbuffer.attachment_type(), GL_RENDERBUFFER, renderbuffer);
+			glFramebufferRenderbuffer(FrameBuffer, renderbuffer.attachment_type(),
+                GL_RENDERBUFFER, renderbuffer);
 			assert_error();
 		}
 
@@ -532,7 +560,8 @@ namespace freeze
             assert_error();
         }
 
-        void read_pixels(GLint x,GLint y,GLsizei width,GLsizei height,GLenum format,GLenum type,GLvoid* data)
+        void read_pixels(GLint x,GLint y,GLsizei width,GLsizei height,
+            GLenum format,GLenum type,GLvoid* data)
         {
             glReadPixels(x,y,width,height,format,type,data);
             assert_error();
@@ -613,7 +642,8 @@ namespace freeze
             assert_error();
         }
 
-        //void varyings(GLuint program, GLsizei count, const char **varyings, GLenum bufferMode)
+        //void varyings(GLuint program, 
+        //    GLsizei count, const char **varyings, GLenum bufferMode)
         //{
         //    void glTransformFeedbackVaryings(program, count,varyings,bufferMode);
         //    assert_error();
@@ -645,8 +675,10 @@ namespace freeze
         }
 
         //GL_POINTS, 
-        //GL_LINE_STRIP, GL_LINE_LOOP, GL_LINES, GL_LINE_STRIP_ADJACENCY, GL_LINES_ADJACENCY, 
-        //GL_TRIANGLE_STRIP, GL_TRIANGLE_FAN, GL_TRIANGLES, GL_TRIANGLE_STRIP_ADJACENCY, GL_TRIANGLES_ADJACENCY,
+        //GL_LINE_STRIP, GL_LINE_LOOP, GL_LINES, 
+        //GL_LINE_STRIP_ADJACENCY, GL_LINES_ADJACENCY, 
+        //GL_TRIANGLE_STRIP, GL_TRIANGLE_FAN, GL_TRIANGLES, 
+        //GL_TRIANGLE_STRIP_ADJACENCY, GL_TRIANGLES_ADJACENCY,
         //GL_PATCHES
         void draw(GLenum mode)
         {
@@ -668,7 +700,8 @@ namespace freeze
 
         void draw_stream_instanced(GLenum mode, GLuint stream, GLsizei primcount)
         {
-            glDrawTransformFeedbackStreamInstanced(GLenum mode,this->ref(), tream, primcount);
+            glDrawTransformFeedbackStreamInstanced(GLenum mode,this->ref(),
+                tream, primcount);
             assert_error();
         }
 	};

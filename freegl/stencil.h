@@ -128,12 +128,21 @@ namespace freeze
             test(GL_NOTEQUAL, 1, 0xFF);
         }
 
-        static inline void op_separate(GLenum face, GLenum sfail, GLenum dpfail, GLenum dppass)
+        static inline void op_separate(GLenum face, 
+            GLenum sfail, GLenum dpfail, GLenum dppass)
         {
             glStencilFuncSeparate(face, sfail, dpfail, dppass);
         }
 
-        //sfail,dpfail,dppass  -- GL_KEEP, GL_ZERO, GL_REPLACE, GL_INCR, GL_INCR_WRAP, GL_DECR, GL_DECR_WRAP, GL_INVERT
+        //sfail,dpfail,dppass  
+        //    -- GL_KEEP, 
+        //       GL_ZERO, 
+        //       GL_REPLACE, 
+        //       GL_INCR, 
+        //       GL_INCR_WRAP, 
+        //       GL_DECR, 
+        //       GL_DECR_WRAP, 
+        //       GL_INVERT
         // +--------------+----------------------------------------------------------+
         // |   行为       |                      描述                                 |
         // +--------------+----------------------------------------------------------+
@@ -153,7 +162,8 @@ namespace freeze
         // +--------------+----------------------------------------------------------+
         // | GL_INVERT	  |  按位翻转当前的模板缓冲值                                     |
         // +--------------+----------------------------------------------------------+
-        static inline void op(GLenum sfail = GL_KEEP, GLenum dpfail = GL_KEEP, GLenum dppass = GL_KEEP)
+        static inline void op(GLenum sfail = GL_KEEP, 
+            GLenum dpfail = GL_KEEP, GLenum dppass = GL_KEEP)
         {
             glStencilOp(sfail, dpfail, dppass);
         }

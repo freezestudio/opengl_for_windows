@@ -107,16 +107,16 @@ namespace freeze
         constexpr static auto make_geometry_shader = make<shader<GL_GEOMETRY_SHADER>>;
 
 
-        void compile_and_link(std::string const& vs, 
-            std::string const& fs =""s, 
+        void compile_and_link(std::string const& vs,
+            std::string const& fs = ""s,
             std::string const& gs = ""s)
         {
             compile(vs, fs, gs);
             link();
         }
 
-        void compile_file_and_link(std::string const& vs, 
-            std::string const& fs =""s, 
+        void compile_file_and_link(std::string const& vs,
+            std::string const& fs = ""s,
             std::string const& gs = ""s)
         {
             compile_file(vs, fs, gs);
@@ -145,13 +145,16 @@ namespace freeze
 
             auto size = shader_sources.size();
 
-            if      (size == 1) compile_file(shader_files[0]);
-            else if (size == 2) compile_file(shader_files[0], shader_files[1]);
-            else                compile_file(shader_files[0], shader_files[1], shader_files[2]);
+            if (size == 1)
+                compile_file(shader_files[0]);
+            else if (size == 2)
+                compile_file(shader_files[0], shader_files[1]);
+            else
+                compile_file(shader_files[0], shader_files[1], shader_files[2]);
         }
 
-        void compile_file(std::string const& vs, 
-            std::string const& fs =""s, 
+        void compile_file(std::string const& vs,
+            std::string const& fs = ""s,
             std::string const& gs = ""s)
         {
             auto vssource = source_from_file(vs);
@@ -179,14 +182,17 @@ namespace freeze
 
             auto size = shader_sources.size();
 
-            if      (size == 1) compile(shader_sources[0]);
-            else if (size == 2) compile(shader_sources[0], shader_sources[1]);
-            else                compile(shader_sources[0], shader_sources[1], shader_sources[2]);
-            
+            if (size == 1)
+                compile(shader_sources[0]);
+            else if (size == 2)
+                compile(shader_sources[0], shader_sources[1]);
+            else
+                compile(shader_sources[0], shader_sources[1], shader_sources[2]);
+
         }
 
-        void compile(std::string const& vs, 
-            std::string const& fs = ""s, 
+        void compile(std::string const& vs,
+            std::string const& fs = ""s,
             std::string const& gs = ""s)
         {
             if (vs.empty())return;
@@ -194,8 +200,8 @@ namespace freeze
             auto vs_shader = make_vertex_shader();
             vs_shader.source(vs);
             glAttachShader(this->ref(), vs_shader.ref());
-            
-            if (!gs.empty()) 
+
+            if (!gs.empty())
             {
                 auto gs_shader = make_geometry_shader();
                 gs_shader.source(gs);
@@ -336,13 +342,14 @@ namespace freeze
             assert_error();
         }
 
-		//bufferMode:
-		//   GL_INTERLEAVED_ATTRIBS,GL_SEPARATE_ATTRIBS
-		void set_varyings(GLchar const** varyings, GLsizei count, GLenum bufferMode = GL_INTERLEAVED_ATTRIBS)
-		{
-			glTransformFeedbackVaryings(this->ref(), count, varyings, bufferMode);
-			assert_error();
-		}
+        //bufferMode:
+        //   GL_INTERLEAVED_ATTRIBS,GL_SEPARATE_ATTRIBS
+        void set_varyings(GLchar const** varyings, GLsizei count, 
+            GLenum bufferMode = GL_INTERLEAVED_ATTRIBS)
+        {
+            glTransformFeedbackVaryings(this->ref(), count, varyings, bufferMode);
+            assert_error();
+        }
 
     private:
         auto get_loc(std::string const& name)  const

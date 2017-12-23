@@ -27,7 +27,7 @@ freeGL，是基于OpenGL3.3及以上版本、c++17的Windows及Android原生简明封装。
 int __stdcall wWinMain(HINSTANCE hInstance, HINSTANCE, LPWSTR, int)
 {
     //初始化
-    auto gl = freeze::make<freeze::freegl>(3, 3);
+    auto gl = freeze::make<freeze::freegl>(4, 3);
     
     //窗口
     auto window = freeze::make<freeze::window>(600, 400);
@@ -40,19 +40,19 @@ int __stdcall wWinMain(HINSTANCE hInstance, HINSTANCE, LPWSTR, int)
     });
     
     //加载glad
-    gl.load_loader();
+    window.load_loader();
     //更佳的双缓冲切换
-    gl.swap_interval(1);
+    window.swap_interval(1);
     
     //着色器程序
     auto shader = freeze::make_program();
     shader.compile(
-        "#version 330 core                     \n"
+        "#version 430 core                     \n"
         "layout(location=0)in vec3 pos;        \n"
         "void main(){                          \n"
         "    gl_Position = vec4(pos,1.0f);     \n"
         "}                                     \n"s,
-        "#version 330 core                     \n"
+        "#version 430 core                     \n"
         "out vec4 color;                       \n"
         "void main(){                          \n"
         "    color = vec4(0.4f,0.3f,0.2f,1.0f);\n"
@@ -69,8 +69,7 @@ int __stdcall wWinMain(HINSTANCE hInstance, HINSTANCE, LPWSTR, int)
     auto vbo = freeze::make_vertex_buffer();
     vbo.bind();
     vbo.copy_data(vertices, sizeof(vertices));
-    auto vbo_vertex = freeze::make_vertex();
-    vbo_vertex.set(0, 3, GL_FLOAT, 3 * sizeof(float), 0);
+    freeze::vertex::set(0, 3, 0, 0);
     vbo.unbind();
     vao.unbind();
     
@@ -86,7 +85,7 @@ int __stdcall wWinMain(HINSTANCE hInstance, HINSTANCE, LPWSTR, int)
         vao.unbind();
 
         window.swap_buffers();
-        gl.poll_events();
+        window.poll_events();
     }
 
     return 0;
@@ -101,4 +100,4 @@ int __stdcall wWinMain(HINSTANCE hInstance, HINSTANCE, LPWSTR, int)
 * 英文教程参考：<https://learnopengl.com/>
 * API文档参考：<https://www.khronos.org/registry/OpenGL-Refpages/gl4/>
 * API文档参考：<https://www.khronos.org/registry/OpenGL-Refpages/es3/>
-* WIKI  参考：https://www.khronos.org/opengl/wiki/
+* WIKI  参考：<https://www.khronos.org/opengl/wiki/>
