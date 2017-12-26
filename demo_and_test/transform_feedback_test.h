@@ -32,13 +32,21 @@ public:
     virtual void draw() override;
     void process_event(window_pointer window);
 private:
+    float last_x;
+    float last_y;
+    bool first_mouse;
+    float delta_time;
+    float last_frame;
     freeze::camera              scene_camera;
 private:
     freeze::program             planet_shader;
     freeze::program             rock_shader;
+
     freeze::modeled             planet_model;
     freeze::modeled             rock_model;
+
     freeze::texture2d           planet_tex;
     freeze::texture2d           rock_tex;
+
 };
 

@@ -97,18 +97,46 @@ namespace freeze
             std::vector<GLuint>& vecIndices)
         {
             shader.use();
-            vecTextures[0].active(0);
-            vecTextures[0].bind();
-            vecTextures[1].active(1);
-            vecTextures[1].bind();
-            vecTextures[2].active(2);
-            vecTextures[2].bind();
+
+            if (vecTextures.size() >= 3)
+            {
+                vecTextures[0].active(0);
+                vecTextures[0].bind();
+                vecTextures[1].active(1);
+                vecTextures[1].bind();
+                vecTextures[2].active(2);
+                vecTextures[2].bind();
+            }
 
             vao.bind();
             glDrawElements(GL_TRIANGLES, vecIndices.size(), GL_UNSIGNED_INT, 0);
             vao.unbind();
         }
-    private:
+
+        void draw_instanced(
+            program& shader,
+            std::vector<texture2d>& vecTextures,
+            std::vector<GLuint>& vecIndices,
+            GLsizei count)
+        {
+            shader.use();
+
+            if (vecTextures.size() >= 3)
+            {
+                vecTextures[0].active(0);
+                vecTextures[0].bind();
+                vecTextures[1].active(1);
+                vecTextures[1].bind();
+                vecTextures[2].active(2);
+                vecTextures[2].bind();
+            }
+
+            vao.bind();
+            glDrawElementsInstanced(GL_TRIANGLES, 
+                vecIndices.size(), GL_UNSIGNED_INT, nullptr,count);
+            vao.unbind();
+        }
+    public:
         vertex_array_buffer_t<Delay> vao;
     };
 }
@@ -145,7 +173,7 @@ namespace freeze
 
             auto importer = make<Assimp::Importer>();
             auto scene = importer.ReadFile(file,
-                aiProcessPreset_TargetRealtime_MaxQuality | aiProcess_FlipUVs);
+                aiProcessPreset_TargetRealtime_MaxQuality /*| aiProcess_FlipUVs*/);
             if (!scene)return;
             process_node(scene->mRootNode, scene);
         }
@@ -169,6 +197,15 @@ namespace freeze
             for (auto& list : _vec_mesh_data)
             {
                 list.mesh.draw(shader,list.data.Textures,list.data.Indices);
+            }
+        }
+
+        void draw_instanced(program& shader, GLsizei count)
+        {
+            for (auto& list : _vec_mesh_data)
+            {
+                list.mesh.draw_instanced(shader, list.data.Textures,
+                    list.data.Indices, count);
             }
         }
 
@@ -253,6 +290,10 @@ namespace freeze
         {
             auto file = _dir + name;
             std::vector<char> buffer;
+
+            auto path = fs::path{ file };
+            if (!fs::exists(path))return buffer;
+
             std::ifstream ifs{ file,std::ios::binary };
             if (ifs.is_open())
             {
@@ -275,9 +316,9 @@ namespace freeze
             std::vector<char> const& orm)
         {
             std::vector<texture2d> t2d;
-            t2d.emplace_back(to_texture(albedo));
-            t2d.emplace_back(to_texture(normal));
-            t2d.emplace_back(to_texture(orm));
+            if(!albedo.empty())  t2d.emplace_back(to_texture(albedo));
+            if (!normal.empty()) t2d.emplace_back(to_texture(normal));
+            if (!orm.empty())    t2d.emplace_back(to_texture(orm));
             return t2d;
         }
 
@@ -287,9 +328,9 @@ namespace freeze
             tex_dataless& orm)
         {
             std::vector<texture2d> t2d;
-            t2d.emplace_back(to_texture_2(albedo));
-            t2d.emplace_back(to_texture_2(normal));
-            t2d.emplace_back(to_texture_2(orm));
+            if(!albedo.isnull()) t2d.emplace_back(to_texture_2(albedo));
+            if (!normal.isnull()) t2d.emplace_back(to_texture_2(normal));
+            if (!orm.isnull()) t2d.emplace_back(to_texture_2(orm));
             return t2d;
         }
 
@@ -325,9 +366,10 @@ namespace freeze
 
             return tex;
         }
-    private:
+    public:
         //std::vector<mesh_list> _vec_mesh_data;
         std::vector<mesh_list_2> _vec_mesh_data;
+    private:
         std::vector < std::vector<texture2d> > _vec_mesh_tex;
         std::string _dir;
         std::string _name;

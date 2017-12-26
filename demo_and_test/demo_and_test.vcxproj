@@ -175,6 +175,10 @@
     <None Include="resources\objects\nanosuit\nanosuit.mtl" />
     <None Include="resources\objects\planet\planet.mtl" />
     <None Include="resources\objects\rock\rock.mtl" />
+    <None Include="resources\shaders\aplanet.fs" />
+    <None Include="resources\shaders\aplanet.vs" />
+    <None Include="resources\shaders\asteroids.fs" />
+    <None Include="resources\shaders\asteroids.vs" />
     <None Include="resources\shaders\background.fs" />
     <None Include="resources\shaders\background.vs" />
     <None Include="resources\shaders\billboard.fs" />

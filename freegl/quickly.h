@@ -29,7 +29,7 @@ namespace freeze
 	{
 		tex.bind();
 		int width, height, components;
-		stbi_set_flip_vertically_on_load(true);
+		stbi_set_flip_vertically_on_load(1);
 		auto data = stbi_loadf(file.c_str(), &width, &height, &components, 0);
 		if (data)
 		{
@@ -41,6 +41,7 @@ namespace freeze
 			tex.set_mag_filter(GL_LINEAR);
 			stbi_image_free(data);
 		}
+        stbi_set_flip_vertically_on_load(0);
 		tex.unbind();
 	}
 	

@@ -142,13 +142,33 @@ void ibl_renderer::set_vertices()
 
 void ibl_renderer::set_shader()
 {
-    pbr_shader.compile_file_and_link("resources/shaders/pbr.vs"s, "resources/shaders/pbr.fs");
-    etc_shader.compile_file_and_link("resources/shaders/cubemap.vs"s, "resources/shaders/equirectangular_to_cubemap.fs"s);
-    irr_shader.compile_file_and_link("resources/shaders/cubemap.vs"s, "resources/shaders/irradiance_convolution.fs"s);
-    pft_shader.compile_file_and_link("resources/shaders/cubemap.vs"s, "resources/shaders/prefilter.fs"s);
-    brdf_shader.compile_file_and_link("resources/shaders/brdf.vs"s, "resources/shaders/brdf.fs"s);
-    bg_shader.compile_file_and_link("resources/shaders/background.vs"s, "resources/shaders/background.fs"s);
-    pick_shader.compile_file_and_link("resources/shaders/pick.vs"s, "resources/shaders/pick.fs"s);
+    pbr_shader.compile_file_and_link(
+        "resources/shaders/pbr.vs"s,
+        "resources/shaders/pbr.fs");
+
+    etc_shader.compile_file_and_link(
+        "resources/shaders/cubemap.vs"s, 
+        "resources/shaders/equirectangular_to_cubemap.fs"s);
+
+    irr_shader.compile_file_and_link(
+        "resources/shaders/cubemap.vs"s, 
+        "resources/shaders/irradiance_convolution.fs"s);
+
+    pft_shader.compile_file_and_link(
+        "resources/shaders/cubemap.vs"s, 
+        "resources/shaders/prefilter.fs"s);
+
+    brdf_shader.compile_file_and_link(
+        "resources/shaders/brdf.vs"s, 
+        "resources/shaders/brdf.fs"s);
+
+    bg_shader.compile_file_and_link(
+        "resources/shaders/background.vs"s, 
+        "resources/shaders/background.fs"s);
+
+    pick_shader.compile_file_and_link(
+        "resources/shaders/pick.vs"s, 
+        "resources/shaders/pick.fs"s);
 
     pbr_shader.use();
     pbr_shader.set_int("irradianceMap"s, 3);
@@ -164,12 +184,24 @@ void ibl_renderer::set_texture()
     glm::mat4 projection = glm::perspective(glm::radians(90.0f), 1.0f, 0.1f, 10.0f);
     glm::mat4 views[] =
     {
-        glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.0f,  0.0f,  0.0f), glm::vec3(0.0f, -1.0f,  0.0f)),
-        glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(-1.0f,  0.0f,  0.0f), glm::vec3(0.0f, -1.0f,  0.0f)),
-        glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f,  1.0f,  0.0f), glm::vec3(0.0f,  0.0f,  1.0f)),
-        glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, -1.0f,  0.0f), glm::vec3(0.0f,  0.0f, -1.0f)),
-        glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f,  0.0f,  1.0f), glm::vec3(0.0f, -1.0f,  0.0f)),
-        glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f,  0.0f, -1.0f), glm::vec3(0.0f, -1.0f,  0.0f))
+        glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), 
+            glm::vec3(1.0f,  0.0f,  0.0f), 
+            glm::vec3(0.0f, -1.0f,  0.0f)),
+        glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), 
+            glm::vec3(-1.0f,  0.0f,  0.0f), 
+            glm::vec3(0.0f, -1.0f,  0.0f)),
+        glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), 
+            glm::vec3(0.0f,  1.0f,  0.0f), 
+            glm::vec3(0.0f,  0.0f,  1.0f)),
+        glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), 
+            glm::vec3(0.0f, -1.0f,  0.0f), 
+            glm::vec3(0.0f,  0.0f, -1.0f)),
+        glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), 
+            glm::vec3(0.0f,  0.0f,  1.0f), 
+            glm::vec3(0.0f, -1.0f,  0.0f)),
+        glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), 
+            glm::vec3(0.0f,  0.0f, -1.0f), 
+            glm::vec3(0.0f, -1.0f,  0.0f))
     };
 
     //≥ı ºªØ‰÷»æª∫≥Â«¯
@@ -324,7 +356,8 @@ void ibl_renderer::set_texture()
             for (unsigned int i = 0; i < 6; ++i)
             {
                 pft_shader.set_mat4("view", views[i]);
-                pbr_fbo.attachement_color(pft_tex, 0, GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, mip);
+                pbr_fbo.attachement_color(pft_tex, 0, 
+                    GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, mip);
 
                 glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
                 cube_vao.bind();
@@ -362,7 +395,8 @@ void ibl_renderer::set_texture()
     pbr_fbo.unbind();
 
     //------------------------------------------------------------------------------
-    auto proj = glm::perspective(glm::radians(scene_camera.Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
+    auto proj = glm::perspective(glm::radians(scene_camera.Zoom), 
+        (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
     pbr_shader.use();
     pbr_shader.set_mat4("projection"s, proj);
     bg_shader.use();
@@ -430,7 +464,9 @@ void ibl_renderer::set_particle()
 
     particle_vao.unbind();
 
-    particle_shader.compile_file("resources/shaders/particle.vs"s, "resources/shaders/particle.fs"s);
+    particle_shader.compile_file_and_link(
+        "resources/shaders/particle.vs"s, 
+        "resources/shaders/particle.fs"s);
     particle_shader.use();
     particle_shader.set_int("sprite"s, 0);
 
@@ -572,7 +608,8 @@ void ibl_renderer::do_scroll_callback(double xoffset, double yoffset)
     scene_camera.process_mouse_scroll(yoffset);
 }
 
-void ibl_renderer::do_button_callback(int button, int action, int mods, double xpos, double ypos)
+void ibl_renderer::do_button_callback(
+    int button, int action, int mods, double xpos, double ypos)
 {
     if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS)
     {

@@ -220,6 +220,18 @@
     <None Include="resources\shaders\instance_render.frag">
       <Filter>资源文件\resources\shaders</Filter>
     </None>
+    <None Include="resources\shaders\asteroids.vs">
+      <Filter>资源文件\resources\shaders</Filter>
+    </None>
+    <None Include="resources\shaders\asteroids.fs">
+      <Filter>资源文件\resources\shaders</Filter>
+    </None>
+    <None Include="resources\shaders\aplanet.vs">
+      <Filter>资源文件\resources\shaders</Filter>
+    </None>
+    <None Include="resources\shaders\aplanet.fs">
+      <Filter>资源文件\resources\shaders</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Image Include="resources\objects\cyborg\cyborg_diffuse.png">

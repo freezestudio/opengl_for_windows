@@ -1,6 +1,6 @@
 //
 //main.cpp
-
+//
 //#include "ibl_renderer.h"
 //#include "particle_renderer.h"
 #include "transform_feedback_test.h"
@@ -37,7 +37,7 @@ int main()
 	{
 		render->process_event(window.get());
 
-		freeze::clear_color_depth(0.1f, 0.1f, 0.1f);
+		freeze::clear_color_depth(0.2f, 0.3f, 0.4f);
 		render->draw();
 
 		window.swap_buffers();
