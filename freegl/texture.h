@@ -453,7 +453,7 @@ namespace freeze
         {
             int x, y, channels;
             //stbi_set_flip_vertically_on_load(1/*true*/);
-            auto image_data = stbi_load_from_memory((stbi_uc*)data.data(), data.size(), 
+            auto image_data = stbi_load_from_memory((stbi_uc*)data.data(), data.size(),
                 &x, &y, &channels, 0);
             if (!image_data)return false;
 
@@ -539,7 +539,7 @@ namespace freeze
             auto index = 0;
             for (auto data : datas)
             {
-                auto image_data = stbi_load_from_memory((const stbi_uc*)data.data(), 
+                auto image_data = stbi_load_from_memory((const stbi_uc*)data.data(),
                     data.size(), &x, &y, &channels, 0);
                 if (!image_data)return;
                 switch (channels)
@@ -582,7 +582,7 @@ namespace freeze
             GL_RGB,
             GL_RGBA,
         };
-        constexpr auto gl_internal_format_size = 
+        constexpr auto gl_internal_format_size =
             sizeof(gl_internal_format) / sizeof(gl_internal_format[0]);
 
         constexpr GLint gl_red[] = {
@@ -752,6 +752,38 @@ namespace freeze
 
         return buffer;
     }
+
+    inline std::vector<std::vector<char>>
+        load_cubmap_from_dir(std::string const& dir)
+    {
+        std::vector<std::vector<char>> vec_cube_data;
+        auto path = fs::path{ dir };
+        if (!fs::exists(path))return vec_cube_data;
+
+        fs::directory_iterator begin{ path };
+        fs::directory_iterator end;
+
+        std::vector<std::string> files;
+        for (auto iter = begin; iter != end; ++iter)
+        {
+            auto file = iter->path();
+            if (fs::is_regular_file(file))
+            {
+                files.emplace_back(file.string());
+            }
+        }
+
+        assert(files.size() == 6);
+        if (files.size() != 6)vec_cube_data;
+
+        for (auto file : files)
+        {
+            auto data = load_image_from_file(file);
+            vec_cube_data.emplace_back(data);
+        }
+
+        return vec_cube_data;
+    }
 #endif
 
 #if defined(ANDROID) || defined(__ANDROID__)
@@ -775,7 +807,7 @@ namespace freeze
 
         int x, y, channels;
         GLenum format;
-        auto data = stbi_load_from_memory((stbi_uc*)buffer, read_size, 
+        auto data = stbi_load_from_memory((stbi_uc*)buffer, read_size,
             &x, &y, &channels, 0);
         if (!data)
         {
@@ -807,7 +839,7 @@ namespace freeze
 
     template<typename TextureType, typename AssetManager>
     inline TextureType
-        load_cubetexture_from_assets(AssetManager const& assetmgr, 
+        load_cubetexture_from_assets(AssetManager const& assetmgr,
             std::vector<std::string> const& files)
     {
         TextureType texture;
@@ -830,7 +862,7 @@ namespace freeze
             auto read_size = assetmgr.get_file_data(file, buffer, file_size);
             if (read_size == -1)return texture;
 
-            auto data = stbi_load_from_memory((stbi_uc*)buffer, read_size, 
+            auto data = stbi_load_from_memory((stbi_uc*)buffer, read_size,
                 &x, &y, &channels, 0);
             if (!data)
             {

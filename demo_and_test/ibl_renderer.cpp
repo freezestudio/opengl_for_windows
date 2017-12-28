@@ -585,7 +585,7 @@ void ibl_renderer::process_event(window_pointer window)
         scene_camera.process_keyboard(freeze::camera_movement::RIGHT, cameraSpeed);
 }
 
-void ibl_renderer::do_mouse_callback(double xpos, double ypos)
+void ibl_renderer::do_mouse_callback(freeze::window::pointer window, double xpos, double ypos)
 {
     if (first_mouse)
     {
@@ -603,14 +603,17 @@ void ibl_renderer::do_mouse_callback(double xpos, double ypos)
     scene_camera.process_mouse_movement(xoffset, yoffset);
 }
 
-void ibl_renderer::do_scroll_callback(double xoffset, double yoffset)
+void ibl_renderer::do_scroll_callback(freeze::window::pointer window, 
+    double xoffset, double yoffset)
 {
     scene_camera.process_mouse_scroll(yoffset);
 }
 
-void ibl_renderer::do_button_callback(
-    int button, int action, int mods, double xpos, double ypos)
+void ibl_renderer::do_button_callback(freeze::window::pointer window,
+    int button, int action, int mods)
 {
+    double xpos, ypos;
+    glfwGetCursorPos(window, &xpos, &ypos);
     if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS)
     {
         auto hit = hit_test((int)xpos, SCR_HEIGHT - (int)ypos - 1);

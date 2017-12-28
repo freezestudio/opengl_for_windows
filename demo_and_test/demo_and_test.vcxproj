@@ -157,12 +157,14 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\thirdparty\glfw\deps\glad.c" />
+    <ClCompile Include="cubemap_renderer.cpp" />
     <ClCompile Include="ibl_renderer.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="particle_renderer.cpp" />
     <ClCompile Include="transform_feedback_test.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="cubemap_renderer.h" />
     <ClInclude Include="ibl_renderer.h" />
     <ClInclude Include="particle_renderer.h" />
     <ClInclude Include="renderer_base.h" />
@@ -202,6 +204,8 @@
     <None Include="resources\shaders\pbr.vs" />
     <None Include="resources\shaders\pick.fs" />
     <None Include="resources\shaders\pick.vs" />
+    <None Include="resources\shaders\skybox.frag" />
+    <None Include="resources\shaders\skybox.vert" />
     <None Include="resources\shaders\test_pick.fs" />
     <None Include="resources\shaders\prefilter.fs" />
     <None Include="resources\shaders\shadow.frag" />

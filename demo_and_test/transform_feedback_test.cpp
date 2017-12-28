@@ -82,12 +82,12 @@ void transform_feedback_test::draw()
         glm::radians(scene_camera.Zoom),
         (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.f);
     auto view = scene_camera.get_view_matrix();
-    auto model = glm::mat4{ 1.0f };
+    //auto model = glm::mat4{ 1.0f };
 
     planet_shader.use();
     planet_shader.set_mat4("projection"s, projection);
     planet_shader.set_mat4("view"s, view);
-    planet_shader.set_mat4("model"s, model);
+    //planet_shader.set_mat4("model"s, model);
     planet_tex.active(6);
     planet_tex.bind();
 

@@ -3,14 +3,18 @@
 //
 //#include "ibl_renderer.h"
 //#include "particle_renderer.h"
-#include "transform_feedback_test.h"
+//#include "transform_feedback_test.h"
+#include "cubemap_renderer.h"
 
 int main()
 {
 	auto gl = freeze::make<freeze::freegl>(4, 3);
 	gl.hint(freeze::window_hint_type::samples, 4);
 
-	auto window = freeze::make<freeze::window>(SCR_WIDTH, SCR_HEIGHT);
+    auto moniter = freeze::make<freeze::monitor>(freeze::monitor_type::primary);
+    auto mode = moniter.get_mode();
+	//auto window = freeze::make<freeze::window>(SCR_WIDTH, SCR_HEIGHT);
+    auto window = freeze::make<freeze::window>(mode->width, mode->height, "hello", moniter.get(), nullptr);
 	window.make_context_current();
 	window.set_frame_buffer_size_callback(RENDERER::framebuffer_size_callback);
 	window.set_cursor_pos_callback(RENDERER::mouse_callback);
@@ -44,6 +48,12 @@ int main()
 		window.poll_events();
 	}
 
+    window.set_frame_buffer_size_callback(nullptr);
+    window.set_mouse_button_callback(nullptr);
+    window.set_cursor_pos_callback(nullptr);
+    window.set_scroll_callback(nullptr);
+
+    render.reset();
 
 	return 0;
 }

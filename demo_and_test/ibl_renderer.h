@@ -25,9 +25,9 @@ public:
     void picking();
     int hit_test(int x, int y);
     void on_hit(int hit);
-    void do_mouse_callback(double xpos, double ypos);
-    void do_scroll_callback(double xoffset, double yoffset);
-    void do_button_callback(int button, int action, int mods, double xpos, double ypos);
+    void do_mouse_callback(freeze::window::pointer window, double xpos, double ypos);
+    void do_scroll_callback(freeze::window::pointer window, double xoffset, double yoffset);
+    void do_button_callback(freeze::window::pointer window, int button, int action, int mods);
 private:
     void set_vertices();
     void set_shader();

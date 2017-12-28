@@ -81,6 +81,9 @@
     <ClCompile Include="transform_feedback_test.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="cubemap_renderer.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="renderer_base.h">
@@ -93,6 +96,9 @@
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="transform_feedback_test.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="cubemap_renderer.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>
@@ -230,6 +236,12 @@
       <Filter>资源文件\resources\shaders</Filter>
     </None>
     <None Include="resources\shaders\aplanet.fs">
+      <Filter>资源文件\resources\shaders</Filter>
+    </None>
+    <None Include="resources\shaders\skybox.vert">
+      <Filter>资源文件\resources\shaders</Filter>
+    </None>
+    <None Include="resources\shaders\skybox.frag">
       <Filter>资源文件\resources\shaders</Filter>
     </None>
   </ItemGroup>

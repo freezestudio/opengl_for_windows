@@ -67,7 +67,7 @@ public:
     {
         if (ms_instance)
         {
-            ms_instance->do_mouse_callback(xpos, ypos);
+            ms_instance->do_mouse_callback(window, xpos, ypos);
         }
     }
     static void scroll_callback(
@@ -75,7 +75,7 @@ public:
     {
         if (ms_instance)
         {
-            ms_instance->do_scroll_callback(xoffset, yoffset);
+            ms_instance->do_scroll_callback(window, xoffset, yoffset);
         }
     }
 
@@ -83,9 +83,7 @@ public:
     {
         if (ms_instance)
         {
-            double x, y;
-            glfwGetCursorPos(window, &x, &y);
-            ms_instance->do_button_callback(button, action, mods, x, y);
+            ms_instance->do_button_callback(window, button, action, mods);
         }
     }
 
@@ -105,17 +103,17 @@ protected:
         
     }
 
-    void do_mouse_callback(double xpos, double ypos)
+    void do_mouse_callback(freeze::window::pointer window, double xpos, double ypos)
     {
 
     }
 
-    void do_scroll_callback(double xoffset, double yoffset)
+    void do_scroll_callback(freeze::window::pointer window, double xoffset, double yoffset)
     {
 
     }
 
-    void do_button_callback(int button, int action, int mods, double xpos,double ypos)
+    void do_button_callback(freeze::window::pointer window, int button, int action, int mods)
     {
 
     }
