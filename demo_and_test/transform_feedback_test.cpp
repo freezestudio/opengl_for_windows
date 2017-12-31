@@ -26,6 +26,22 @@ transform_feedback_test::~transform_feedback_test()
 void transform_feedback_test::do_init()
 {
     ms_instance = shared_from_this();
+
+    auto tex_datas = freeze::load_images_from_dir("resources/textures/skybox0"s);
+    assert(tex_datas.size() > 0);
+    for (auto i = 0; i < tex_datas.size(); ++i)
+    {
+        auto tex = freeze::make_texture2d();
+        tex.bind();
+        tex.set_image(tex_datas[i]);
+        tex.mipmap();
+        tex.set_wrap_s(GL_REPEAT);
+        tex.set_wrap_t(GL_REPEAT);
+        tex.set_min_filter(GL_LINEAR);
+        tex.set_mag_filter(GL_LINEAR);
+        tex.unbind();
+        vec_image_tex.emplace_back(tex);
+    }
 }
 
 void transform_feedback_test::draw()
