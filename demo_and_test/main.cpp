@@ -3,8 +3,8 @@
 //
 //#include "ibl_renderer.h"
 //#include "particle_renderer.h"
-//#include "transform_feedback_test.h"
-#include "cubemap_renderer.h"
+#include "transform_feedback_test.h"
+//#include "cubemap_renderer.h"
 
 int main()
 {
@@ -13,8 +13,9 @@ int main()
 
     auto moniter = freeze::make<freeze::monitor>(freeze::monitor_type::primary);
     auto mode = moniter.get_mode();
-	//auto window = freeze::make<freeze::window>(SCR_WIDTH, SCR_HEIGHT);
-    auto window = freeze::make<freeze::window>(mode->width, mode->height, "hello", moniter.get(), nullptr);
+	auto window = freeze::make<freeze::window>(SCR_WIDTH, SCR_HEIGHT);
+    //auto window = freeze::make<freeze::window>(mode->width, mode->height, 
+    //    "hello", moniter.get(), nullptr);
 	window.make_context_current();
 	window.set_frame_buffer_size_callback(RENDERER::framebuffer_size_callback);
 	window.set_cursor_pos_callback(RENDERER::mouse_callback);

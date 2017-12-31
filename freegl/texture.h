@@ -753,17 +753,16 @@ namespace freeze
         return buffer;
     }
 
-    inline std::vector<std::vector<char>>
-        load_cubmap_from_dir(std::string const& dir)
+    inline std::vector<std::string>
+        find_images_from_dir(std::string const& dir)
     {
-        std::vector<std::vector<char>> vec_cube_data;
+        std::vector<std::string> files;
         auto path = fs::path{ dir };
-        if (!fs::exists(path))return vec_cube_data;
+        if (!fs::exists(path))return files;
 
         fs::directory_iterator begin{ path };
         fs::directory_iterator end;
 
-        std::vector<std::string> files;
         for (auto iter = begin; iter != end; ++iter)
         {
             auto file = iter->path();
@@ -773,8 +772,32 @@ namespace freeze
             }
         }
 
+        return files;
+    }
+
+    inline std::vector<std::vector<char>>
+        load_images_from_dir(std::string const& dir)
+    {
+        std::vector<std::vector<char>> vec_file_data;
+        auto files = find_images_from_dir(dir);
+
+        for (auto file : files)
+        {
+            auto data = load_image_from_file(file);
+            vec_file_data.emplace_back(data);
+        }
+
+        return vec_file_data;
+    }
+
+    inline std::vector<std::vector<char>>
+        load_cubmap_from_dir(std::string const& dir)
+    {
+        std::vector<std::vector<char>> vec_cube_data;
+        auto files = find_images_from_dir(dir);
+
         assert(files.size() == 6);
-        if (files.size() != 6)vec_cube_data;
+        if (files.size() != 6)return vec_cube_data;
 
         for (auto file : files)
         {

@@ -77,4 +77,20 @@ namespace freeze
 	}
 }
 
+namespace freeze
+{
+    template<typename T>
+    T random(T min, T max)
+    {
+        std::random_device random_device;
+        //operator()()
+        auto rand = random_device();
+
+        std::default_random_engine random_engine{ rand };
+        std::uniform_real_distribution<T> urdist(min, max);
+        //operator()()
+        return urdist(random_engine);
+    }
+}
+
 #endif //FREEGL_QUICKLY_H
