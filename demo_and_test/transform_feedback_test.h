@@ -29,21 +29,27 @@ class transform_feedback_test
 public:
     transform_feedback_test();
     ~transform_feedback_test();
+
+public:
+    std::shared_ptr<freeze::freegl> gl;
+    std::shared_ptr<freeze::window> win;
 public:
     void do_init();
     virtual void draw() override;
     void process_event(window_pointer window);
+
 private:
     float last_x;
     float last_y;
     bool first_mouse;
     float delta_time;
     std::chrono::time_point<high_clock> last_time;
-    freeze::camera              scene_camera;
+    freeze::camera                      scene_camera;
+
 private:
-    freeze::program             image_shader;
-    std::vector<freeze::texture2d> vec_image_tex;
-    std::vector<freeze::tfo>       vec_tfo;
-    freeze::vao                    vao;
+    freeze::program                     image_shader;
+    std::vector<freeze::texture2d>      vec_image_tex;
+    std::vector<freeze::tfo>            vec_tfo;
+    freeze::vao                         vao;
 };
 
