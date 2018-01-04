@@ -51,5 +51,6 @@ private:
     std::vector<freeze::texture2d>      vec_image_tex;
     std::vector<freeze::tfo>            vec_tfo;
     freeze::vao                         vao;
+    glm::mat4                           mat_model[100];
 };
 

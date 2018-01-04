@@ -35,7 +35,7 @@ void transform_feedback_test::do_init()
     image_shader.use();
     image_shader.set_int("image"s, 0);
 
-    auto tex_datas = freeze::load_images_from_dir("resources/textures/skybox0"s);
+    auto tex_datas = freeze::load_images_from_dir("C:\\Users\\olfan\\Pictures\\1200600"s);
     assert(tex_datas.size() > 0);
 
     stbi_set_flip_vertically_on_load(1);
@@ -63,25 +63,42 @@ void transform_feedback_test::do_init()
     freeze::vertex::set_enable(0, 2, 0, 0);
     vbo.unbind();
 
-    float offset[200] = { 0.0f };
+    //float offset[200] = { 0.0f };
+    //auto index = 0;
+    //for (auto y = -10; y < 10; y += 2)
+    //{
+    //    for (auto x = -10; x < 10; x += 2)
+    //    {
+    //        offset[index++] = (float)x * 0.2f + 0.2f;
+    //        offset[index++] = (float)y * 0.2f + 0.2f;
+    //    }
+    //}
+
+    //auto vbo2 = freeze::make_vbo();
+    //vbo2.bind();
+    //vbo2.copy_data(offset, sizeof(offset));
+    //freeze::vertex::set_enable(1, 2, 0, 0);
+    //freeze::vertex::divisor(1, 1);
+    //vbo2.unbind();
+
+    vao.unbind();
+
+    glm::vec3 offset[100] = {  };
     auto index = 0;
     for (auto y = -10; y < 10; y += 2)
     {
         for (auto x = -10; x < 10; x += 2)
         {
-            offset[index++] = (float)x * 0.2f + 0.2f;
-            offset[index++] = (float)y * 0.2f + 0.2f;
+            offset[index].x = (float)x * 0.2f + 0.2f;
+            offset[index].y = (float)y * 0.2f + 0.2f;
+            index++;
         }
     }
 
-    auto vbo2 = freeze::make_vbo();
-    vbo2.bind();
-    vbo2.copy_data(offset, sizeof(offset));
-    freeze::vertex::set_enable(1, 2, 0, 0);
-    freeze::vertex::divisor(1, 1);
-    vbo2.unbind();
-
-    vao.unbind();
+    for (auto i = 0; i < 100; i++)
+    {
+        mat_model[i] = glm::translate(glm::mat4{1.0f}, glm::vec3{ offset[i].x,offset[i].y,0.0f });
+    }
 }
 
 void transform_feedback_test::draw()
@@ -97,16 +114,13 @@ void transform_feedback_test::draw()
     image_shader.use();
     vao.bind();
 
-    vec_image_tex[2].active();
-    vec_image_tex[2].bind();
-    glDrawArraysInstanced(GL_POINTS, 0, 1, 100);
-
-    //for (auto i = 0; i < 100; ++i)
-    //{
-    //    vec_image_tex[i%6].active();
-    //    vec_image_tex[i % 6].bind();
-    //    glDrawArrays(GL_POINTS, 0, 1);
-    //}
+    for (auto i = 0; i < 100; ++i)
+    {
+        image_shader.set_mat4("model"s, mat_model[i]);
+        vec_image_tex[i%vec_image_tex.size()].active();
+        vec_image_tex[i%vec_image_tex.size()].bind();
+        glDrawArrays(GL_POINTS, 0, 1);
+    }
 
     vao.unbind();
 }
