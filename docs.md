@@ -302,4 +302,554 @@ void glGetObjectPtrLabel(void * ptr​, GLsizei bufSize​, GLsizei * length​,
 ### 面向对象语言问题
 
 像C++那样的面向对象语言，常常将状态封装到对象中。但是OpenGL的状态是全局的。当将状态封装到对象中时，会产生一些问题。
+例如，可能有一个纹理对象具有如下的构造函数和析构函数：
+
+```c++
+MyTexture::MyTexture(const char *pfilePath)
+{
+  if(LoadFile(pfilePath)==ERROR)
+	 return;
+  textureID=0;
+  glGenTextures(1, &textureID);
+  //More GL code...
+}
+
+MyTexture::~MyTexture()
+{
+  if(textureID)
+	 glDeleteTextures(1, &textureID);
+}
+```
+
+这样做有一个问题。除非创建了OpenGL上下文，并且在该线程中处于活动状态，否则OpenGL函数将不起作用。因此，在上下文创建之前glGenTextures将无法正常工作，并且在上下文销毁之后glDeleteTextures将无法正常工作。
+
+当用户在全局范围内创建一个纹理对象或类似的OpenGL对象包装时，这个问题通常会以构造函数的形式出现。有几个可能的解决方案：
+
+1. 不要使用构造函数/析构函数来初始化/销毁OpenGL对象。相反，为了这些目的，使用这些类的成员函数。这违反了RAII的原则，所以这不是最好的行动。
+1. 如果尚未创建上下文，请让OpenGL对象构造函数引发异常。这就需要在上下文创建功能中添加一个新的功能，该功能会在创建并激活上下文时告诉您的代码。
+1. 创建一个拥有所有其他OpenGL相关对象的类。这个类还应该负责在其构造函数中创建上下文。
+1. 如果在上下文不是最新的情况下创建/销毁对象，则允许程序崩溃。这使用户有责任正确使用它们，但是这也使得他们的工作代码看起来更加自然。
+
+#### RAII和隐藏的析构函数调用
+
+RAII的C++原理说，如果一个对象封装了一个资源（比如一个OpenGL对象），构造函数应该创建资源，而析构函数应该销毁它。 这看起来不错：
+
+```c++
+MyTexture::MyTexture(const char *pfilePath)
+{
+  if(LoadFile(pfilePath)==ERROR)
+	 return;
+  textureID=0;
+  glGenTextures(1, &textureID);
+  //More GL code...
+}
+
+MyTexture::~MyTexture()
+{
+  if(textureID)
+	 glDeleteTextures(1, &textureID);
+}
+```
+
+这个问题发生在你想要传递这个对象到其它地方的时候，或者是在像vector这样的C++容器中创建它的时候。 考虑这个功能：
+
+```c++
+MyTexture CreateTexture()
+{
+  MyTexture tex;
+
+  //Initialize `tex` with data.
+
+  return tex;
+}
+```
+
+这里发生了什么？按照C++的规则，在这个函数调用结束时，tex将被销毁。返回的不是tex本身，而是此对象的副本。但是tex管理一个资源：一个OpenGL对象。而这个资源将会被析构函数破坏。
+
+返回的副本将因此具有已被销毁的OpenGL对象名称。
+
+发生这种情况是因为我们违反了C++的3/5原则：如果你为一个一个类写了析构函数，复制/移动构造函数，或者复制/移动赋值操作符，那么你必须写所有这些。
+
+编译器生成的拷贝构造函数是错误的;它复制OpenGL对象名称，而不是OpenGL对象本身。这留下了两个C++对象，每个C++对象都打算销毁相同的OpenGL对象。
+
+理想情况下，复制RAII包装应该将OpenGL对象的数据复制到新的OpenGL对象中。这将使每个C++对象具有自己独特的OpenGL对象。但是，将OpenGL对象的数据复制到一个新的对象是非常昂贵的;这也是基本上不可能做到的，这要归功于扩展的能力来添加你可能不会静态知道的状态。
+
+所以相反，我们应该禁止复制OpenGL包装对象。这种类型应该是仅移动类型;在移动中，我们从移动的对象中窃取资源。
+
+```c++
+class MyTexture
+{
+private:
+  GLuint obj_ = 0; //Cannot leave this uninitialized.
+
+  void Release()
+  {
+    glDeleteTextures(1, &obj_);
+    obj_ = 0;
+  }
+
+public:
+  //Other constructors as normal.
+
+  //Free up the texture.
+  ~MyTexture() {Release();}
+
+  //Delete the copy constructor/assignment.
+  MyTexture(const MyTexture &) = delete;
+  MyTexture &operator=(const MyTexture &) = delete;
+
+  MyTexture(MyTexture &&other) : obj_(other.obj_)
+  {
+    other.obj_ = 0; //Use the "null" texture for the old object.
+  }
+
+  MyTexture &operator=(MyTexture &&other)
+  {
+    //ALWAYS check for self-assignment.
+    if(this != &other)
+    {
+      Release();
+      //obj_ is now 0.
+      std::swap(obj_, other.obj_);
+    }
+  }
+};
+```
+
+现在，上面的代码可以工作。 返回tex; 将会引起tex的移动，在tex被破坏之前，tex将被视为0。 用0纹理调用glDeleteTextures是被允许的。
+
+#### OOP和隐藏的绑定
+
+在使用OpenGL和c++等语言时还有另外一个问题。 考虑以下功能：
+
+```c++
+void MyTexture::TexParameter(GLenum pname, GLint param)
+{
+    glBindTexture(GL_TEXTURE_2D, textureID);
+    glTexParameteri(GL_TEXTURE_2D, pname, param);
+}
+```
+
+问题是纹理的绑定对类的用户是隐藏的。 对重复绑定对象可能会有性能影响（特别是因为API对外部用户而言似乎不重要）。 但主要关心的是正确性; 绑定的对象是全局状态，现在一个本地成员函数已经改变了。
+
+这可能会导致许多隐藏的破损来源。 实现这一目标的安全方法如下：
+
+```c++
+void MyTexture::TexParameter(GLenum pname, GLint param)
+{
+    GLuint boundTexture = 0;
+    glGetIntegerv(GL_TEXTURE_BINDING_2D, (GLint*) &boundTexture);
+    glBindTexture(GL_TEXTURE_2D, textureID);
+    glTexParameteri(GL_TEXTURE_2D, pname, param);
+    glBindTexture(GL_TEXTURE_2D, boundTexture);
+}
+```
+
+请注意，此解决方案强调性能的正确性; glGetIntegerv调用可能不会特别快。
+
+更有效的解决方案是使用直接状态访问，它需要OpenGL 4.5或ARB_direct_state_access或更早的EXT_direct_state_access扩展：
+
+```c++
+void MyTexture::TexParameter(GLenum pname, GLint param)
+{
+    glTextureParameteri(textureID, GL_TEXTURE_2D, pname, param);
+}
+```
+
+### 纹理上传和像素读取
+
+您可以为纹理创建存储，并使用glTexImage2D（或类似的功能，根据纹理的类型）上传像素。如果程序在上载期间崩溃，或对角线出现在所得图像中，这是因为你的像素阵列的每一水平线的取向不是4这通常发生于用户加载图像是将RGB的或多个BGR格式（例如，24个BPP图像），这取决于图像数据的来源。
+
+例如，你的图像宽度= 401和高度= 500.高度是无关的;重要的是宽度。如果我们做数学，401像素×3字节= 1203，这是不能被4整除。一些图像文件格式可能固有地将每行对齐到4个字节，但有些不。对于那些不行，每行将从最后一个开始正好开始1203个字节。可以更改OpenGL的行对齐，以适合图像数据的行对齐。这是通过调用glPixelStorei（GL_UNPACK_ALIGNMENT，＃）完成的，其中＃是您想要的对齐方式。默认对齐方式是4。
+
+如果你有兴趣，大多数GPU像4个字节的块。换句话说，当每个组件是一个字节时，GL_RGBA或GL_BGRA是首选。 GL_RGB和GL_BGR被认为是奇怪的，因为大多数GPU，大多数CPU和任何其他类型的芯片不处理24位。这意味着，驱动程序将您的GL_RGB或GL_BGR转换为GPU所喜欢的，通常是BGRA。
+
+同样，如果你用glReadPixels读取一个缓冲区，你可能会遇到类似的问题。有一个GL_PACK_ALIGNMENT就像GL_UNPACK_ALIGNMENT一样。默认对齐方式也是4，这意味着每个水平线必须是4的倍数。如果你阅读的格式，如GL_BGRA或GL_RGBA您缓冲区将不会有任何问题，因为该线将永远是4的倍数，如果在格式，如GL_BGR或GL_RGB读它，那么你的风险运行到这个问题。
+
+GL_PACK / UNPACK_ALIGNMENTs只能是1,2,4或8.所以3的对齐方式是不允许的。
+
+### 图像精度
+
+您可以（但不建议这样做）调用glTexImage2D(GL_TEXTURE_2D, 0, X, width, height, 0, format, type, pixels)，并将X设置为1，2，3或4。到组件的数量（GL_RED将是1，GL_RG将是2，GL_RGB将是3，GL_RGBA将是4）。
+
+实际上最好是给出一个真实的图像格式，一个具有特定的内部精度。如果OpenGL实现不支持您选择的特定格式和精度，那么驱动程序将在内部将其转换成它支持的东西。
+
+OpenGL版本3.x及以上版本有一套所需的图像格式，所有符合的实现必须执行。
+
+注意：不可变存储纹理的创建主动禁止使用未经处理的图像格式。或如上所述的整数。
+我们也应该说在教程网站上看到以下内容是很常见的：
+
+```c++
+glTexImage2D(GL_TEXTURE_2D，0，GL_RGB，width，height，0，GL_RGB，GL_UNSIGNED_BYTE，pixels);
+```
+
+虽然GL会接受GL_RGB，但由驱动来决定适当的精度。我们建议您具体写成GL_RGB8：
+
+```c++
+glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB8, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, pixels);
+```
+
+这意味着您需要驱动程序实际将其存储在R8G8B8格式中。我们还应该说，大多数GPU将GL_RGB8在内部转换成GL_RGBA8。所以最好避开GL_RGB8。我们还应该说明，在一些平台上，比如Windows，像素上传格式的GL_BGRA是首选。
+
+```c++
+glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, width, height, 0, GL_BGRA, GL_UNSIGNED_BYTE, pixels);
+```
+
+这使用GL_RGBA8作为内部格式。 GL_BGRA和GL_UNSIGNED_BYTE（或GL_UNSIGNED_INT_8_8_8_8是以像素数组为单位的数据，驱动程序可能不需要执行任何基于CPU的转换，并直接将DMA数据直接传输到显卡。基准测试显示，在Windows和nVidia和ATI/AMD，这是最佳的格式。
+
+首选的像素传输格式和类型可以从实现中查询。
+
+### 深度缓冲精度
+
+当为窗口选择像素格式，并要求深度缓冲区时，深度缓冲区通常以16位，24位或32位的位深度存储为标准化整数。
+
+注意：您可以使用真正的浮点深度格式创建图像。但这些只能用于帧缓冲区对象，而不能用于默认帧缓冲区。
+在OpenGL中，所有的深度值都在[0，1]的范围内。整数规范化过程只是将这个浮点范围转换为适当精度的整数值。它是存储在深度缓冲区中的整数值。
+
+通常，24位深度缓冲区会将每个深度值填充到32位，因此每像素8位将不会使用。但是，如果要求8位模板缓冲区以及深度缓冲区，则两个单独的图像通常会合并为一个深度/模板图像。 24位将用于深度，其余8位用于模板。
+
+现在深度缓冲浮点的误解已经解决了，这个调用有什么问题呢？
+
+```c++
+glReadPixels(0, 0, width, height, GL_DEPTH_COMPONENT, GL_FLOAT, mypixels);
+```
+
+由于深度格式是标准化的整数格式，因此驱动程序必须使用CPU将标准化的整数数据转换为浮点值。 这很慢。
+
+处理这个问题的首选方法是用这个代码：
+
+```c++
+if(depth_buffer_precision == 16)
+  {
+    GLushort mypixels[width*height];
+    glReadPixels(0, 0, width, height, GL_DEPTH_COMPONENT, GL_UNSIGNED_SHORT, mypixels);
+  }
+  else if(depth_buffer_precision == 24)
+  {
+    GLuint mypixels[width*height];    //There is no 24 bit variable, so we'll have to settle for 32 bit
+    glReadPixels(0, 0, width, height, GL_DEPTH_COMPONENT, GL_UNSIGNED_INT_24_8, mypixels);  //No upconversion.
+  }
+  else if(depth_buffer_precision == 32)
+  {
+    GLuint mypixels[width*height];
+    glReadPixels(0, 0, width, height, GL_DEPTH_COMPONENT, GL_UNSIGNED_INT, mypixels);
+  }
+```
+
+如果您有深度/模板格式，则可以通过这种方式获取深度/模板数据：
+
+```c++
+GLuint mypixels[width*height];
+glReadPixels(0, 0, width, height, GL_DEPTH_STENCIL, GL_UNSIGNED_INT_24_8, mypixels);
+```
+
+### 创建一个完整的纹理
+
+这个代码有什么问题？
+
+```c++
+glGenTextures(1, &textureID);
+glBindTexture(GL_TEXTURE_2D, textureID);
+glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, width, height, 0, GL_BGRA, GL_UNSIGNED_BYTE, pixels);
+```
+
+纹理将不起作用，因为它是不完整的。 默认的GL_TEXTURE_MIN_FILTER状态是GL_NEAREST_MIPMAP_LINEAR。 而且因为OpenGL定义默认的GL_TEXTURE_MAX_LEVEL为1000，所以OpenGL会期望定义mipmap级别。 由于您只定义了一个mipmap级别，所以OpenGL会考虑纹理不完整，直到GL_TEXTURE_MAX_LEVEL设置正确，或者GL_TEXTURE_MIN_FILTER参数设置为不使用mipmap。
+
+更好的代码是使用纹理存储功能（如果你有OpenGL 4.2或ARB_texture_storage）分配纹理的存储，然后用glTexSubImage2D上传：
+
+```c++
+glGenTextures(1, &textureID);
+glBindTexture(GL_TEXTURE_2D, textureID);
+glTexStorage2D(GL_TEXTURE_2D, 1, GL_RGBA8, width, height);
+glTexSubImage2D(GL_TEXTURE_2D, 0​, 0, 0, width​, height​, GL_BGRA, GL_UNSIGNED_BYTE, pixels);
+```
+
+这将创建具有单个mipmap级别的纹理，并适当地设置所有参数。 如果你想有多个mipmap，那么你应该把1改成你想要的mipmap。 您还需要单独的glTexSubImage2D调用来上传每个mipmap。
+
+如果不可用，你可以从这个代码中得到类似的效果：
+
+```c++
+glGenTextures(1, &textureID);
+glBindTexture(GL_TEXTURE_2D, textureID);
+glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_BASE_LEVEL, 0);
+glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, 0);
+glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, width, height, 0, GL_BGRA, GL_UNSIGNED_BYTE, pixels);
+```
+
+同样，如果你使用多个mipmap，你应该改变GL_TEXTURE_MAX_LEVEL来表示你将使用多少（减1,因为base/max级别是一个闭区间）。然后执行一个glTexImage2D（注意缺少“Sub”）。 为每个mipmap。
+
+### 自动生成mipmap
+
+可以使用glGenerateMipmap函数自动生成纹理的Mipmap。 此函数（或扩展GL_ARB_framebuffer_object）需要OpenGL 3.0或更高版本。 该功能很简单， 当你为纹理调用它时，会为该纹理生成mipmap：
+
+```c++
+glGenTextures(1, &textureID);
+glBindTexture(GL_TEXTURE_2D, textureID);
+glTexStorage2D(GL_TEXTURE_2D, num_mipmaps, GL_RGBA8, width, height);
+glTexSubImage2D(GL_TEXTURE_2D, 0​, 0, 0, width​, height​, GL_BGRA, GL_UNSIGNED_BYTE, pixels);
+glGenerateMipmap(GL_TEXTURE_2D);  //Generate num_mipmaps number of mipmaps here.
+glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+```
+
+如果纹理存储不可用，则可以使用较旧的API：
+
+```c++
+glGenTextures(1, &textureID);
+glBindTexture(GL_TEXTURE_2D, textureID);
+glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, width, height, 0, GL_BGRA, GL_UNSIGNED_BYTE, pixels);
+glGenerateMipmap(GL_TEXTURE_2D);  //Generate mipmaps now!!!
+glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+```
+
+警告：据报道，在某些ATI驱动程序中，glGenerateMipmap（GL_TEXTURE_2D）除非在此特定情况下调用glEnable（GL_TEXTURE_2D），否则无效。 再次，要清楚，绑定纹理，glEnable，然后glGenerateMipmap。 这是一个bug，一直在ATI驱动程序中。 也许在你读这个的时候，它会被纠正的。 （glGenerateMipmap在2011年不适用于ATI）
+
+### glGetError
+
+为什么要检查错误？ 为什么你应该调用glGetError()?
+
+```c++
+glGenTextures(1, &textureID);
+glBindTexture(GL_TEXTURE_2D, textureID);
+glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR); 
+glTexParameteri(GL_TEXTURE_2D, GL_GENERATE_MIPMAP, GL_TRUE);   //Requires GL 1.4. Removed from GL 3.1 and above.
+glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, width, height, 0, GL_BGRA, GL_UNSIGNED_BYTE, pixels);
+```
+
+该代码没有调用glGetError()。 如果你要调用glGetError，它会返回GL_INVALID_ENUM。 
+如果在每个函数调用之后放置一个glGetError调用，
+则会注意到在 glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR_MIPMAP_LINEAR)上引发了错误。 
+magnification filter不能指定使用mipmap; 只有minification filter可以做到这一点。
+
+### 在编译着色器时检查错误
+
+在编译/链接着色器或程序对象时总是检查错误。
+
+### 创建Cubemap纹理
+
+最好将换行模式设置为GL_CLAMP_TO_EDGE，而不是其他格式。 别忘了定义全部6个面，否则纹理被认为是不完整的。 不要忘记设置GL_TEXTURE_WRAP_R，因为立方体贴图需要3D纹理坐标。
+
+```c++
+glGenTextures(1, &textureID);
+glBindTexture(GL_TEXTURE_CUBE_MAP, textureID);
+glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_BASE_LEVEL, 0); 
+glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAX_LEVEL, 0); 
+//Define all 6 faces
+glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X, 0, GL_RGBA8, width, height, 0, GL_BGRA, GL_UNSIGNED_BYTE, pixels_face0);
+glTexImage2D(GL_TEXTURE_CUBE_MAP_NEGATIVE_X, 0, GL_RGBA8, width, height, 0, GL_BGRA, GL_UNSIGNED_BYTE, pixels_face1);
+glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_Y, 0, GL_RGBA8, width, height, 0, GL_BGRA, GL_UNSIGNED_BYTE, pixels_face2);
+glTexImage2D(GL_TEXTURE_CUBE_MAP_NEGATIVE_Y, 0, GL_RGBA8, width, height, 0, GL_BGRA, GL_UNSIGNED_BYTE, pixels_face3);
+glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_Z, 0, GL_RGBA8, width, height, 0, GL_BGRA, GL_UNSIGNED_BYTE, pixels_face4);
+glTexImage2D(GL_TEXTURE_CUBE_MAP_NEGATIVE_Z, 0, GL_RGBA8, width, height, 0, GL_BGRA, GL_UNSIGNED_BYTE, pixels_face5);
+```
+
+当使用glTexStorage2D代替glTexImage2D时，应该使用目标GL_TEXTURE_CUBE_MAP调用glTexStorage2D一次，然后调用glTexSubImage2D来上传每个面的数据。
+
+如果要自动生成mipmap，可以使用上述任何一种机制，使用目标GL_TEXTURE_CUBE_MAP。 生成立方体贴图的mipmap时，OpenGL将不会混合使用多个纹理，而在较低的mip级别留下可见的接缝。 除非启用无缝的立方体贴图纹理。
+
+### 更新纹理
+
+要在现有的2D纹理中更改纹理元素，请使用glTexSubImage2D：
+
+```c++
+glBindTexture(GL_TEXTURE_2D, textureID);    //A texture you have already created storage for
+glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, width, height, GL_BGRA, GL_UNSIGNED_BYTE, pixels);
+```
+
+glTexImage2D创建纹理的存储，定义大小/格式，并删除所有以前的像素数据。 glTexSubImage2D只修改纹理内的像素数据。 它可以用来更新所有的纹素，或者只是其中的一部分。
+
+要从帧缓冲区中复制纹理元素，请使用glCopyTexSubImage2D。
+
+glBindTexture（GL_TEXTURE_2D，textureID）; //你已经为glCopyTexSubImage2D（GL_TEXTURE_2D，0，0，0，0，width，height）创建了存储的纹理; //将当前读缓冲区复制到纹理
+
+请注意，有一个glCopyTexImage2D函数，该函数执行复制以填充图像，但也定义了图像大小，格式等等，就像glTexImage2D一样。
+
+### 渲染到纹理
+
+要直接渲染到纹理，而不是像上面那样进行复制，请使用帧缓冲区对象。
+
+警告：NVIDIA的OpenGL驱动程序使用不完整的纹理有一个已知的问题。如果纹理不是纹理完整的，则FBO本身将被视为GL_FRAMEBUFFER_UNSUPPORTED，或者将具有GL_FRAMEBUFFER_INCOMPLETE_ATTACHMENT。这是一个驱动程序错误，因为OpenGL规范不允许实现仅仅因为纹理尚未完成而返回这些值中的任何一个。在NVIDIA驱动程序中解决这个问题之前，建议确保所有纹理都具有mipmap级别，并且所有的glTexParameteri值都是针对纹理格式设置的。例如，如果mag和min过滤器有任何LINEAR字段，则整数纹理不完整。
+
+### 深度测试不起作用
+
+首先，检查深度测试是否激活。确保glEnable已被调用并且相应的glDepthFunc处于活动状态。还要确保glDepthRange与深度函数匹配。
+
+假设所有的设置都正确，你的帧缓冲区可能根本就没有深度缓冲区。对于您创建的Framebuffer对象很容易看到。对于默认帧缓冲区，这完全取决于你如何创建你的OpenGL上下文。
+
+例如，如果您正在使用GLUT，则需要确保将GLUT_DEPTH传递给glutInitDisplayMode函数。
+
+### 帧缓冲区中没有Alpha
+
+如果你正在做Blending，你需要一个目标alpha，你需要确保你的渲染目标有一个。渲染到Framebuffer对象时很容易确保。但是使用默认帧缓冲区，这取决于你如何创建你的OpenGL上下文。
+
+例如，如果您正在使用GLUT，则需要确保将GLUT_ALPHA传递给glutInitDisplayMode函数。
+
+### glFinish和glFlush
+
+如果您正在渲染到默认帧缓冲区的前端缓冲区，请使用glFlush。 有一个双缓冲窗口更好，但如果你有一个情况，你想直接渲染到窗口，然后继续。
+
+有很多教程网站建议你这样做：
+
+```c++
+glFlush();
+SwapBuffers();
+```
+
+这是不必要的。 SwapBuffer命令负责flushing和命令处理。
+
+glFlush和glFinish函数用于将CPU操作与GPU命令同步。
+
+在许多情况下，这样的显式同步是不必要的。 Sync Objects r 的使用可以使其成为必要，也可以使用对图像的任意读取/写入。
+
+因此，当你正在做的事情规范明确指出不会是同步的，你应该只使用glFinish。
+
+### 像素传输速度慢
+
+要实现良好的像素传输性能，您需要使用实现可以直接使用的像素传输格式。考虑一下：
+
+glTexImage2D（GL_TEXTURE_2D，0，GL_RGBA8，width，height，0，GL_RGBA，GL_UNSIGNED_BYTE，pixels）;
+问题是像素传输格式GL_RGBA可能不直接支持GL_RGBA8格式。在某些平台上，GPU倾向于交换红色和蓝色（GL_BGRA）。
+
+如果您提供GL_RGBA，则驱动程序可能需要为您进行缓慢的交换。如果您确实使用GL_BGRA，则对像素传输的调用将快得多。
+
+请记住，对于第三个参数，它必须保持为GL_RGBA8。这定义了纹理的图像格式;最后三个参数描述了像素数据的存储方式。图像格式没有定义纹理存储的顺序，因此GPU仍然可以在内部存储为BGRA。
+
+请注意，GL_BGRA像素传输格式仅在上传到GL_RGBA8图像时才是首选。在处理其他格式时，如GL_RGBA16，GL_RGBA8UI甚至GL_RGBA8_SNORM，那么常规的GL_RGBA排序可能是首选。
+
+在哪个平台上首选GL_BGRA？列表会太长，但是Microsoft Windows就是一个例子。请注意，使用GL 4.3或ARB_internalformat_query2，您可以简单地询问实施glGetInternalFormativ（GL_TEXTURE_2D，GL_RGBA8，GL_TEXTURE_IMAGE_FORMAT，1，＆preferred_format）的首选格式。
+
+### 交换缓冲区
+
+一个现代的OpenGL程序应该总是使用双缓冲。一个现代的3D OpenGL程序也应该有一个深度缓冲区。
+
+渲染序列应该是这样的：
+
+```c++
+glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+RenderScene();
+SwapBuffers(HDC); //对于Windows
+```
+
+应始终清除缓冲区。在更老的硬件上，有一种技术可以在不清除场景的情况下离开，但即使是在最近的硬件上，这也会让事情变得更慢。所以一定要清楚。
+
+### 像素所有权问题
+
+如果您的窗口被覆盖，或者部分覆盖了窗口，或者窗口位于桌面区域之外，则GPU可能无法渲染到这些部分。从这些区域读取也可能产生垃圾数据。
+
+这是因为这些像素不能通过“像素所有权测试”。只有通过此测试的像素才具有有效的数据。那些失败的内容没有定义。
+
+如果这对您是一个问题（注意：如果您需要从覆盖区域读回数据，这只是一个问题），解决方案是呈现给Framebuffer对象并渲染到该对象。如果需要显示图像，则可以使用默认帧缓冲区。
+
+### glEnable（GL_POLYGON_SMOOTH）
+
+这不是推荐的抗锯齿方法。 改用Multisampling。
+
+### 位字段枚举器
+
+一些OpenGL枚举器代表特定位域中的位。所有这些都以_BIT结尾（在任何扩展后缀之前）。看看这个例子：
+
+```c++
+glEnable(GL_BLEND | GL_DRAW_BUFFER); // invalid
+glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT); // valid
+```
+
+第一行是错误的。因为这些枚举器都不以_BIT结尾，所以它们不是位域，因此不应该一起进行OR运算。
+
+相比之下，第二行是非常好的。所有这些都以_BIT结尾，所以这是有道理的。
+
+### 三重缓冲
+
+您无法控制驱动程序是否执行三重缓冲。你可以尝试使用FBO自己实现它。但是，如果驱动程序已经在执行三重缓冲，那么您的代码只能将其变成四重缓冲。这通常是矫枉过正
+
+### 调色板的纹理
+
+主要的GL供应商已经放弃了对EXT_paletted_texture扩展的支持。如果您真的需要在新硬件上使用调色板纹理，则可以使用着色器来实现这一效果。
+
+着色器示例：
+
+```c
+//Fragment shader
+#version 110
+uniform sampler2D ColorTable;     //256 x 1 pixels
+uniform sampler2D MyIndexTexture;
+varying vec2 TexCoord0;
+
+void main()
+{
+  //What color do we want to index?
+  vec4 myindex = texture2D(MyIndexTexture, TexCoord0);
+  //Do a dependency texture read
+  vec4 texel = texture2D(ColorTable, myindex.xy);
+  gl_FragColor = texel;   //Output the color
+}
+```
+
+ColorTable可能采用您选择的格式，例如GL_RGBA8。 ColorTable可以是256 x 1像素大小的纹理。
+
+MyIndexTexture可以是任何格式，虽然GL_R8非常合适（GL_R8在GL 3.0中可用）。 MyIndexTexture可以是任何维度，如64 x 32。
+
+我们阅读MyIndexTexture，并使用这个结果作为texcoord来读取ColorTable。 如果您希望执行调色板动画，或仅更新颜色表中的颜色，则可以使用glTexSubImage2D将新值提交给ColorTable。 假设颜色表格是GL_RGBA格式：
+
+```c
+glBindTexture(GL_TEXTURE_2D, myColorTableID);
+glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, 256, 1, GL_BGRA, GL_UNSIGNED_BYTE, mypixels);
+```
+
+### 禁用深度测试，并允许深度写入
+
+在某些情况下，您可能想要禁用深度测试，并在渲染对象时仍允许更新深度缓冲区。事实证明，如果您禁用深度测试（glDisable（GL_DEPTH_TEST）），则GL也禁止写入深度缓冲区。正确的解决方案是告诉GL使用glDepthFunc（GL_ALWAYS）忽略深度测试结果。要小心，因为在这种状态下，如果最后渲染一个远处的对象，则深度缓冲区将包含该远处对象的值。
+
+### glGetFloatv glGetBooleanv glGetDoublev glGetIntegerv
+
+你发现这些功能很慢。
+
+这很正常。 glGet表单的任何函数都可能会很慢。 nVidia和ATI / AMD建议您避免使用它们。 GL驱动程序（也是GPU）倾向于接收信息。如果你自己跟踪信息，你可以避免所有的glGet调用。
+
+### y轴
+
+几乎在OpenGL中的所有东西都使用一个坐标系，X指向右，Y指向上。这包括像素传输函数和纹理坐标。
+
+例如，glReadPixels采用x和y的位置。 y轴从底部被认为是0，顶部是一些值。对于一些习惯了操作系统的操作系统来说，这对y轴是颠倒过来的（你的窗口的y轴是从上到下，你的鼠标的坐标是y轴从上到下）看起来可能不直观。解决方案对于鼠标是显而易见的：windowHeight - mouseY。
+
+对于纹理，GL认为y轴是从下到上，最下面是0.0，最上面是1.0。有些人将他们的位图加载到GL纹理，并想知道为什么它们在模型上反转。解决方法很简单：通过执行1.0 - v来反转位图或反转模型的texcoord。
+
+### 渲染方法中的glGenTextures
+
+似乎有些人在渲染功能中创建了一个纹理。不要在渲染函数中创建资源。这也适用于所有其他glGen函数调用。不要读取模型文件，并在渲染函数中使用它们创建VBO。尝试在程序开始时分配资源。当程序终止时释放这些资源。
+
+最糟糕的是，有些在渲染函数中创建纹理（或任何其他GL对象），并且从不调用glDeleteTextures。每次渲染函数被调用时，都会创建一个新纹理而不会释放旧纹理！
+
+### 错误的数组大小
+
+我们将用GL 1.1给出这个例子，但是如果您使用的是未来版本的OpenGL的VBO或任何其他功能，则同样的原则适用。
+
+这个代码有什么问题？
+
+```c++
+GLfloat vertex[] = {0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 1.0, 0.0, 0.0, 1.0, 0.0};
+GLfloat normal[] = {0.0, 0.0, 1.0};
+GLfloat color[] = {1.0, 0.7, 1.0, 1.0};
+GLushort index[] = {0, 1, 2, 3};
+glVertexPointer(3, GL_FLOAT, sizeof(GLfloat)*3, vertex);
+glNormalPointer(GL_FLOAT, sizeof(GLfloat)*3, normal);
+glColorPointer(4, GL_FLOAT, sizeof(GLfloat)*4, color);
+glDrawElements(GL_QUADS, 4, GL_UNSIGNED_SHORT, index);
+```
+
+目的是呈现一个四元组，但你的数组大小不匹配。 只有1个法线，而GL每个顶点都需要1个法线。 你的四边形只有一个RGBA颜色，而GL每个顶点都需要一种颜色。 您可能会导致系统崩溃，因为GL驱动程序将从您提供的正常和颜色数组的大小之外进行读取。
+
+常见问题也解释了这个问题。
 
