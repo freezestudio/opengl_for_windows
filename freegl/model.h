@@ -161,7 +161,7 @@ namespace freeze
 
         model_t()
         {
-
+            _vec_mesh_data.clear();
         }
 
     public:

@@ -465,7 +465,7 @@ namespace freeze
             case 2:this->format = GL_RG; break;
             case 4:this->format = GL_RGBA; break;
             }
-            glTexImage2D(GL_TEXTURE_2D, 0, this->format,
+            glTexImage2D(GL_TEXTURE_2D, 0, /*this->format*/GL_RGBA8,
                 x, y, 0, this->format, GL_UNSIGNED_BYTE, (void const*)image_data);
             stbi_image_free(image_data);
             //stbi_set_flip_vertically_on_load(0/*false*/);
@@ -476,18 +476,8 @@ namespace freeze
         bool set_image(texture_data_t<delay> const& texdata)
         {
             if (texdata.isnull())return false;
-            set_image(texdata.format(), texdata.width(), texdata.height(),
+            set_image(/*texdata.format()*/GL_RGBA8, texdata.width(), texdata.height(),
                 texdata.format(), GL_UNSIGNED_BYTE, texdata.data());
-
-            int x = texdata.width();
-            int y = texdata.height();
-            this->format = texdata.format();
-
-            auto image_data = texdata.data();
-
-            glTexImage2D(GL_TEXTURE_2D, 0, this->format,
-                x, y, 0, this->format, GL_UNSIGNED_BYTE, (void const*)image_data);
-            assert_error();
 
             return true;
         }
@@ -550,7 +540,7 @@ namespace freeze
                 case 2:format = GL_RG; break;
                 case 4:format = GL_RGBA; break;
                 }
-                set_image(index++, format, x, y, format, GL_UNSIGNED_BYTE, image_data);
+                set_image(index++, /*format*/GL_RGBA8, x, y, format, GL_UNSIGNED_BYTE, image_data);
                 stbi_image_free(image_data);
             }
         }
