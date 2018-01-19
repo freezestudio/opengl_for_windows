@@ -1,5 +1,9 @@
 # OpenGL着色语言
 
+`OpenGL`着色语言（`GLSL`）是`OpenGL`的主要着色语言。虽然`OpenGL Extensions`有许多可用于`OpenGL`的着色语言，但`OpenGL` 直接支持`GLSL`（和`SPIR-V`），而不需要扩展。
+
+`GLSL`是一种`C`风格的语言。该语言经历了一系列的版本更改，并且共享了`OpenGL`的弃用模型。当前版本的`GLSL`是`4.60`。
+
 ## 着色器
 
 ### 对象
