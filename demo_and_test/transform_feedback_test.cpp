@@ -1,13 +1,26 @@
 #include "transform_feedback_test.h"
 
-
 static float quad_vertices[] = {
-    // positions        //               // texture Coords
-    -1.0f,  1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f,
-    -1.0f, -1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f,
-     1.0f,  1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f,
-     1.0f, -1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f,
+    // positions  // texture Coords
+    -1.0f, -1.0f, 0.0f, 0.0f, //leftbottom
+     1.0f, -1.0f, 1.0f, 0.0f, //rightbottom
+    -1.0f,  1.0f, 0.0f, 1.0f, //lefttop
+     1.0f,  1.0f, 1.0f, 1.0f, //righttop
 };
+
+//#define NormalOf(L,X) ((float)((float)(2.0f*X)/((float)L)-1.0f))
+//#define ONE_OF_WIDTH  NormalOf(COUNTOF_WIDTH,1)
+//#define ONE_OF_HEIGHT NormalOf(COUNTOF_HEIGHT,1)
+
+static inline float normal_of(float length, float number)
+{
+    return 2.0f * number / length - 1.0f;
+}
+
+static inline float one_of_length(float length)
+{
+    return 1.0f/length;
+}
 
 transform_feedback_test::transform_feedback_test()
     : scene_camera{ 0.0f,0.0f,3.0f }
@@ -29,13 +42,12 @@ void transform_feedback_test::do_init()
 
     image_shader.compile_file_and_link(
         "resources/shaders/tfb_test.vs"s,
-        "resources/shaders/tfb_test.fs"s,
-        "resources/shaders/tfb_test.gs"s
+        "resources/shaders/tfb_test.fs"s
     );
     image_shader.use();
     image_shader.set_int("image"s, 0);
 
-    auto tex_datas = freeze::load_images_from_dir("C:\\Users\\olfan\\Pictures\\1200600"s);
+    auto tex_datas = freeze::load_images_from_dir("resources/textures"s);
     assert(tex_datas.size() > 0);
 
     stbi_set_flip_vertically_on_load(1);
@@ -55,49 +67,37 @@ void transform_feedback_test::do_init()
     stbi_set_flip_vertically_on_load(0);
 
     vao.bind();
-
     auto vbo = freeze::make_vbo();
-    vbo.bind();
-    float pos[] = { 0.0f,0.0f };
-    vbo.copy_data(pos, sizeof(pos));
-    freeze::vertex::set_enable(0, 2, 0, 0);
+    vbo.bind();    
+    vbo.copy_data(quad_vertices, sizeof(quad_vertices));
+    freeze::vertex::set_enable(0, 4, 0, 0);
     vbo.unbind();
-
-    //float offset[200] = { 0.0f };
-    //auto index = 0;
-    //for (auto y = -10; y < 10; y += 2)
-    //{
-    //    for (auto x = -10; x < 10; x += 2)
-    //    {
-    //        offset[index++] = (float)x * 0.2f + 0.2f;
-    //        offset[index++] = (float)y * 0.2f + 0.2f;
-    //    }
-    //}
-
-    //auto vbo2 = freeze::make_vbo();
-    //vbo2.bind();
-    //vbo2.copy_data(offset, sizeof(offset));
-    //freeze::vertex::set_enable(1, 2, 0, 0);
-    //freeze::vertex::divisor(1, 1);
-    //vbo2.unbind();
-
     vao.unbind();
 
-    glm::vec3 offset[100] = {  };
+    glm::vec3 offset[COUNTOF_MUL] = {  };
     auto index = 0;
-    for (auto y = -10; y < 10; y += 2)
+    for (auto y = 0; y < COUNTOF_HEIGHT; ++y)
     {
-        for (auto x = -10; x < 10; x += 2)
+        for (auto x = 0; x < COUNTOF_WIDTH; ++x)
         {
-            offset[index].x = (float)x * 0.2f + 0.2f;
-            offset[index].y = (float)y * 0.2f + 0.2f;
-            index++;
+            offset[index++] = glm::vec3{
+                normal_of(SCR_WIDTH,x*PER_WIDTH) + one_of_length(COUNTOF_WIDTH),
+                normal_of(SCR_HEIGHT,y*PER_WIDTH) + one_of_length(COUNTOF_HEIGHT),
+                0.0f
+            };
         }
     }
 
-    for (auto i = 0; i < 100; i++)
+    for (auto i = 0; i < COUNTOF_MUL; i++)
     {
-        mat_model[i] = glm::translate(glm::mat4{1.0f}, glm::vec3{ offset[i].x,offset[i].y,0.0f });
+        auto model = glm::translate(glm::mat4{1.0f},offset[i]);
+        model = glm::scale(model, 
+            glm::vec3{ 
+                1.0f / (float)COUNTOF_WIDTH,
+                1.0f / (float)COUNTOF_HEIGHT,
+                1.0f 
+            });
+        mat_model[i] = model;
     }
 }
 
@@ -107,19 +107,19 @@ void transform_feedback_test::draw()
     //1ms = 1000us
     //1us = 1000ns
     auto current_time = high_clock::now();
-    auto span = last_time - current_time;
+    auto span = current_time - last_time;
     delta_time = (float)span.count() * 0.000000001f;
     last_time = current_time;
 
     image_shader.use();
     vao.bind();
 
-    for (auto i = 0; i < 100; ++i)
+    for (auto i = 0; i < COUNTOF_MUL; ++i)
     {
         image_shader.set_mat4("model"s, mat_model[i]);
         vec_image_tex[i%vec_image_tex.size()].active();
         vec_image_tex[i%vec_image_tex.size()].bind();
-        glDrawArrays(GL_POINTS, 0, 1);
+        glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
     }
 
     vao.unbind();
