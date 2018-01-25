@@ -1,19 +1,19 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.27130.2010
+VisualStudioVersion = 15.0.27130.2024
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "demo_and_test", "demo_and_test\demo_and_test.vcxproj", "{D0DEB8C4-531E-45D4-8E6E-26CDB8AC2F75}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "readme", "readme", "{DD08EAF0-261A-4C1A-B8E5-C637093355CA}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Docs", "Docs", "{DD08EAF0-261A-4C1A-B8E5-C637093355CA}"
 	ProjectSection(SolutionItems) = preProject
-		CommonMistakes.md = CommonMistakes.md
-		docs.md = docs.md
-		OpenGLConcepts.md = OpenGLConcepts.md
-		OpenGLObject.md = OpenGLObject.md
-		OpenGLShadingLanguage.md = OpenGLShadingLanguage.md
+		Docs\CommonMistakes.md = Docs\CommonMistakes.md
+		Docs\docs.md = Docs\docs.md
+		Docs\OpenGLConcepts.md = Docs\OpenGLConcepts.md
+		Docs\OpenGLObject.md = Docs\OpenGLObject.md
+		Docs\OpenGLShadingLanguage.md = Docs\OpenGLShadingLanguage.md
 		readme.md = readme.md
-		RenderingPipeline.md = RenderingPipeline.md
+		Docs\RenderingPipeline.md = Docs\RenderingPipeline.md
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "freegl", "freegl", "{2606D55A-7241-4F19-8BE5-BC2D3C952057}"
