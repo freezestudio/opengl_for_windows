@@ -11,45 +11,45 @@ namespace freeze
     //Target :
     //
     //GL_ARRAY_BUFFER
-    //    缓冲区将被用作顶点数据的源，但只有在调用glVertexAttribPointer时才会进行连接。
-    //    该函数的指针字段取自当前绑定到此目标的任何缓冲区的开始的字节偏移量。
+    //    ���������������������ݵ�Դ����ֻ���ڵ���glVertexAttribPointerʱ�Ż�������ӡ�
+    //    �ú�����ָ���ֶ�ȡ�Ե�ǰ�󶨵���Ŀ����κλ������Ŀ�ʼ���ֽ�ƫ������
     //GL_ELEMENT_ARRAY_BUFFER
-    //    gl*Draw*Elements* 形式的所有渲染函数将使用指针字段作为绑定到此目标的缓冲区对象的开头的字节偏移量。
-    //    用于索引渲染的索引将取自缓冲区对象。
-    //    请注意，此绑定目标是“ 顶点数组对象”状态的一部分，因此必须在此处绑定缓冲区之前绑定VAO。
-    //GL_COPY_READ_BUFFER和GL_COPY_WRITE_BUFFER
-    //    没有特定的语义。
-    //    因为它们没有实际意义，所以它们是用glCopyBufferSubData复制缓冲区对象数据的有用目标。
-    //    拷贝时不必使用这些目标，但是通过使用它们，可以避免具有实际语义的令人不安的缓冲区目标。
-    //GL_PIXEL_UNPACK_BUFFER和GL_PIXEL_PACK_BUFFER
-    //    用于执行异步像素传输操作。
-    //    如果缓冲区绑定到GL_PIXEL_UNPACK_BUFFER，
-    //    则glTexImage*，glTexSubImage*，glCompressedTexImage*和glCompressedTexSubImage*
-    //    都将受到影响。
-    //    这些函数将从绑定的缓冲区对象读取它们的数据，而不是客户端指针指向的位置。
-    //    同样，如果一个缓冲区绑定到GL_PIXEL_PACK_BUFFER，
-    //    glGetTexImage和glReadPixels将把它们的数据存储到绑定的缓冲区对象，而不是客户端指针指向的地方。
+    //    gl*Draw*Elements* ��ʽ��������Ⱦ������ʹ��ָ���ֶ���Ϊ�󶨵���Ŀ��Ļ���������Ŀ�ͷ���ֽ�ƫ������
+    //    ����������Ⱦ��������ȡ�Ի���������
+    //    ��ע�⣬�˰�Ŀ���ǡ� �����������״̬��һ���֣���˱����ڴ˴��󶨻�����֮ǰ��VAO��
+    //GL_COPY_READ_BUFFER��GL_COPY_WRITE_BUFFER
+    //    û���ض������塣
+    //    ��Ϊ����û��ʵ�����壬������������glCopyBufferSubData���ƻ������������ݵ�����Ŀ�ꡣ
+    //    ����ʱ����ʹ����ЩĿ�꣬����ͨ��ʹ�����ǣ����Ա������ʵ����������˲����Ļ�����Ŀ�ꡣ
+    //GL_PIXEL_UNPACK_BUFFER��GL_PIXEL_PACK_BUFFER
+    //    ����ִ���첽���ش��������
+    //    ����������󶨵�GL_PIXEL_UNPACK_BUFFER��
+    //    ��glTexImage*��glTexSubImage*��glCompressedTexImage*��glCompressedTexSubImage*
+    //    �����ܵ�Ӱ�졣
+    //    ��Щ�������Ӱ󶨵Ļ����������ȡ���ǵ����ݣ������ǿͻ���ָ��ָ���λ�á�
+    //    ͬ�������һ���������󶨵�GL_PIXEL_PACK_BUFFER��
+    //    glGetTexImage��glReadPixels�������ǵ����ݴ洢���󶨵Ļ��������󣬶����ǿͻ���ָ��ָ��ĵط���
     //GL_QUERY_BUFFER
-    //    用于执行从异步查询到缓冲区对象内存的直接写入。
-    //    如果一个缓冲区绑定到GL_QUERY_BUFFER，
-    //    那么所有的glGetQueryObject[ui64v]函数调用都会将结果写入一个偏移量到绑定的缓冲区对象中。
+    //    ����ִ�д��첽��ѯ�������������ڴ��ֱ��д�롣
+    //    ���һ���������󶨵�GL_QUERY_BUFFER��
+    //    ��ô���е�glGetQueryObject[ui64v]�������ö��Ὣ���д��һ��ƫ�������󶨵Ļ����������С�
     //GL_TEXTURE_BUFFER
-    //    没有特殊的语义，
-    //    但是如果你打算为缓冲区纹理使用一个缓冲区对象，当你第一次创建它的时候，在这里绑定它是一个好主意。
+    //    û����������壬
+    //    ������������Ϊ����������ʹ��һ�����������󣬵����һ�δ�������ʱ�������������һ�������⡣
     //GL_TRANSFORM_FEEDBACK_BUFFER
-    //    Transform Feedback操作中使用的缓冲区的索引缓冲区绑定。
+    //    Transform Feedback������ʹ�õĻ������������������󶨡�
     //GL_UNIFORM_BUFFER
-    //    用作缓冲区的索引缓冲区绑定，用作统一块的存储。
+    //    �����������������������󶨣�����ͳһ��Ĵ洢��
     //GL_DRAW_INDIRECT_BUFFER
-    //    绑定到此目标的缓冲区在执行间接渲染时将用作间接数据的源。仅在核心OpenGL 4.0或
-    //    ARB_draw_indirect中可用。
+    //    �󶨵���Ŀ��Ļ�������ִ�м����Ⱦʱ������������ݵ�Դ�����ں���OpenGL 4.0��
+    //    ARB_draw_indirect�п��á�
     //GL_ATOMIC_COUNTER_BUFFER
-    //    用作原子计数器存储的缓冲区的索引缓冲区绑定。需要OpenGL 4.2或ARB_shader_atomic_counters
+    //    ����ԭ�Ӽ������洢�Ļ������������������󶨡���ҪOpenGL 4.2��ARB_shader_atomic_counters
     //GL_DISPATCH_INDIRECT_BUFFER
-    //    绑定到此目标的缓冲区将通过glDispatchComputeIndirect用作间接计算调度操作的源。
-    //    需要OpenGL 4.3或ARB_compute_shader。
+    //    �󶨵���Ŀ��Ļ�������ͨ��glDispatchComputeIndirect������Ӽ�����Ȳ�����Դ��
+    //    ��ҪOpenGL 4.3��ARB_compute_shader��
     //GL_SHADER_STORAGE_BUFFER
-    //    用作存储着色器存储块的缓冲区的索引缓冲区绑定。
+    //    �����洢��ɫ���洢��Ļ������������������󶨡�
     //
     template<GLenum Target>
     struct buffer_t : make_object<buffer_t<Target>>
@@ -79,13 +79,13 @@ namespace freeze
         }
 
         //
-        //STREAM:  数据存储内容将被修改一次，最多使用几次。
-        //STATIC:  数据存储内容将被修改一次，并多次使用。
-        //DYNAMIC: 数据存储内容将被重复修改，并多次使用。
+        //STREAM:  ���ݴ洢���ݽ����޸�һ�Σ����ʹ�ü��Ρ�
+        //STATIC:  ���ݴ洢���ݽ����޸�һ�Σ������ʹ�á�
+        //DYNAMIC: ���ݴ洢���ݽ����ظ��޸ģ������ʹ�á�
         //
-        //DRAW：用户将数据写入缓冲区，但用户不会读取它。
-        //READ：用户将不会写入数据，但用户将读取数据。
-        //COPY：用户既不会写也不能读数据。
+        //DRAW���û�������д�뻺���������û������ȡ����
+        //READ���û�������д�����ݣ����û�����ȡ���ݡ�
+        //COPY���û��Ȳ���дҲ���ܶ����ݡ�
         void copy_data(void const *data, GLsizeiptr size, GLenum usage = GL_STATIC_DRAW)
         {
             glBufferData(Target, size, data, usage);
@@ -145,7 +145,7 @@ namespace freeze
             assert_error();
         }
 
-        //直接赋值支持
+        //ֱ�Ӹ�ֵ֧��
         void *map_buffer(GLintptr offset, GLsizeiptr length, GLbitfield access) const
         {
             auto pbuffer = glMapBufferRange(Target, offset, length, access);
@@ -373,10 +373,10 @@ namespace freeze
 namespace freeze
 {
     //
-    // 附加至少一个缓冲（颜色、深度或模板缓冲）。
-    // 至少有一个颜色附件(Attachment)。
-    // 所有的附件都必须是完整的（保留了内存）。
-    // 每个缓冲都应该有相同的样本数。
+    // ��������һ�����壨��ɫ����Ȼ�ģ�建�壩��
+    // ������һ����ɫ����(Attachment)��
+    // ���еĸ����������������ģ��������ڴ棩��
+    // ÿ�����嶼Ӧ������ͬ����������
 	// FrameBuffer:
     //     GL_FRAMEBUFFER
     //     GL_DRAW_FRAMEBUFFER  (= GL_FRAMEBUFFER)

@@ -702,6 +702,24 @@ namespace freeze
             return windowp_ != nullptr;
         }
 
+        bool create(int width, int height,
+            std::wstring title = L"demo"s,
+            monitor::pointer _monitor = nullptr,
+            window::pointer _window = nullptr)
+        {
+            auto length = ::WideCharToMultiByte(
+                CP_UTF8, 0, title.c_str(), -1, nullptr, 0, nullptr, nullptr
+            );
+            char* cht = new char[length] {0};
+            ::WideCharToMultiByte(
+                CP_UTF8, 0, title.c_str(), -1, cht, length, nullptr, nullptr
+            );
+
+            auto ret = create(width, height, cht, _monitor, _window);
+            delete[] cht;
+            return ret;
+        }
+
         void destroy()
         {
             glfwDestroyWindow(windowp_);

@@ -10,11 +10,11 @@ namespace freeze
 	template<typename = void>
 	struct vertex_t
 	{
-		// index   é¡¶ç‚¹å±æ€§ï¼ˆä½ç½®å€¼ï¼‰
-		// size    é¡¶ç‚¹å¤§å° (è¡¨ç¤ºnç»´çš„å‘é‡) 1,2,3,4,GL_BGRA
-		// type    æ•°æ®ç±»å‹(enum)
-		// stride  æ­¥é•¿ï¼Œè¿ç»­é¡¶ç‚¹å±æ€§ç»„ä¹‹é—´çš„é—´éš”
-		// pointer ä½ç½®æ•°æ®åœ¨ç¼“å†²ä¸­èµ·å§‹ä½ç½®çš„åç§»é‡
+		// index   ¶¥µãÊôĞÔ£¨Î»ÖÃÖµ£©
+		// size    ¶¥µã´óĞ¡ (±íÊ¾nÎ¬µÄÏòÁ¿) 1,2,3,4,GL_BGRA
+		// type    Êı¾İÀàĞÍ(enum)
+		// stride  ²½³¤£¬Á¬Ğø¶¥µãÊôĞÔ×éÖ®¼äµÄ¼ä¸ô
+		// pointer Î»ÖÃÊı¾İÔÚ»º³åÖĞÆğÊ¼Î»ÖÃµÄÆ«ÒÆÁ¿
 		static void set(GLuint index, GLint size, GLenum type, 
             GLboolean normalized, GLsizei stride, GLint pointer)
 		{
@@ -42,7 +42,7 @@ namespace freeze
                 pointer * sizeof(GLfloat));
 		}
 
-		// div -- 0è¡¨ç¤ºæ¯é¡¶ç‚¹ï¼Œnè¡¨ç¤ºå¸Œæœ›æ¯nä¸ªå®ä¾‹æ›´æ–°ä¸€æ¬¡å±æ€§
+		// div -- 0±íÊ¾Ã¿¶¥µã£¬n±íÊ¾Ï£ÍûÃ¿n¸öÊµÀı¸üĞÂÒ»´ÎÊôĞÔ
 		static void divisor(GLuint index, GLuint div)
 		{
 			glVertexAttribDivisor(index, div);

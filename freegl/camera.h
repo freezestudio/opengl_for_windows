@@ -7,8 +7,8 @@
 
 namespace freeze
 {
-    // å®šä¹‰æ‘„åƒæœºç§»åŠ¨çš„å‡ ç§å¯èƒ½é€‰é¡¹ã€‚
-    // ç”¨ä½œæŠ½è±¡ä»¥é¿å¼€ç‰¹å®šäºçª—å£ç³»ç»Ÿçš„è¾“å…¥æ–¹æ³•
+    // ¶¨ÒåÉãÏñ»úÒÆ¶¯µÄ¼¸ÖÖ¿ÉÄÜÑ¡Ïî¡£
+    // ÓÃ×÷³éÏóÒÔ±Ü¿ªÌØ¶¨ÓÚ´°¿ÚÏµÍ³µÄÊäÈë·½·¨
     enum camera_movement
     {
         FORWARD,
@@ -17,53 +17,53 @@ namespace freeze
         RIGHT,
     };
 
-    // æ‘„åƒæœºç¼ºçœå€¼
-    constexpr float YAW = -90.0f;      //åèˆªy -- æŒ‡å‘å·¦ä¾§
-    constexpr float PITCH = 0.0f;      //ä¿¯ä»°x -- æŒ‡å‘å‰æ–¹
-    constexpr float SPEED = 2.5f;      //é€Ÿåº¦
-    constexpr float SENSITIVTY = 0.1f; //çµæ•åº¦
-    constexpr float ZOOM = 45.0f;      //ç¼©æ”¾
+    // ÉãÏñ»úÈ±Ê¡Öµ
+    constexpr float YAW = -90.0f;      //Æ«º½y -- Ö¸Ïò×ó²à
+    constexpr float PITCH = 0.0f;      //¸©Ñöx -- Ö¸ÏòÇ°·½
+    constexpr float SPEED = 2.5f;      //ËÙ¶È
+    constexpr float SENSITIVTY = 0.1f; //ÁéÃô¶È
+    constexpr float ZOOM = 45.0f;      //Ëõ·Å
 
 
-    // ä¸€ä¸ªæŠ½è±¡ç›¸æœºç±»ï¼Œç”¨äºå¤„ç†è¾“å…¥å¹¶è®¡ç®—ç”¨äºOpenGLçš„ç›¸åº”çš„æ¬§æ‹‰è§’ï¼Œå‘é‡å’ŒçŸ©é˜µ
+    // Ò»¸ö³éÏóÏà»úÀà£¬ÓÃÓÚ´¦ÀíÊäÈë²¢¼ÆËãÓÃÓÚOpenGLµÄÏàÓ¦µÄÅ·À­½Ç£¬ÏòÁ¿ºÍ¾ØÕó
     template<typename = void>
     class camera_t
     {
     public:
-        // æ‘„åƒæœºå±æ€§
+        // ÉãÏñ»úÊôĞÔ
 
-        //åœ¨ä¸–ç•Œåæ ‡ç³»ä¸­çš„ä½ç½®
+        //ÔÚÊÀ½ç×ø±êÏµÖĞµÄÎ»ÖÃ
         glm::vec3 Position;
-        //å‘å‰ï¼Œä»£è¡¨z
+        //ÏòÇ°£¬´ú±íz
         glm::vec3 Front;
-        //å‘ä¸Šï¼Œä»£è¡¨y
+        //ÏòÉÏ£¬´ú±íy
         glm::vec3 Up;
-        //å‘å³ï¼Œä»£è¡¨x
+        //ÏòÓÒ£¬´ú±íx
         glm::vec3 Right;
-        //ä¸–ç•Œåæ ‡ç³»ä¸­çš„å‘ä¸Šæ–¹å‘
+        //ÊÀ½ç×ø±êÏµÖĞµÄÏòÉÏ·½Ïò
         glm::vec3 WorldUp;
 
-        // æ¬§æ‹‰è§’
+        // Å·À­½Ç
 
-        float Pitch; //x ä¿¯ä»°è§’
-        float Yaw;   //y åèˆªè§’
-        //float Roll;  //z æ»šè½¬è§’
+        float Pitch; //x ¸©Ñö½Ç
+        float Yaw;   //y Æ«º½½Ç
+        //float Roll;  //z ¹ö×ª½Ç
 
-        // æ‘„åƒæœºé€‰é¡¹
+        // ÉãÏñ»úÑ¡Ïî
 
-        //ç§»åŠ¨é€Ÿåº¦
+        //ÒÆ¶¯ËÙ¶È
         float MovementSpeed;
-        //é¼ æ ‡çµæ•åº¦
+        //Êó±êÁéÃô¶È
         float MouseSensitivity;
-        //ç¼©æ”¾
+        //Ëõ·Å
         float Zoom;
 
     public:
-        // ä½¿ç”¨å‘é‡æ„é€ 
-        camera_t(glm::vec3 position = glm::vec3{ 0.0f, 0.0f, 0.0f }, // ä½ç½®
-            glm::vec3 up = glm::vec3{ 0.0f, 1.0f, 0.0f },    // ä¸–ç•Œåæ ‡ç³»ä¸­çš„å‘ä¸Šæ–¹å‘
-            float yaw = YAW,                                 // yåèˆª
-            float pitch = PITCH)                             // xä¿¯ä»°
+        // Ê¹ÓÃÏòÁ¿¹¹Ôì
+        camera_t(glm::vec3 position = glm::vec3{ 0.0f, 0.0f, 0.0f }, // Î»ÖÃ
+            glm::vec3 up = glm::vec3{ 0.0f, 1.0f, 0.0f },    // ÊÀ½ç×ø±êÏµÖĞµÄÏòÉÏ·½Ïò
+            float yaw = YAW,                                 // yÆ«º½
+            float pitch = PITCH)                             // x¸©Ñö
             : Front{ 0.0f, 0.0f, -1.0f }
             , MovementSpeed(SPEED)
             , MouseSensitivity(SENSITIVTY)
@@ -78,11 +78,11 @@ namespace freeze
             update_camera_vectors();
         }
 
-        // ä½¿ç”¨æ ‡é‡å€¼æ„é€ 
-        camera_t(float posX, float posY, float posZ,                 //ä½ç½®
-            float upX = 0.0f, float upY = 1.0f, float upZ = 0.0f,    //ä¸–ç•Œåæ ‡ç³»ä¸­çš„å‘ä¸Šæ–¹å‘
-            float yaw = YAW,                                         //yåèˆª
-            float pitch = PITCH)                                     //xä¿¯ä»°
+        // Ê¹ÓÃ±êÁ¿Öµ¹¹Ôì
+        camera_t(float posX, float posY, float posZ,                 //Î»ÖÃ
+            float upX = 0.0f, float upY = 1.0f, float upZ = 0.0f,    //ÊÀ½ç×ø±êÏµÖĞµÄÏòÉÏ·½Ïò
+            float yaw = YAW,                                         //yÆ«º½
+            float pitch = PITCH)                                     //x¸©Ñö
             : Front{ 0.0f, 0.0f, -1.0f }
             , MovementSpeed(SPEED)
             , MouseSensitivity(SENSITIVTY)
@@ -97,17 +97,17 @@ namespace freeze
             update_camera_vectors();
         }
 
-        // è¿”å›ä½¿ç”¨æ¬§æ‹‰è§’å’ŒLookAtçŸ©é˜µè®¡ç®—çš„è§†å›¾çŸ©é˜µ
+        // ·µ»ØÊ¹ÓÃÅ·À­½ÇºÍLookAt¾ØÕó¼ÆËãµÄÊÓÍ¼¾ØÕó
         glm::mat4 get_view_matrix()
         {
             return glm::lookAt(Position, Position + Front, Up);
         }
 
-        // å¤„ç†ä»ä»»ä½•ç±»ä¼¼é”®ç›˜çš„è¾“å…¥ç³»ç»Ÿæ¥æ”¶çš„è¾“å…¥ã€‚
-        // ä»¥æ‘„åƒæœºå®šä¹‰çš„ENUMå½¢å¼æ¥å—è¾“å…¥å‚æ•°ï¼ˆä»çª—å£ç³»ç»ŸæŠ½è±¡ï¼‰
+        // ´¦Àí´ÓÈÎºÎÀàËÆ¼üÅÌµÄÊäÈëÏµÍ³½ÓÊÕµÄÊäÈë¡£
+        // ÒÔÉãÏñ»ú¶¨ÒåµÄENUMĞÎÊ½½ÓÊÜÊäÈë²ÎÊı£¨´Ó´°¿ÚÏµÍ³³éÏó£©
         void process_keyboard(camera_movement direction, float deltaTime)
         {
-            //é€Ÿåº¦
+            //ËÙ¶È
             float velocity = MovementSpeed * deltaTime;
             //W,S,A,D
             switch (direction) {
@@ -118,7 +118,7 @@ namespace freeze
             }
         }
 
-        // å¤„ç†ä»é¼ æ ‡è¾“å…¥ç³»ç»Ÿæ¥æ”¶çš„è¾“å…¥ã€‚ æœŸæœ›xå’Œyæ–¹å‘ä¸Šçš„åç§»å€¼ã€‚
+        // ´¦Àí´ÓÊó±êÊäÈëÏµÍ³½ÓÊÕµÄÊäÈë¡£ ÆÚÍûxºÍy·½ÏòÉÏµÄÆ«ÒÆÖµ¡£
         void process_mouse_movement(float xoffset, float yoffset, 
             bool constrainPitch = true)
         {
@@ -154,7 +154,7 @@ namespace freeze
         }
 
     private:
-        // ä»ç›¸æœºçš„ï¼ˆæ›´æ–°çš„ï¼‰æ¬§æ‹‰è§’è®¡ç®—å‰å‘é‡
+        // ´ÓÏà»úµÄ£¨¸üĞÂµÄ£©Å·À­½Ç¼ÆËãÇ°ÏòÁ¿
         void update_camera_vectors()
         {
             // Calculate the new Front vector
@@ -164,7 +164,7 @@ namespace freeze
             front.z = sinf(glm::radians(Yaw)) * cosf(glm::radians(Pitch));
             Front = glm::normalize(front);
             // Also re-calculate the Right and Up vector
-            //å½’ä¸€åŒ–çŸ¢é‡ï¼Œå› ä¸ºå®ƒä»¬çš„é•¿åº¦è¶Šæ¥è¶Šæ¥è¿‘äº0ï¼Œå› æ­¤æ‚¨çš„ä»°è§†è¶Šå¤šï¼Œç§»åŠ¨è¶Šæ…¢ã€‚
+            //¹éÒ»»¯Ê¸Á¿£¬ÒòÎªËüÃÇµÄ³¤¶ÈÔ½À´Ô½½Ó½üÓÚ0£¬Òò´ËÄúµÄÑöÊÓÔ½¶à£¬ÒÆ¶¯Ô½Âı¡£
             Right = glm::normalize(glm::cross(Front, WorldUp));
             Up = glm::normalize(glm::cross(Right, Front));
         }

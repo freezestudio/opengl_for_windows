@@ -253,7 +253,7 @@ namespace freeze
 
     public:
 
-        //ç”¨äºä»æ·±åº¦-æ¨¡æ¿æ ¼å¼çš„çº¹ç†ä¸­è¯»å–çš„æ¨¡å¼ ver>=4.3
+        //ÓÃÓÚ´ÓÉî¶È-Ä£°å¸ñÊ½µÄÎÆÀíÖĞ¶ÁÈ¡µÄÄ£Ê½ ver>=4.3
         //param -- GL_DEPTH_COMPONENT,GL_STENCIL_COMPONENT
         //void set_depth_stencil_mode(GLint param = GL_DEPTH_COMPONENT)
         //{
@@ -271,8 +271,8 @@ namespace freeze
         //    set_parameter(GL_TEXTURE_BORDER_COLOR, rgba);
         //}
 
-        //glTexImage2Dè°ƒç”¨ä¸­çš„internal format ä¸º GL_DEPTH_COMPONENT_*æ—¶
-        //    GL_COMPARE_REF_TO_TEXTURE (è®¾ä¸ºæ­¤å€¼æ—¶ï¼Œéœ€éšåè°ƒç”¨set_compare_func)
+        //glTexImage2Dµ÷ÓÃÖĞµÄinternal format Îª GL_DEPTH_COMPONENT_*Ê±
+        //    GL_COMPARE_REF_TO_TEXTURE (ÉèÎª´ËÖµÊ±£¬ĞèËæºóµ÷ÓÃset_compare_func)
         //    GL_NONE
         void set_compare_mode(GLint param)
         {
@@ -295,14 +295,14 @@ namespace freeze
         //    }
         //}
 
-        //çº¹ç†ç¯ç»•æ–¹å¼S,T,R (S,T,P,Q)(X,Y,Z,W)
-        //GL_REPEAT	              å¯¹çº¹ç†çš„é»˜è®¤è¡Œä¸ºã€‚é‡å¤çº¹ç†å›¾åƒã€‚
-        //GL_MIRRORED_REPEAT	  å’ŒGL_REPEATä¸€æ ·ï¼Œä½†æ¯æ¬¡é‡å¤å›¾ç‰‡æ˜¯é•œåƒæ”¾ç½®çš„ã€‚
+        //ÎÆÀí»·ÈÆ·½Ê½S,T,R (S,T,P,Q)(X,Y,Z,W)
+        //GL_REPEAT	              ¶ÔÎÆÀíµÄÄ¬ÈÏĞĞÎª¡£ÖØ¸´ÎÆÀíÍ¼Ïñ¡£
+        //GL_MIRRORED_REPEAT	  ºÍGL_REPEATÒ»Ñù£¬µ«Ã¿´ÎÖØ¸´Í¼Æ¬ÊÇ¾µÏñ·ÅÖÃµÄ¡£
         //GL_MIRROR_CLAMP_TO_EDGE (ver >= 4.4)
-        //GL_CLAMP_TO_EDGE	      çº¹ç†åæ ‡ä¼šè¢«çº¦æŸåœ¨0åˆ°1ä¹‹é—´ï¼Œè¶…å‡ºçš„éƒ¨åˆ†ä¼šé‡å¤çº¹ç†åæ ‡çš„è¾¹ç¼˜ï¼Œ
-        //                        äº§ç”Ÿä¸€ç§è¾¹ç¼˜è¢«æ‹‰ä¼¸çš„æ•ˆæœã€‚
-        //GL_CLAMP_TO_BORDER	  è¶…å‡ºçš„åæ ‡ä¸ºç”¨æˆ·æŒ‡å®šçš„è¾¹ç¼˜é¢œè‰²ã€‚
-        //                        (éœ€éšåè°ƒç”¨set_border_colorï¼Œä»¥è®¾ç½®ä¸€ç§è¾¹æ¡†è‰²)
+        //GL_CLAMP_TO_EDGE	      ÎÆÀí×ø±ê»á±»Ô¼ÊøÔÚ0µ½1Ö®¼ä£¬³¬³öµÄ²¿·Ö»áÖØ¸´ÎÆÀí×ø±êµÄ±ßÔµ£¬
+        //                        ²úÉúÒ»ÖÖ±ßÔµ±»À­ÉìµÄĞ§¹û¡£
+        //GL_CLAMP_TO_BORDER	  ³¬³öµÄ×ø±êÎªÓÃ»§Ö¸¶¨µÄ±ßÔµÑÕÉ«¡£
+        //                        (ĞèËæºóµ÷ÓÃset_border_color£¬ÒÔÉèÖÃÒ»ÖÖ±ß¿òÉ«)
         void set_wrap_s(GLint param)
         {
             set_parameter(GL_TEXTURE_WRAP_S, param);
@@ -322,23 +322,23 @@ namespace freeze
             set_parameter(GL_TEXTURE_WRAP_R, param);
         }
 
-        //param: çº¹ç†è¿‡æ»¤
+        //param: ÎÆÀí¹ıÂË
         //   +---------------------------+-----------------------------------
-        //   | GL_NEAREST                |  é‚»è¿‘è¿‡æ»¤                             
+        //   | GL_NEAREST                |  ÁÚ½ü¹ıÂË                             
         //   +---------------------------+-----------------------------------
-        //   | GL_LINEAR                 |  çº¿æ€§è¿‡æ»¤                             
+        //   | GL_LINEAR                 |  ÏßĞÔ¹ıÂË                             
         //   +---------------------------+-----------------------------------
-        //   | GL_NEAREST_MIPMAP_NEAREST |  ä½¿ç”¨æœ€é‚»è¿‘çš„å¤šçº§æ¸è¿œçº¹ç†æ¥åŒ¹é…åƒç´ å¤§å°ï¼Œ
-        //   |                           |  å¹¶ä½¿ç”¨é‚»è¿‘æ’å€¼è¿›è¡Œçº¹ç†é‡‡æ ·           
+        //   | GL_NEAREST_MIPMAP_NEAREST |  Ê¹ÓÃ×îÁÚ½üµÄ¶à¼¶½¥Ô¶ÎÆÀíÀ´Æ¥ÅäÏñËØ´óĞ¡£¬
+        //   |                           |  ²¢Ê¹ÓÃÁÚ½ü²åÖµ½øĞĞÎÆÀí²ÉÑù           
         //   +---------------------------+-----------------------------------
-        //   | GL_LINEAR_MIPMAP_NEAREST  |  ä½¿ç”¨æœ€é‚»è¿‘çš„å¤šçº§æ¸è¿œçº¹ç†çº§åˆ«ï¼Œ        
-        //   |                           |  å¹¶ä½¿ç”¨çº¿æ€§æ’å€¼è¿›è¡Œé‡‡æ ·               
+        //   | GL_LINEAR_MIPMAP_NEAREST  |  Ê¹ÓÃ×îÁÚ½üµÄ¶à¼¶½¥Ô¶ÎÆÀí¼¶±ğ£¬        
+        //   |                           |  ²¢Ê¹ÓÃÏßĞÔ²åÖµ½øĞĞ²ÉÑù               
         //   +---------------------------+-----------------------------------
-        //   | GL_NEAREST_MIPMAP_LINEAR  |  åœ¨ä¸¤ä¸ªæœ€åŒ¹é…åƒç´ å¤§å°çš„å¤šçº§æ¸è¿œçº¹ç†ä¹‹é—´  
-        //   |                           |  è¿›è¡Œçº¿æ€§æ’å€¼ï¼Œä½¿ç”¨é‚»è¿‘æ’å€¼è¿›è¡Œé‡‡æ ·    
+        //   | GL_NEAREST_MIPMAP_LINEAR  |  ÔÚÁ½¸ö×îÆ¥ÅäÏñËØ´óĞ¡µÄ¶à¼¶½¥Ô¶ÎÆÀíÖ®¼ä  
+        //   |                           |  ½øĞĞÏßĞÔ²åÖµ£¬Ê¹ÓÃÁÚ½ü²åÖµ½øĞĞ²ÉÑù    
         //   +---------------------------+-----------------------------------
-        //   | GL_LINEAR_MIPMAP_LINEAR   |  åœ¨ä¸¤ä¸ªé‚»è¿‘çš„å¤šçº§æ¸è¿œçº¹ç†ä¹‹é—´ä½¿ç”¨çº¿æ€§æ’å€¼ï¼Œ
-        //   |                           |  å¹¶ä½¿ç”¨çº¿æ€§æ’å€¼è¿›è¡Œé‡‡æ ·                
+        //   | GL_LINEAR_MIPMAP_LINEAR   |  ÔÚÁ½¸öÁÚ½üµÄ¶à¼¶½¥Ô¶ÎÆÀíÖ®¼äÊ¹ÓÃÏßĞÔ²åÖµ£¬
+        //   |                           |  ²¢Ê¹ÓÃÏßĞÔ²åÖµ½øĞĞ²ÉÑù                
         //   +---------------------------+-----------------------------------
         void set_min_filter(GLint param)
         {
@@ -346,8 +346,8 @@ namespace freeze
         }
 
         //param:
-        //     é‚»è¿‘è¿‡æ»¤ GL_NEAREST
-        //     çº¿æ€§è¿‡æ»¤ GL_LINEAR
+        //     ÁÚ½ü¹ıÂË GL_NEAREST
+        //     ÏßĞÔ¹ıÂË GL_LINEAR
         void set_mag_filter(GLint param)
         {
             set_parameter(GL_TEXTURE_MAG_FILTER, param);
@@ -418,7 +418,7 @@ namespace freeze
     template<GLenum T2D = GL_TEXTURE_2D>
     struct texture2d_impl : texture_base<T2D>
     {
-        //åˆ«å¿˜äº†å…ˆç»‘å®š
+        //±ğÍüÁËÏÈ°ó¶¨
         // internalFormat -- GL_DEPTH_COMPONENT,GL_DEPTH_STENCIL,GL_RED,GL_RG,GL_RGB,GL_RGBA
         // widht
         // height
@@ -448,7 +448,7 @@ namespace freeze
             assert_error();
         }
 
-        //åˆ«å¿˜äº†å…ˆç»‘å®š
+        //±ğÍüÁËÏÈ°ó¶¨
         bool set_image(std::vector<char> const& data)
         {
             int x, y, channels;
@@ -499,7 +499,7 @@ namespace freeze
     template<GLenum T2DMS = GL_TEXTURE_2D_MULTISAMPLE>
     struct texture2d_multisample_impl : texture_base<T2DMS>
     {
-        //åˆ«å¿˜äº†å…ˆç»‘å®š
+        //±ğÍüÁËÏÈ°ó¶¨
         void set_image(GLsizei samples, GLint internalFormat,
             GLsizei width, GLsizei height, GLboolean fixedsamplelocations)
         {
@@ -511,8 +511,8 @@ namespace freeze
     template<GLenum TCM = GL_TEXTURE_CUBE_MAP>
     struct texture_cube_impl : texture_base<TCM>
     {
-        //ç»‘å®šä¸€æ¬¡
-        //è°ƒç”¨6æ¬¡åˆ†åˆ«è®¾ç½®+-x,+-y,+-z
+        //°ó¶¨Ò»´Î
+        //µ÷ÓÃ6´Î·Ö±ğÉèÖÃ+-x,+-y,+-z
         void set_image(GLsizei index, GLint internalFormat,
             GLsizei width, GLsizei height, GLenum format,
             GLenum type, const void* pixels)
